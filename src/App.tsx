@@ -1,12 +1,7 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
-import { Button, ConfigProvider, Divider, Input, Space } from "antd";
+import { ConfigProvider, Space } from "antd";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
       <ConfigProvider
