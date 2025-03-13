@@ -1,16 +1,15 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
-import { Button, ConfigProvider, Divider, Input, Space } from "antd";
+import { ConfigProvider } from "antd";
+import OwnLayout from "./ownLayout";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
       <ConfigProvider
         theme={{
+          token: {
+            // colorText: "#ffffff",
+          },
           components: {
             Button: {
               colorPrimary: "#25675C",
@@ -20,12 +19,18 @@ function App() {
               colorPrimary: "#eb2f96",
               algorithm: true, // Enable algorithm
             },
+            Menu: {
+              colorText: "#ffffff",
+              itemSelectedColor: "#014F42",
+              subMenuItemSelectedColor: "#ffffff",
+            },
+            Slider: {
+              colorBgLayout: "#014F42",
+            },
           },
         }}
       >
-        <Space>
-          <div className="text-6xl">We Will Back Soon</div>
-        </Space>
+        <OwnLayout />
       </ConfigProvider>
     </>
   );
