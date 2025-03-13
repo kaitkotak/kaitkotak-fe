@@ -15,12 +15,6 @@ import { useState } from "react";
 import { Content, Header } from "antd/es/layout/layout";
 import { ItemType, MenuItemType } from "antd/es/menu/interface";
 
-interface IMenu {
-  label: string;
-  icon: any;
-  children?: Partial<IMenu>[];
-}
-
 const OwnLayout = () => {
   let menus: ItemType<MenuItemType>[] = [
     {
