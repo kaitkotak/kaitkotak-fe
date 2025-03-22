@@ -1,66 +1,62 @@
-import { Avatar, Button, Layout, Menu, theme } from "antd";
+import { Avatar, Breadcrumb, Button, Layout, Menu, theme } from "antd";
 import {
   DatabaseOutlined,
-  FileProtectOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  ProductOutlined,
-  ShopOutlined,
-  SwitcherOutlined,
-  TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import Sider from "antd/es/layout/Sider";
 import { useState } from "react";
-import { Content, Header } from "antd/es/layout/layout";
+import { Header } from "antd/es/layout/layout";
 import { ItemType, MenuItemType } from "antd/es/menu/interface";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const OwnLayout = () => {
   let menus: ItemType<MenuItemType>[] = [
+    // {
+    //   key: "1",
+    //   label: "Produksi",
+    //   icon: <ProductOutlined />,
+    // },
+    // {
+    //   key: "2",
+    //   label: "Purchase Order",
+    //   icon: <FileProtectOutlined />,
+    // },
+    // {
+    //   key: "3",
+    //   label: "Penjualan",
+    //   icon: <ShopOutlined />,
+    // },
+    // {
+    //   key: "4",
+    //   label: "Bahan Baku",
+    //   icon: <SwitcherOutlined />,
+    // },
+    // {
+    //   key: "5",
+    //   label: "Pengguna",
+    //   icon: <TeamOutlined />,
+    // },
     {
-      key: "1",
-      label: "Produksi",
-      icon: <ProductOutlined />,
-    },
-    {
-      key: "2",
-      label: "Purchase Order",
-      icon: <FileProtectOutlined />,
-    },
-    {
-      key: "3",
-      label: "Penjualan",
-      icon: <ShopOutlined />,
-    },
-    {
-      key: "4",
-      label: "Bahan Baku",
-      icon: <SwitcherOutlined />,
-    },
-    {
-      key: "5",
-      label: "Pengguna",
-      icon: <TeamOutlined />,
-    },
-    {
-      key: "6",
+      key: "",
       label: "Data Master",
       icon: <DatabaseOutlined />,
       children: [
+        // {
+        //   key: 7,
+        //   label: "Item",
+        // },
+        // {
+        //   key: 8,
+        //   label: "Pelanggan",
+        // },
         {
-          key: 7,
-          label: "Item",
-        },
-        {
-          key: 8,
-          label: "Pelanggan",
-        },
-        {
-          key: 9,
+          key: "/master/sales-people",
           label: "Sales",
         },
         {
-          key: 10,
+          key: "/master/transportation",
           label: "Transportasi",
         },
       ],
@@ -69,11 +65,21 @@ const OwnLayout = () => {
 
   const [collapsed, setCollapsed] = useState(false);
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { colorBgContainer },
   } = theme.useToken();
+  const navigate = useNavigate();
+  // const [_, contextHolder] = message.useMessage();
+
+  const clickMenuHandler = (val: any) => {
+    console.log(val);
+    if (val.key) {
+      navigate(val.key);
+    }
+  };
 
   return (
     <Layout className="h-screen">
+      {/* {contextHolder} */}
       <Sider
         trigger={null}
         collapsible
@@ -101,10 +107,14 @@ const OwnLayout = () => {
           items={menus}
           color="#fffff"
           style={{ background: "#014F42", color: "#ffffff" }}
+          onClick={clickMenuHandler}
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
+        <Header
+          style={{ padding: 0, background: colorBgContainer }}
+          className="flex"
+        >
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -115,18 +125,14 @@ const OwnLayout = () => {
               height: 64,
             }}
           />
+
+          <Breadcrumb
+            items={[{ title: "sample" }]}
+            style={{ margin: "auto 0" }}
+          />
         </Header>
-        <Content
-          style={{
-            margin: "24px 16px",
-            padding: 24,
-            minHeight: 280,
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-          }}
-        >
-          Content
-        </Content>
+
+        <Outlet />
       </Layout>
     </Layout>
   );
