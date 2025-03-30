@@ -43,14 +43,14 @@ const OwnLayout = () => {
       label: "Data Master",
       icon: <DatabaseOutlined />,
       children: [
-        // {
-        //   key: 7,
-        //   label: "Item",
-        // },
-        // {
-        //   key: 8,
-        //   label: "Pelanggan",
-        // },
+        {
+          key: "/master/item",
+          label: "Item",
+        },
+        {
+          key: "/master/customer",
+          label: "Pelanggan",
+        },
         {
           key: "/master/sales-people",
           label: "Sales",
