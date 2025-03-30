@@ -20,7 +20,10 @@ const TransportationForm = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    form.setFieldsValue(data?.data.data);
+    if (params.id) {
+      form.setFieldsValue(data?.data.data);
+    }
+    console.log("data", data);
   }, [data]);
 
   const submit: FormProps<ITransportationForm>["onFinish"] = (values) => {
@@ -47,7 +50,7 @@ const TransportationForm = () => {
       >
         <Form
           form={form}
-          autoComplete="off"
+          // autoComplete="off"
           layout="vertical"
           onFinish={submit}
         >

@@ -17,8 +17,8 @@ import Search from "antd/es/input/Search";
 import { Content } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import UseGetSalesPeople from "../hooks/useGetSalesPeople";
-import useDeleteSalesPeople from "../hooks/useDeleteSalesPeople";
+import UseGetCustomers from "../hooks/useGetCustomers";
+import useDeleteCustomer from "../hooks/useDeleteCustomer";
 
 interface IData {
   id: string;
@@ -27,32 +27,33 @@ interface IData {
   phone_number: string;
 }
 
-const SalesPeople = () => {
+const Customer = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const [salesPeople, setSalesPeople] = useState<IData[]>([]);
+  const [transportations, setTransportations] = useState<IData[]>([]);
   const [tableParams, setTableParams] = useState<ITableParams>({
     pagination: {
       current: 1,
       pageSize: 5,
     },
   });
-  const { data, isLoading } = UseGetSalesPeople(tableParams);
-  const { mutateAsync: deleteAction } = useDeleteSalesPeople();
+  const { data, isLoading } = UseGetCustomers(tableParams);
+  const { mutateAsync: deleteAction } = useDeleteCustomer();
   const navigate = useNavigate();
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] =
     useState<boolean>(false);
   const [selectedRowId, setSelectedRowId] = useState<string>("");
 
   useEffect(() => {
-    setSalesPeople(data?.data.data);
+    setTransportations(data?.data.data);
   }, [data]);
 
   const columns: TableColumnsType<IData> = [
     { title: "Nama", dataIndex: "full_name", responsive: ["md"] },
+    { title: "Kode", dataIndex: "customer_code", responsive: ["md"] },
     { title: "No HP", dataIndex: "phone_number", responsive: ["md"] },
-    { title: "No KTP", dataIndex: "ktp", responsive: ["md"] },
+    { title: "Nama Sales", dataIndex: "sales_rep_id", responsive: ["md"] },
     {
       dataIndex: "action",
       render: (_, record) => (
@@ -110,7 +111,7 @@ const SalesPeople = () => {
   return (
     <>
       <Modal
-        title="Hapus Data Sales"
+        title="Hapus Data Pelanggan"
         open={isOpenConfirmationModal}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -141,12 +142,12 @@ const SalesPeople = () => {
             icon={<FileAddOutlined />}
             onClick={() => goToForm("create")}
           >
-            Tambah Sales
+            Tambah Pelanggan
           </Button>
         </div>
         <Table
           className="mt-8"
-          dataSource={salesPeople}
+          dataSource={transportations}
           columns={columns}
           loading={isLoading}
           pagination={tableParams.pagination}
@@ -157,4 +158,4 @@ const SalesPeople = () => {
   );
 };
 
-export default SalesPeople;
+export default Customer;

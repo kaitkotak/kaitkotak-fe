@@ -7,3 +7,5 @@ interface ISalesPeople {
   ktp_photo: string;
   profile_photo: string;
 }
+
+type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];

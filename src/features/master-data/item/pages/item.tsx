@@ -17,42 +17,56 @@ import Search from "antd/es/input/Search";
 import { Content } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import UseGetSalesPeople from "../hooks/useGetSalesPeople";
-import useDeleteSalesPeople from "../hooks/useDeleteSalesPeople";
+import UseGetItems from "../hooks/useGetItems";
+import useDeleteItem from "../hooks/useDeleteItem";
 
 interface IData {
-  id: string;
-  driver_name: string;
-  vehicle_number: string;
-  phone_number: string;
+  cost_per_g: number;
+  cost_per_kg: number;
+  cost_per_unit: number;
+  customer_code: string;
+  description: string;
+  id: number;
+  image: string;
+  item_code: string;
+  item_name: string;
+  price_per_g: number;
+  price_per_kg: number;
+  price_per_unit: number;
+  type: string;
+  weight_g: number;
 }
 
-const SalesPeople = () => {
+const Item = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const [salesPeople, setSalesPeople] = useState<IData[]>([]);
+  const [items, setItems] = useState<IData[]>([]);
   const [tableParams, setTableParams] = useState<ITableParams>({
     pagination: {
       current: 1,
       pageSize: 5,
     },
   });
-  const { data, isLoading } = UseGetSalesPeople(tableParams);
-  const { mutateAsync: deleteAction } = useDeleteSalesPeople();
+  const { data, isLoading } = UseGetItems(tableParams);
+  const { mutateAsync: deleteAction } = useDeleteItem();
   const navigate = useNavigate();
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] =
     useState<boolean>(false);
-  const [selectedRowId, setSelectedRowId] = useState<string>("");
+  const [selectedRowId, setSelectedRowId] = useState<number>(0);
 
   useEffect(() => {
-    setSalesPeople(data?.data.data);
+    setItems(data?.data.data);
   }, [data]);
 
   const columns: TableColumnsType<IData> = [
-    { title: "Nama", dataIndex: "full_name", responsive: ["md"] },
-    { title: "No HP", dataIndex: "phone_number", responsive: ["md"] },
-    { title: "No KTP", dataIndex: "ktp", responsive: ["md"] },
+    { title: "Nama", dataIndex: "item_name", responsive: ["md"] },
+    { title: "Kode", dataIndex: "item_code", responsive: ["md"] },
+    { title: "Berat (gr)", dataIndex: "weight_g", responsive: ["md"] },
+    { title: "Harga Jual", dataIndex: "price_per_unit", responsive: ["md"] },
+    { title: "Harga Produksi", dataIndex: "cost_per_unit", responsive: ["md"] },
+    { title: "Tipe", dataIndex: "type", responsive: ["md"] },
+    { title: "Kode Pelanggan", dataIndex: "customer_code", responsive: ["md"] },
     {
       dataIndex: "action",
       render: (_, record) => (
@@ -75,7 +89,7 @@ const SalesPeople = () => {
     },
   ];
 
-  const openDeleteConfirmation = (id: string) => {
+  const openDeleteConfirmation = (id: number) => {
     setIsOpenConfirmationModal(true);
     setSelectedRowId(id);
   };
@@ -93,7 +107,7 @@ const SalesPeople = () => {
     }));
   };
 
-  const goToForm = (mode: string, id?: string) => {
+  const goToForm = (mode: string, id?: number) => {
     const path: string = mode === "create" ? "create" : `edit/${id}`;
     navigate(path);
   };
@@ -110,7 +124,7 @@ const SalesPeople = () => {
   return (
     <>
       <Modal
-        title="Hapus Data Sales"
+        title="Hapus Data Item"
         open={isOpenConfirmationModal}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -141,12 +155,12 @@ const SalesPeople = () => {
             icon={<FileAddOutlined />}
             onClick={() => goToForm("create")}
           >
-            Tambah Sales
+            Tambah Item
           </Button>
         </div>
         <Table
           className="mt-8"
-          dataSource={salesPeople}
+          dataSource={items}
           columns={columns}
           loading={isLoading}
           pagination={tableParams.pagination}
@@ -157,4 +171,4 @@ const SalesPeople = () => {
   );
 };
 
-export default SalesPeople;
+export default Item;
