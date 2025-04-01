@@ -35,10 +35,13 @@ const Transportation = () => {
   const [tableParams, setTableParams] = useState<ITableParams>({
     pagination: {
       current: 1,
-      pageSize: 5,
+      pageSize: 10,
     },
   });
-  const { data, isLoading } = UseGetTransportations(tableParams);
+  const { data, isLoading } = UseGetTransportations({
+    page: tableParams.pagination.current,
+    limit: tableParams.pagination.pageSize,
+  });
   const { mutateAsync: deleteAction } = useDeleteTransportation();
   const navigate = useNavigate();
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] =
@@ -47,6 +50,12 @@ const Transportation = () => {
 
   useEffect(() => {
     setTransportations(data?.data.data);
+    setTableParams({
+      pagination: {
+        ...tableParams.pagination,
+        total: data?.data.meta.total,
+      },
+    });
   }, [data]);
 
   const columns: TableColumnsType<IData> = [
@@ -130,7 +139,7 @@ const Transportation = () => {
       >
         <div className="flex justify-between">
           <Search
-            placeholder="input search text"
+            placeholder="Pencarian..."
             onSearch={handleSearch}
             style={{ width: 200 }}
           />

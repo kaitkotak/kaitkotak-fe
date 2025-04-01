@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { generateUrlWithParams } from "../../../../libs/generateUrlWithParams";
 import { axiosInstance } from "../../../../libs/axios";
 
-const UseGetTransportations = (props: ITableParams) => {
+const UseGetTransportations = (props: ICustomTablePaginationConfig) => {
   const url: string = generateUrlWithParams(
     `/master/transport_vehicle?`,
     props
@@ -10,7 +10,6 @@ const UseGetTransportations = (props: ITableParams) => {
   return useQuery({
     queryKey: ["masterTransportation", props],
     queryFn: async () => axiosInstance.get(url),
-    staleTime: Infinity,
   });
 };
 
