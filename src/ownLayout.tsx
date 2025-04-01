@@ -6,10 +6,11 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import Sider from "antd/es/layout/Sider";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Header } from "antd/es/layout/layout";
 import { ItemType, MenuItemType } from "antd/es/menu/interface";
 import { Outlet, useNavigate } from "react-router-dom";
+import { BreadcrumbContext } from "./context/breadcrumb";
 
 const OwnLayout = () => {
   let menus: ItemType<MenuItemType>[] = [
@@ -69,6 +70,7 @@ const OwnLayout = () => {
   } = theme.useToken();
   const navigate = useNavigate();
   // const [_, contextHolder] = message.useMessage();
+  const { breadcrumb } = useContext(BreadcrumbContext);
 
   const clickMenuHandler = (val: any) => {
     console.log(val);
@@ -126,10 +128,7 @@ const OwnLayout = () => {
             }}
           />
 
-          <Breadcrumb
-            items={[{ title: "sample" }]}
-            style={{ margin: "auto 0" }}
-          />
+          <Breadcrumb items={breadcrumb} style={{ margin: "auto 0" }} />
         </Header>
 
         <Outlet />

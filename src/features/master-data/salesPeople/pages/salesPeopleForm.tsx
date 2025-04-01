@@ -15,11 +15,12 @@ import {
 } from "antd";
 import { Content } from "antd/es/layout/layout";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import UseGetDetailSalesPeople from "../hooks/useGetDetailSalesPeople";
 import useCreateSalesPeople from "../hooks/useCreateSalesPeople";
 import useUpdateSalesPeople from "../hooks/useUpdateSalesPeople";
 import TextArea from "antd/es/input/TextArea";
+import { BreadcrumbContext } from "../../../../context/breadcrumb";
 // import { PlusOutlined } from "@ant-design/icons";
 // import useUpload from "../../../../hooks/useUpload";
 
@@ -43,6 +44,21 @@ const SalesPeopleForm = () => {
   // const [photo, setPhoto] = useState<string>("");
   // const [ktpPhoto, setKtpPhoto] = useState<string>("");
   // const [fileChange, setFileChange] = useState<string>("");
+  const { setBreadcrumb } = useContext(BreadcrumbContext);
+
+  useEffect(() => {
+    setBreadcrumb([
+      {
+        title: "Data Master",
+      },
+      {
+        title: "Sales",
+      },
+      {
+        title: params.id ? "Edit Sales" : "Tambah Sales",
+      },
+    ]);
+  }, []);
 
   useEffect(() => {
     if (params.id) {
@@ -76,7 +92,7 @@ const SalesPeopleForm = () => {
   };
 
   const back = () => {
-    navigate("/master/transportation");
+    navigate("/master/sales-people");
   };
 
   // const getBase64 = (file: FileType): Promise<string> =>

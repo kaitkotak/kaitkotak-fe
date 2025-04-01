@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import Transportation from "../features/master-data/transportation/pages/transportation";
 import App from "../App";
 import TransportationForm from "../features/master-data/transportation/pages/transportationForm";
@@ -14,6 +14,10 @@ export const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
+      {
+        path: "",
+        element: <Navigate to="/master/item" />,
+      },
       {
         path: "master",
         children: [
