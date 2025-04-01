@@ -3,6 +3,7 @@ import { ConfigProvider } from "antd";
 import OwnLayout from "./ownLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { BreadcrumbProvider } from "./context/breadcrumb";
 
 // const { toast } = useToast();
 // const jwtTokenErrors: string[] = [
@@ -58,33 +59,35 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ConfigProvider
-        theme={{
-          token: {
-            // colorText: "#ffffff",
-          },
-          components: {
-            Button: {
-              colorPrimary: "#25675C",
-              algorithm: true, // Enable algorithm
+      <BreadcrumbProvider>
+        <ConfigProvider
+          theme={{
+            token: {
+              // colorText: "#ffffff",
             },
-            Input: {
-              colorPrimary: "#eb2f96",
-              algorithm: true, // Enable algorithm
+            components: {
+              Button: {
+                colorPrimary: "#25675C",
+                algorithm: true, // Enable algorithm
+              },
+              Input: {
+                colorPrimary: "#eb2f96",
+                algorithm: true, // Enable algorithm
+              },
+              Menu: {
+                colorText: "#ffffff",
+                itemSelectedColor: "#014F42",
+                subMenuItemSelectedColor: "#ffffff",
+              },
+              Slider: {
+                colorBgLayout: "#014F42",
+              },
             },
-            Menu: {
-              colorText: "#ffffff",
-              itemSelectedColor: "#014F42",
-              subMenuItemSelectedColor: "#ffffff",
-            },
-            Slider: {
-              colorBgLayout: "#014F42",
-            },
-          },
-        }}
-      >
-        <OwnLayout />
-      </ConfigProvider>
+          }}
+        >
+          <OwnLayout />
+        </ConfigProvider>
+      </BreadcrumbProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

@@ -15,10 +15,11 @@ import {
 } from "antd";
 import Search from "antd/es/input/Search";
 import { Content } from "antd/es/layout/layout";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UseGetItems from "../hooks/useGetItems";
 import useDeleteItem from "../hooks/useDeleteItem";
+import { BreadcrumbContext } from "../../../../context/breadcrumb";
 
 interface IData {
   cost_per_g: number;
@@ -57,6 +58,18 @@ const Item = () => {
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] =
     useState<boolean>(false);
   const [selectedRowId, setSelectedRowId] = useState<number>(0);
+  const { setBreadcrumb } = useContext(BreadcrumbContext);
+
+  useEffect(() => {
+    setBreadcrumb([
+      {
+        title: "Data Master",
+      },
+      {
+        title: "Item",
+      },
+    ]);
+  }, []);
 
   useEffect(() => {
     setItems(data?.data.data);

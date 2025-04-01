@@ -3,8 +3,9 @@ import { Content } from "antd/es/layout/layout";
 import useCreateTransportation from "../hooks/useCreateTransportation";
 import { useNavigate, useParams } from "react-router-dom";
 import UseGetTransportation from "../hooks/useGetTransportation";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import useUpdateTransportation from "../hooks/useUpdateTransportation";
+import { BreadcrumbContext } from "../../../../context/breadcrumb";
 
 const TransportationForm = () => {
   const {
@@ -18,12 +19,26 @@ const TransportationForm = () => {
     id: params.id ?? "",
   });
   const [form] = Form.useForm();
+  const { setBreadcrumb } = useContext(BreadcrumbContext);
+
+  useEffect(() => {
+    setBreadcrumb([
+      {
+        title: "Data Master",
+      },
+      {
+        title: "Transportasi",
+      },
+      {
+        title: params.id ? "Edit Transportasi" : "Tambah Transportasi",
+      },
+    ]);
+  }, []);
 
   useEffect(() => {
     if (params.id) {
       form.setFieldsValue(data?.data.data);
     }
-    console.log("data", data);
   }, [data]);
 
   const submit: FormProps<ITransportationForm>["onFinish"] = (values) => {

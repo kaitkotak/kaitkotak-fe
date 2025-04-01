@@ -17,13 +17,14 @@ import {
 } from "antd";
 import { Content } from "antd/es/layout/layout";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 // import { PlusOutlined } from "@ant-design/icons";
 import useCreateCustomer from "../hooks/useCreateCustomer";
 import useUpdateCustomer from "../hooks/useUpdateCustomer";
 import UseGetCustomer from "../hooks/useGetCustomer";
 import UseGetSalesPeople from "../../salesPeople/hooks/useGetSalesPeople";
+import { BreadcrumbContext } from "../../../../context/breadcrumb";
 // import useUpload from "../hooks/useUpload";
 
 const CustomerForm = () => {
@@ -53,6 +54,21 @@ const CustomerForm = () => {
     limit: SalesParams.pagination.pageSize,
   });
   const [salesOption, setSalesOption] = useState<ISalesPeople[]>([]);
+  const { setBreadcrumb } = useContext(BreadcrumbContext);
+
+  useEffect(() => {
+    setBreadcrumb([
+      {
+        title: "Data Master",
+      },
+      {
+        title: "Pelanggan",
+      },
+      {
+        title: params.id ? "Edit Pelanggan" : "Tambah Pelanggan",
+      },
+    ]);
+  }, []);
 
   useEffect(() => {
     if (params.id) {

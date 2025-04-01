@@ -11,10 +11,11 @@ import {
 } from "antd";
 import { Content } from "antd/es/layout/layout";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import useCreateItem from "../hooks/useCreateItem";
 import useUpdateItem from "../hooks/useUpdateItem";
 import UseGetItem from "../hooks/useGetItem";
+import { BreadcrumbContext } from "../../../../context/breadcrumb";
 
 const ItemForm = () => {
   const {
@@ -28,6 +29,21 @@ const ItemForm = () => {
     id: params.id ?? "",
   });
   const [form] = Form.useForm();
+  const { setBreadcrumb } = useContext(BreadcrumbContext);
+
+  useEffect(() => {
+    setBreadcrumb([
+      {
+        title: "Data Master",
+      },
+      {
+        title: "Item",
+      },
+      {
+        title: params.id ? "Edit Item" : "Tambah Item",
+      },
+    ]);
+  }, []);
 
   useEffect(() => {
     if (params.id) {

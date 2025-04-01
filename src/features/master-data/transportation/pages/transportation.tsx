@@ -15,10 +15,11 @@ import {
 } from "antd";
 import Search from "antd/es/input/Search";
 import { Content } from "antd/es/layout/layout";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import UseGetTransportations from "../hooks/useGetTransportations";
 import { useNavigate } from "react-router-dom";
 import useDeleteTransportation from "../hooks/useDeleteTransportation";
+import { BreadcrumbContext } from "../../../../context/breadcrumb";
 
 interface IData {
   id: string;
@@ -47,6 +48,18 @@ const Transportation = () => {
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] =
     useState<boolean>(false);
   const [selectedRowId, setSelectedRowId] = useState<string>("");
+  const { setBreadcrumb } = useContext(BreadcrumbContext);
+
+  useEffect(() => {
+    setBreadcrumb([
+      {
+        title: "Data Master",
+      },
+      {
+        title: "Transportasi",
+      },
+    ]);
+  }, []);
 
   useEffect(() => {
     setTransportations(data?.data.data);
