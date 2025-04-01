@@ -48,7 +48,10 @@ const CustomerForm = () => {
       pageSize: 100,
     },
   });
-  const { data: salesResponse } = UseGetSalesPeople(SalesParams);
+  const { data: salesResponse } = UseGetSalesPeople({
+    page: SalesParams.pagination.current,
+    limit: SalesParams.pagination.pageSize,
+  });
   const [salesOption, setSalesOption] = useState<ISalesPeople[]>([]);
 
   useEffect(() => {

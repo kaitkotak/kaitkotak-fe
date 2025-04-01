@@ -35,10 +35,13 @@ const Customer = () => {
   const [tableParams, setTableParams] = useState<ITableParams>({
     pagination: {
       current: 1,
-      pageSize: 5,
+      pageSize: 10,
     },
   });
-  const { data, isLoading } = UseGetCustomers(tableParams);
+  const { data, isLoading } = UseGetCustomers({
+    page: tableParams.pagination.current,
+    limit: tableParams.pagination.pageSize,
+  });
   const { mutateAsync: deleteAction } = useDeleteCustomer();
   const navigate = useNavigate();
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] =
@@ -47,6 +50,12 @@ const Customer = () => {
 
   useEffect(() => {
     setTransportations(data?.data.data);
+    setTableParams({
+      pagination: {
+        ...tableParams.pagination,
+        total: data?.data.meta.total,
+      },
+    });
   }, [data]);
 
   const columns: TableColumnsType<IData> = [
