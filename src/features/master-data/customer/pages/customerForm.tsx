@@ -4,6 +4,7 @@ import {
   Flex,
   Form,
   FormProps,
+  Image,
   // Image,
   Input,
   Row,
@@ -11,9 +12,9 @@ import {
   // Space,
   Spin,
   theme,
-  // Upload,
-  // UploadFile,
-  // UploadProps,
+  Upload,
+  UploadFile,
+  UploadProps,
 } from "antd";
 import { Content } from "antd/es/layout/layout";
 import { useNavigate, useParams } from "react-router-dom";
@@ -25,24 +26,32 @@ import useUpdateCustomer from "../hooks/useUpdateCustomer";
 import UseGetCustomer from "../hooks/useGetCustomer";
 import UseGetSalesPeople from "../../salesPeople/hooks/useGetSalesPeople";
 import { BreadcrumbContext } from "../../../../context/breadcrumb";
-// import useUpload from "../hooks/useUpload";
+import useUpload from "../../../../hooks/useUpload";
+import { getBase64 } from "../../../../libs/getBase64";
+import { PlusOutlined } from "@ant-design/icons";
 
 const CustomerForm = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const { mutateAsync: create } = useCreateCustomer();
-  const { mutateAsync: update } = useUpdateCustomer();
+  const { mutateAsync: create, isPending: isPendingCreate } =
+    useCreateCustomer();
+  const { mutateAsync: update, isPending: isPendingUpdate } =
+    useUpdateCustomer();
   const navigate = useNavigate();
   const params = useParams();
   const { data, isLoading } = UseGetCustomer({
     id: params.id ?? "",
   });
   const [form] = Form.useForm();
-  // const [fileList, setFileList] = useState<UploadFile[]>([]);
-  // const [previewOpen, setPreviewOpen] = useState(false);
-  // const [previewImage, setPreviewImage] = useState("");
-  // const { mutateAsync: upload } = useUpload();
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const {
+    mutateAsync: upload,
+    data: uploadResponse,
+    isPending: isPendingUpload,
+  } = useUpload();
   const [SalesParams, _] = useState<ITableParams>({
     pagination: {
       current: 1,
@@ -73,6 +82,19 @@ const CustomerForm = () => {
   useEffect(() => {
     if (params.id) {
       form.setFieldsValue(data?.data.data);
+
+      if (data?.data.data.npwp_photo) {
+        setFileList([
+          {
+            uid: "-1",
+            name: "default.png",
+            status: "done",
+            url: `${import.meta.env.VITE_API_URL}/file/download/${
+              data?.data.data.npwp_photo
+            }`,
+          },
+        ]);
+      }
     }
   }, [data]);
 
@@ -82,7 +104,15 @@ const CustomerForm = () => {
     }
   }, [salesResponse]);
 
+  useEffect(() => {
+    form.setFieldValue("npwp_photo", uploadResponse?.data.data.name);
+  }, [uploadResponse]);
+
   const submit: FormProps<ICustomer>["onFinish"] = (values) => {
+    if (values.npwp_photo && !values.npwp_photo.includes("temp")) {
+      delete values.npwp_photo;
+    }
+
     if (params.id) {
       update({ ...values, id: params.id });
     } else {
@@ -94,46 +124,38 @@ const CustomerForm = () => {
     navigate("/master/customer");
   };
 
-  // const getBase64 = (file: FileType): Promise<string> =>
-  //   new Promise((resolve, reject) => {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(file as Blob);
-  //     reader.onload = () => resolve(reader.result as string);
-  //     reader.onerror = (error) => reject(error);
-  //   });
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as FileType);
+    }
 
-  // const handlePreview = async (file: UploadFile) => {
-  //   if (!file.url && !file.preview) {
-  //     file.preview = await getBase64(file.originFileObj as FileType);
-  //   }
-
-  //   setPreviewImage(file.url || (file.preview as string));
-  //   setPreviewOpen(true);
-  // };
-
-  // const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
-  //   setFileList(newFileList);
-  //   console.log(newFileList);
-  //   // upload(fileList[0].originFileObj)
-  // };
-
-  // const uploadButton = (
-  //   <button style={{ border: 0, background: "none" }} type="button">
-  //     <PlusOutlined />
-  //     <div style={{ marginTop: 8 }}>Upload</div>
-  //   </button>
-  // );
-
-  const onChange = (value: string) => {
-    console.log(`selected ${value}`);
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
   };
 
-  const onSearch = (value: string) => {
-    console.log("search:", value);
+  const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+
+    if (newFileList.length) {
+      upload(newFileList[0].originFileObj as File);
+    } else {
+      form.setFieldValue("npwp_photo", "");
+    }
   };
+
+  const uploadButton = (
+    <button style={{ border: 0, background: "none" }} type="button">
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </button>
+  );
 
   return (
-    <Spin spinning={isLoading}>
+    <Spin
+      spinning={
+        isLoading || isPendingCreate || isPendingUpdate || isPendingUpload
+      }
+    >
       <Content
         style={{
           margin: "24px 16px",
@@ -231,8 +253,6 @@ const CustomerForm = () => {
               showSearch
               placeholder="Pilih Sales"
               optionFilterProp="label"
-              onSelect={onChange}
-              onSearch={onSearch}
               options={salesOption.map((s) => ({
                 value: s.id,
                 label: s.full_name,
@@ -248,7 +268,7 @@ const CustomerForm = () => {
             <TextArea />
           </Form.Item>
 
-          {/* <Form.Item<ICustomer>
+          <Form.Item<ICustomer>
             label="Foto NPWP"
             name="npwp_photo"
             rules={[{ required: true, message: "Silahkan upload foto NPWP!" }]}
@@ -259,6 +279,7 @@ const CustomerForm = () => {
               accept=".png,.jpg,.jpeg,.webp"
               onPreview={handlePreview}
               onChange={handleChange}
+              beforeUpload={() => false}
             >
               {fileList.length >= 1 ? null : uploadButton}
             </Upload>
@@ -273,9 +294,9 @@ const CustomerForm = () => {
                 src={previewImage}
               />
             )}
-          </Form.Item> */}
+          </Form.Item>
 
-          <Flex gap="middle" align="end">
+          <Flex gap="middle" justify="end">
             <Form.Item label={null}>
               <Button
                 type="default"

@@ -10,7 +10,6 @@ const UseGetDetailSalesPeople = (props: IProps) => {
   return useQuery({
     queryKey: ["masterSalesPeopleDetail", props.id],
     queryFn: async () => axiosInstance.get(url),
-    staleTime: Infinity,
   });
 };
 

@@ -17,4 +17,5 @@ interface IItemnForm {
   weight_g: number;
   customer_code: string;
   description: string;
+  image?: string;
 }

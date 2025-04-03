@@ -8,5 +8,5 @@ interface ICustomer {
   email: string;
   invoice_code: string;
   npwp_number: string;
-  npwp_photo: string;
+  npwp_photo?: string;
 }

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { axiosInstance } from "../../../../libs/axios";
 
 const useCreateItem = () => {
-  const url: string = "/master/item";
+  const url: string = "/master/items";
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -13,7 +13,7 @@ const useCreateItem = () => {
       return await axiosInstance.post(url, paylod);
     },
     onSuccess: () => {
-      navigate("/master/items");
+      navigate("/master/item");
       queryClient.invalidateQueries({
         queryKey: ["masterItems"],
       });

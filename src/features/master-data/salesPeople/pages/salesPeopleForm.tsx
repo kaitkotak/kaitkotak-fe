@@ -4,46 +4,51 @@ import {
   Flex,
   Form,
   FormProps,
-  // Image,
+  Image,
   Input,
   Row,
   Spin,
   theme,
-  // Upload,
-  // UploadFile,
-  // UploadProps,
+  Upload,
+  UploadFile,
+  UploadProps,
 } from "antd";
 import { Content } from "antd/es/layout/layout";
 import { useNavigate, useParams } from "react-router-dom";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import UseGetDetailSalesPeople from "../hooks/useGetDetailSalesPeople";
 import useCreateSalesPeople from "../hooks/useCreateSalesPeople";
 import useUpdateSalesPeople from "../hooks/useUpdateSalesPeople";
 import TextArea from "antd/es/input/TextArea";
 import { BreadcrumbContext } from "../../../../context/breadcrumb";
-// import { PlusOutlined } from "@ant-design/icons";
-// import useUpload from "../../../../hooks/useUpload";
+import { PlusOutlined } from "@ant-design/icons";
+import useUpload from "../../../../hooks/useUpload";
+import { getBase64 } from "../../../../libs/getBase64";
 
 const SalesPeopleForm = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const { mutateAsync: create } = useCreateSalesPeople();
-  const { mutateAsync: update } = useUpdateSalesPeople();
+  const { mutateAsync: create, isPending: isPendingCreate } =
+    useCreateSalesPeople();
+  const { mutateAsync: update, isPending: isPendingUpdate } =
+    useUpdateSalesPeople();
   const navigate = useNavigate();
   const params = useParams();
   const { data, isLoading } = UseGetDetailSalesPeople({
     id: params.id ?? "",
   });
   const [form] = Form.useForm();
-  // const [photoList, setPhotoList] = useState<UploadFile[]>([]);
-  // const [ktpPhotoList, setKtpPhotoList] = useState<UploadFile[]>([]);
-  // const [previewOpen, setPreviewOpen] = useState(false);
-  // const [previewImage, setPreviewImage] = useState("");
-  // const { mutateAsync: upload, data: uploadResponse } = useUpload();
-  // const [photo, setPhoto] = useState<string>("");
-  // const [ktpPhoto, setKtpPhoto] = useState<string>("");
-  // const [fileChange, setFileChange] = useState<string>("");
+  const [photoList, setPhotoList] = useState<UploadFile[]>([]);
+  const [ktpPhotoList, setKtpPhotoList] = useState<UploadFile[]>([]);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const {
+    mutateAsync: upload,
+    data: uploadResponse,
+    isPending: isPendingUpload,
+  } = useUpload();
+  const [fileChange, setFileChange] = useState<string>("");
   const { setBreadcrumb } = useContext(BreadcrumbContext);
 
   useEffect(() => {
@@ -63,31 +68,50 @@ const SalesPeopleForm = () => {
   useEffect(() => {
     if (params.id) {
       form.setFieldsValue(data?.data.data);
+
+      if (data?.data.data.profile_photo) {
+        setPhotoList([
+          {
+            uid: "-1",
+            name: "default.png",
+            status: "done",
+            url: `${import.meta.env.VITE_API_URL}/file/download/${
+              data?.data.data.profile_photo
+            }`,
+          },
+        ]);
+      }
+
+      if (data?.data.data.ktp_photo) {
+        setKtpPhotoList([
+          {
+            uid: "-1",
+            name: "default.png",
+            status: "done",
+            url: `${import.meta.env.VITE_API_URL}/file/download/${
+              data?.data.data.ktp_photo
+            }`,
+          },
+        ]);
+      }
     }
   }, [data]);
 
-  // useEffect(() => {
-  //   if (fileChange === "photo") {
-  //     setPhoto(uploadResponse?.data.data.name);
-  //   } else {
-  //     setKtpPhoto(uploadResponse?.data.data.name);
-  //   }
-  // }, [uploadResponse]);
+  useEffect(() => {
+    form.setFieldValue(
+      fileChange === "photo" ? "profile_photo" : "ktp_photo",
+      uploadResponse?.data.data.name
+    );
+  }, [uploadResponse]);
 
   const submit: FormProps<ISalesPeople>["onFinish"] = (values) => {
     if (params.id) {
       update({
         ...values,
         id: params.id,
-        // ktp_photo: ktpPhoto,
-        // profile_photo: photo,
       });
     } else {
-      create({
-        ...values,
-        // ktp_photo: ktpPhoto,
-        // profile_photo: photo
-      });
+      create(values);
     }
   };
 
@@ -95,41 +119,52 @@ const SalesPeopleForm = () => {
     navigate("/master/sales-people");
   };
 
-  // const getBase64 = (file: FileType): Promise<string> =>
-  //   new Promise((resolve, reject) => {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(file as Blob);
-  //     reader.onload = () => resolve(reader.result as string);
-  //     reader.onerror = (error) => reject(error);
-  //   });
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as FileType);
+    }
 
-  // const handlePreview = async (file: UploadFile) => {
-  //   if (!file.url && !file.preview) {
-  //     file.preview = await getBase64(file.originFileObj as FileType);
-  //   }
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+  };
 
-  //   setPreviewImage(file.url || (file.preview as string));
-  //   setPreviewOpen(true);
-  // };
+  const handleProfilePhotoChange: UploadProps["onChange"] = ({
+    fileList: newFileList,
+  }) => {
+    setPhotoList(newFileList);
 
-  // const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
-  //   if (fileChange === "photo") {
-  //     setPhotoList(newFileList);
-  //   } else {
-  //     setKtpPhotoList(newFileList);
-  //   }
-  //   upload(newFileList[0].originFileObj as File);
-  // };
+    if (newFileList.length) {
+      upload(newFileList[0].originFileObj as File);
+    } else {
+      form.setFieldValue("profile_photo", "");
+    }
+  };
 
-  // const uploadButton = (
-  //   <button style={{ border: 0, background: "none" }} type="button">
-  //     <PlusOutlined />
-  //     <div style={{ marginTop: 8 }}>Upload</div>
-  //   </button>
-  // );
+  const handlePhotoKtpChange: UploadProps["onChange"] = ({
+    fileList: newFileList,
+  }) => {
+    setKtpPhotoList(newFileList);
+
+    if (newFileList.length) {
+      upload(newFileList[0].originFileObj as File);
+    } else {
+      form.setFieldValue("ktp_photo", "");
+    }
+  };
+
+  const uploadButton = (
+    <button style={{ border: 0, background: "none" }} type="button">
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </button>
+  );
 
   return (
-    <Spin spinning={isLoading}>
+    <Spin
+      spinning={
+        isLoading || isPendingCreate || isPendingUpdate || isPendingUpload
+      }
+    >
       <Content
         style={{
           margin: "24px 16px",
@@ -184,7 +219,7 @@ const SalesPeopleForm = () => {
             <TextArea />
           </Form.Item>
 
-          {/* <Row>
+          <Row>
             <Col span={12}>
               <Form.Item<ISalesPeople>
                 label="Foto"
@@ -199,9 +234,10 @@ const SalesPeopleForm = () => {
                   accept=".png,.jpg,.jpeg,.webp"
                   onPreview={handlePreview}
                   onChange={($event) => {
-                    handleChange($event);
                     setFileChange("photo");
+                    handleProfilePhotoChange($event);
                   }}
+                  beforeUpload={() => false}
                 >
                   {photoList.length >= 1 ? null : uploadButton}
                 </Upload>
@@ -234,9 +270,10 @@ const SalesPeopleForm = () => {
                   accept=".png,.jpg,.jpeg,.webp"
                   onPreview={handlePreview}
                   onChange={($event) => {
-                    handleChange($event);
                     setFileChange("ktpPhoto");
+                    handlePhotoKtpChange($event);
                   }}
+                  beforeUpload={() => false}
                 >
                   {ktpPhotoList.length >= 1 ? null : uploadButton}
                 </Upload>
@@ -254,9 +291,9 @@ const SalesPeopleForm = () => {
                 )}
               </Form.Item>
             </Col>
-          </Row> */}
+          </Row>
 
-          <Flex gap="middle" align="end">
+          <Flex gap="middle" justify="end">
             <Form.Item label={null}>
               <Button
                 type="default"
