@@ -73,7 +73,6 @@ const OwnLayout = () => {
   const { breadcrumb } = useContext(BreadcrumbContext);
 
   const clickMenuHandler = (val: any) => {
-    console.log(val);
     if (val.key) {
       navigate(val.key);
     }
