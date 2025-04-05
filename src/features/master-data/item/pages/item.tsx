@@ -49,10 +49,12 @@ const Item = () => {
       pageSize: 10,
     },
   });
-  const { data, isLoading } = UseGetItems({
-    page: tableParams.pagination.current,
-    limit: tableParams.pagination.pageSize,
-  });
+  const [paginationParams, setPaginationParams] =
+    useState<ICustomTablePaginationConfig>({
+      page: tableParams.pagination.current,
+      limit: tableParams.pagination.pageSize,
+    });
+  const { data, isLoading } = UseGetItems(paginationParams);
   const { mutateAsync: deleteAction } = useDeleteItem();
   const navigate = useNavigate();
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] =
@@ -123,7 +125,7 @@ const Item = () => {
   };
 
   const handleSearch = (keyword: string) => {
-    setTableParams((val: ITableParams) => ({
+    setPaginationParams((val: ICustomTablePaginationConfig) => ({
       ...val,
       filter: keyword,
     }));

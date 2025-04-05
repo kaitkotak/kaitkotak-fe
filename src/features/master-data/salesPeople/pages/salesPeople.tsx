@@ -39,10 +39,12 @@ const SalesPeople = () => {
       pageSize: 10,
     },
   });
-  const { data, isLoading } = UseGetSalesPeople({
-    page: tableParams.pagination.current,
-    limit: tableParams.pagination.pageSize,
-  });
+  const [paginationParams, setPaginationParams] =
+    useState<ICustomTablePaginationConfig>({
+      page: tableParams.pagination.current,
+      limit: tableParams.pagination.pageSize,
+    });
+  const { data, isLoading } = UseGetSalesPeople(paginationParams);
   const { mutateAsync: deleteAction } = useDeleteSalesPeople();
   const navigate = useNavigate();
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] =
@@ -109,7 +111,7 @@ const SalesPeople = () => {
   };
 
   const handleSearch = (keyword: string) => {
-    setTableParams((val: ITableParams) => ({
+    setPaginationParams((val: ICustomTablePaginationConfig) => ({
       ...val,
       filter: keyword,
     }));

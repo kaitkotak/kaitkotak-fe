@@ -32,17 +32,19 @@ const Customer = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const [transportations, setTransportations] = useState<IData[]>([]);
+  const [customers, setCustomers] = useState<IData[]>([]);
   const [tableParams, setTableParams] = useState<ITableParams>({
     pagination: {
       current: 1,
       pageSize: 10,
     },
   });
-  const { data, isLoading } = UseGetCustomers({
-    page: tableParams.pagination.current,
-    limit: tableParams.pagination.pageSize,
-  });
+  const [paginationParams, setPaginationParams] =
+    useState<ICustomTablePaginationConfig>({
+      page: tableParams.pagination.current,
+      limit: tableParams.pagination.pageSize,
+    });
+  const { data, isLoading } = UseGetCustomers(paginationParams);
   const { mutateAsync: deleteAction } = useDeleteCustomer();
   const navigate = useNavigate();
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] =
@@ -62,7 +64,7 @@ const Customer = () => {
   }, []);
 
   useEffect(() => {
-    setTransportations(data?.data.data);
+    setCustomers(data?.data.data);
     setTableParams({
       pagination: {
         ...tableParams.pagination,
@@ -75,7 +77,7 @@ const Customer = () => {
     { title: "Nama", dataIndex: "full_name", responsive: ["md"] },
     { title: "Kode", dataIndex: "customer_code", responsive: ["md"] },
     { title: "No HP", dataIndex: "phone_number", responsive: ["md"] },
-    { title: "Nama Sales", dataIndex: "sales_rep_id", responsive: ["md"] },
+    { title: "Nama Sales", dataIndex: "sales_rep_name", responsive: ["md"] },
     {
       dataIndex: "action",
       render: (_, record) => (
@@ -110,7 +112,7 @@ const Customer = () => {
   };
 
   const handleSearch = (keyword: string) => {
-    setTableParams((val: ITableParams) => ({
+    setPaginationParams((val: ICustomTablePaginationConfig) => ({
       ...val,
       filter: keyword,
     }));
@@ -169,7 +171,7 @@ const Customer = () => {
         </div>
         <Table
           className="mt-8"
-          dataSource={transportations}
+          dataSource={customers}
           columns={columns}
           loading={isLoading}
           pagination={tableParams.pagination}

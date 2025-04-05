@@ -11,8 +11,10 @@ interface IItemnForm {
   item_code: string;
   price_per_g: number;
   price_per_kg: number;
+  price_per_unit: number;
   cost_per_g: number;
   cost_per_kg: number;
+  cost_per_unit: number;
   type: string;
   weight_g: number;
   customer_code: string;

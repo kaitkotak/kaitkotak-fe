@@ -39,10 +39,12 @@ const Transportation = () => {
       pageSize: 10,
     },
   });
-  const { data, isLoading } = UseGetTransportations({
-    page: tableParams.pagination.current,
-    limit: tableParams.pagination.pageSize,
-  });
+  const [paginationParams, setPaginationParams] =
+    useState<ICustomTablePaginationConfig>({
+      page: tableParams.pagination.current,
+      limit: tableParams.pagination.pageSize,
+    });
+  const { data, isLoading } = UseGetTransportations(paginationParams);
   const { mutateAsync: deleteAction } = useDeleteTransportation();
   const navigate = useNavigate();
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] =
@@ -109,7 +111,7 @@ const Transportation = () => {
   };
 
   const handleSearch = (keyword: string) => {
-    setTableParams((val: ITableParams) => ({
+    setPaginationParams((val: ICustomTablePaginationConfig) => ({
       ...val,
       filter: keyword,
     }));

@@ -17,7 +17,7 @@ import {
 } from "antd";
 import { Content } from "antd/es/layout/layout";
 import { useNavigate, useParams } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import useCreateItem from "../hooks/useCreateItem";
 import useUpdateItem from "../hooks/useUpdateItem";
 import UseGetItem from "../hooks/useGetItem";
@@ -26,6 +26,7 @@ import FormItem from "antd/es/form/FormItem";
 import { getBase64 } from "../../../../libs/getBase64";
 import useUpload from "../../../../hooks/useUpload";
 import { PlusOutlined } from "@ant-design/icons";
+import UseGetCustomers from "../../customer/hooks/useGetCustomers";
 
 const ItemForm = () => {
   const {
@@ -59,6 +60,11 @@ const ItemForm = () => {
     data: uploadResponse,
     isPending: isPendingUpload,
   } = useUpload();
+  const { data: customerResponse } = UseGetCustomers({
+    page: 1,
+    limit: 100,
+  });
+  const [customerOption, setCustomerOption] = useState<ICustomer[]>([]);
 
   useEffect(() => {
     setBreadcrumb([
@@ -96,6 +102,12 @@ const ItemForm = () => {
   useEffect(() => {
     form.setFieldValue("image", uploadResponse?.data.data.name);
   }, [uploadResponse]);
+
+  useEffect(() => {
+    if (customerResponse) {
+      setCustomerOption(customerResponse.data.data);
+    }
+  }, [customerResponse]);
 
   const submit: FormProps<IItemnForm>["onFinish"] = (values) => {
     if (values.image && !values.image.includes("temp")) {
@@ -138,6 +150,89 @@ const ItemForm = () => {
       <div style={{ marginTop: 8 }}>Upload</div>
     </button>
   );
+
+  const calculatePrice = (val: number | null, key: string) => {
+    val = val ?? 0;
+
+    switch (key) {
+      case "cost_per_g":
+        form.setFieldValue("cost_per_kg", val * 1000);
+        form.setFieldValue(
+          "cost_per_unit",
+          val * form.getFieldValue("weight_g")
+        );
+        break;
+
+      case "cost_per_kg":
+        form.setFieldValue("cost_per_g", val / 1000);
+        form.setFieldValue(
+          "cost_per_unit",
+          (val / 1000) * form.getFieldValue("weight_g")
+        );
+        break;
+
+      case "cost_per_unit":
+        const costPerGr = val / form.getFieldValue("weight_g");
+        form.setFieldValue("cost_per_g", costPerGr);
+        form.setFieldValue("cost_per_kg", costPerGr * 1000);
+        break;
+
+      case "price_per_g":
+        form.setFieldValue("price_per_kg", val * 1000);
+        form.setFieldValue(
+          "price_per_unit",
+          val * form.getFieldValue("weight_g")
+        );
+        break;
+
+      case "price_per_kg":
+        form.setFieldValue("price_per_g", val / 1000);
+        form.setFieldValue(
+          "price_per_unit",
+          (val / 1000) * form.getFieldValue("weight_g")
+        );
+        break;
+
+      case "price_per_unit":
+        const pricePerGr = val / form.getFieldValue("weight_g");
+        form.setFieldValue("price_per_g", pricePerGr);
+        form.setFieldValue("price_per_kg", pricePerGr * 1000);
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  // const convertToRupiah = (value: number | undefined) => {
+  //   const newValue = value?.toString() ?? "0";
+
+  //   return (
+  //     `${newValue}`
+  //       // .replace(".", ",")
+  //       .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+  //     // .replace(/\./g, "#")
+  //     // .replace(/#(\d{2})$/, ",$1")
+  //     // .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+  //   );
+  // };
+
+  const limitFraction = (event: React.FocusEvent, key: string) => {
+    const val: string = Number(
+      (event.target as HTMLInputElement).value.replace(/\,/g, "")
+      // .replace(/\,/g, ".")
+    ).toString();
+
+    form.setFieldValue(
+      key,
+      `${parseFloat(val).toFixed(2)}`
+      // .replace(/\./g, "#") // temporarily replace dot to avoid confusion
+      // .replace(/#(\d{2})$/, ",$1") // convert last 2 digits to decimal with comma
+      // .replace(/\B(?=(\d{3})+(?!\d))/g, ".") // add thousand separator
+    );
+
+    calculatePrice(Number(`${parseFloat(val).toFixed(2)}`), key);
+  };
 
   return (
     <Spin
@@ -187,6 +282,27 @@ const ItemForm = () => {
           </Row>
 
           <Form.Item<IItemnForm>
+            label="Harga Jual (unit)"
+            name="price_per_unit"
+            rules={[
+              { required: true, message: "Silahkan masukan harga per unit!" },
+            ]}
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              addonBefore="Rp"
+              // formatter={convertToRupiah}
+              // parser={(value) =>
+              //   value?.replace(/\$\s?|(,*)/g, "") as unknown as number
+              // }
+              onChange={(value: number | null) =>
+                calculatePrice(value, "price_per_unit")
+              }
+              onBlur={(e) => limitFraction(e, "price_per_unit")}
+            />
+          </Form.Item>
+
+          <Form.Item<IItemnForm>
             label="Harga Jual (gr)"
             name="price_per_g"
             rules={[
@@ -196,9 +312,11 @@ const ItemForm = () => {
             <InputNumber
               style={{ width: "100%" }}
               addonBefore="Rp"
-              formatter={(value) =>
-                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              // formatter={convertToRupiah}
+              onChange={(value: number | null) =>
+                calculatePrice(value, "price_per_g")
               }
+              onBlur={(e) => limitFraction(e, "price_per_g")}
             />
           </Form.Item>
 
@@ -212,14 +330,37 @@ const ItemForm = () => {
             <InputNumber
               style={{ width: "100%" }}
               addonBefore="Rp"
-              formatter={(value) =>
-                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              // formatter={convertToRupiah}
+              onChange={(value: number | null) =>
+                calculatePrice(value, "price_per_kg")
               }
+              onBlur={(e) => limitFraction(e, "price_per_kg")}
             />
           </Form.Item>
 
           <Form.Item<IItemnForm>
-            label="Harga Produksi (gr)"
+            label="Biaya Produksi (unit)"
+            name="cost_per_unit"
+            rules={[
+              {
+                required: true,
+                message: "Silahkan masukan biaya produksi per unit!",
+              },
+            ]}
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              addonBefore="Rp"
+              // formatter={convertToRupiah}
+              onChange={(value: number | null) =>
+                calculatePrice(value, "cost_per_unit")
+              }
+              onBlur={(e) => limitFraction(e, "cost_per_unit")}
+            />
+          </Form.Item>
+
+          <Form.Item<IItemnForm>
+            label="Biaya Produksi (gr)"
             name="cost_per_g"
             rules={[
               {
@@ -231,14 +372,16 @@ const ItemForm = () => {
             <InputNumber
               style={{ width: "100%" }}
               addonBefore="Rp"
-              formatter={(value) =>
-                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              // formatter={convertToRupiah}
+              onChange={(value: number | null) =>
+                calculatePrice(value, "cost_per_g")
               }
+              onBlur={(e) => limitFraction(e, "cost_per_g")}
             />
           </Form.Item>
 
           <Form.Item<IItemnForm>
-            label="Harga Produksi (kg)"
+            label="Biaya Produksi (kg)"
             name="cost_per_kg"
             rules={[
               {
@@ -250,9 +393,11 @@ const ItemForm = () => {
             <InputNumber
               style={{ width: "100%" }}
               addonBefore="Rp"
-              formatter={(value) =>
-                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              // formatter={convertToRupiah}
+              onChange={(value: number | null) =>
+                calculatePrice(value, "cost_per_kg")
               }
+              onBlur={(e) => limitFraction(e, "cost_per_kg")}
             />
           </Form.Item>
 
@@ -276,7 +421,15 @@ const ItemForm = () => {
                     { required: true, message: "Silahkan pilih pelanggan!" },
                   ]}
                 >
-                  <Input />
+                  <Select
+                    showSearch
+                    placeholder="Pilih Pelanggan"
+                    optionFilterProp="label"
+                    options={customerOption.map((s) => ({
+                      value: s.id,
+                      label: s.customer_code,
+                    }))}
+                  />
                 </Form.Item>
               </Col>
             )}
