@@ -74,9 +74,9 @@ const SalesPeople = () => {
   }, [data]);
 
   const columns: TableColumnsType<IData> = [
-    { title: "Nama", dataIndex: "full_name", responsive: ["md"] },
-    { title: "No HP", dataIndex: "phone_number", responsive: ["md"] },
-    { title: "No KTP", dataIndex: "ktp", responsive: ["md"] },
+    { title: "Nama", dataIndex: "full_name" },
+    { title: "No HP", dataIndex: "phone_number" },
+    { title: "No KTP", dataIndex: "ktp" },
     {
       dataIndex: "action",
       render: (_, record) => (
@@ -174,6 +174,7 @@ const SalesPeople = () => {
           columns={columns}
           loading={isLoading}
           pagination={tableParams.pagination}
+          scroll={{ x: "max-content" }}
           onChange={handleTableChange}
         />
       </Content>
