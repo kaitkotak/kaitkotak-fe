@@ -103,7 +103,7 @@ const OwnLayout = () => {
           </div>
 
           {!collapsed && (
-            <div onClick={() => setCollapsed(true)}>
+            <div>
               <p className="text-sm font-bold">User Name</p>
               <p className="text-xs font-bold">Jabatan</p>
             </div>
@@ -138,7 +138,15 @@ const OwnLayout = () => {
           <Breadcrumb items={breadcrumb} style={{ margin: "auto 0" }} />
         </Header>
 
-        <Outlet />
+        <div
+          onClick={() => {
+            if (width < 576) {
+              setCollapsed(true);
+            }
+          }}
+        >
+          <Outlet />
+        </div>
       </Layout>
     </Layout>
   );
