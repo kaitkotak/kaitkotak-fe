@@ -106,7 +106,6 @@ const OwnLayout = () => {
           mode="inline"
           defaultSelectedKeys={["1"]}
           items={menus}
-          color="#fffff"
           style={{ background: "#014F42", color: "#ffffff" }}
           onClick={clickMenuHandler}
         />

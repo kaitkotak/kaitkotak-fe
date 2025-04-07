@@ -156,7 +156,7 @@ const Transportation = () => {
           <Search
             placeholder="Pencarian..."
             onSearch={handleSearch}
-            style={{ width: 200 }}
+            style={{ width: "100%", maxWidth: 150 }}
           />
 
           <Button
@@ -165,7 +165,7 @@ const Transportation = () => {
             icon={<FileAddOutlined />}
             onClick={() => goToForm("create")}
           >
-            Tambah Transportasi
+            <span className="hidden md:inline">Tambah Transportasi</span>
           </Button>
         </div>
         <Table

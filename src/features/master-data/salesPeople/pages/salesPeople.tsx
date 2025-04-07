@@ -156,7 +156,7 @@ const SalesPeople = () => {
           <Search
             placeholder="Pencarian..."
             onSearch={handleSearch}
-            style={{ width: 200 }}
+            style={{ width: "100%", maxWidth: 150 }}
           />
 
           <Button
@@ -165,7 +165,7 @@ const SalesPeople = () => {
             icon={<FileAddOutlined />}
             onClick={() => goToForm("create")}
           >
-            Tambah Sales
+            <span className="hidden md:inline">Tambah Sales</span>
           </Button>
         </div>
         <Table
