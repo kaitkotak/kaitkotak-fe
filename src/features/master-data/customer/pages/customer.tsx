@@ -74,10 +74,10 @@ const Customer = () => {
   }, [data]);
 
   const columns: TableColumnsType<IData> = [
-    { title: "Nama", dataIndex: "full_name", responsive: ["md"] },
-    { title: "Kode", dataIndex: "customer_code", responsive: ["md"] },
-    { title: "No HP", dataIndex: "phone_number", responsive: ["md"] },
-    { title: "Nama Sales", dataIndex: "sales_rep_name", responsive: ["md"] },
+    { title: "Nama", dataIndex: "full_name" },
+    { title: "Kode", dataIndex: "customer_code" },
+    { title: "No HP", dataIndex: "phone_number" },
+    { title: "Nama Sales", dataIndex: "sales_rep_name" },
     {
       dataIndex: "action",
       render: (_, record) => (
@@ -157,7 +157,7 @@ const Customer = () => {
           <Search
             placeholder="Pencarian..."
             onSearch={handleSearch}
-            style={{ width: 200 }}
+            style={{ width: "100%", maxWidth: 150 }}
           />
 
           <Button
@@ -166,7 +166,7 @@ const Customer = () => {
             icon={<FileAddOutlined />}
             onClick={() => goToForm("create")}
           >
-            Tambah Pelanggan
+            <span className="hidden md:inline">Tambah Pelanggan</span>
           </Button>
         </div>
         <Table
@@ -175,6 +175,7 @@ const Customer = () => {
           columns={columns}
           loading={isLoading}
           pagination={tableParams.pagination}
+          scroll={{ x: "max-content" }}
           onChange={handleTableChange}
         />
       </Content>

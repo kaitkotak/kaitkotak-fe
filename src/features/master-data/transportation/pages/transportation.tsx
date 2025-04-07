@@ -74,9 +74,9 @@ const Transportation = () => {
   }, [data]);
 
   const columns: TableColumnsType<IData> = [
-    { title: "Nama Pengemudi", dataIndex: "driver_name", responsive: ["md"] },
-    { title: "No HP", dataIndex: "phone_number", responsive: ["md"] },
-    { title: "No Kendaraan", dataIndex: "vehicle_number", responsive: ["md"] },
+    { title: "Nama Pengemudi", dataIndex: "driver_name" },
+    { title: "No HP", dataIndex: "phone_number" },
+    { title: "No Kendaraan", dataIndex: "vehicle_number" },
     {
       dataIndex: "action",
       render: (_, record) => (
@@ -156,7 +156,7 @@ const Transportation = () => {
           <Search
             placeholder="Pencarian..."
             onSearch={handleSearch}
-            style={{ width: 200 }}
+            style={{ width: "100%", maxWidth: 150 }}
           />
 
           <Button
@@ -165,7 +165,7 @@ const Transportation = () => {
             icon={<FileAddOutlined />}
             onClick={() => goToForm("create")}
           >
-            Tambah Transportasi
+            <span className="hidden md:inline">Tambah Transportasi</span>
           </Button>
         </div>
         <Table
@@ -174,6 +174,7 @@ const Transportation = () => {
           columns={columns}
           loading={isLoading}
           pagination={tableParams.pagination}
+          scroll={{ x: "max-content" }}
           onChange={handleTableChange}
         />
       </Content>

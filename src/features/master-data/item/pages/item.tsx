@@ -84,13 +84,13 @@ const Item = () => {
   }, [data]);
 
   const columns: TableColumnsType<IData> = [
-    { title: "Nama", dataIndex: "item_name", responsive: ["md"] },
-    { title: "Kode", dataIndex: "item_code", responsive: ["md"] },
-    { title: "Berat (gr)", dataIndex: "weight_g", responsive: ["md"] },
-    { title: "Harga Jual", dataIndex: "price_per_unit", responsive: ["md"] },
-    { title: "Harga Produksi", dataIndex: "cost_per_unit", responsive: ["md"] },
-    { title: "Tipe", dataIndex: "type", responsive: ["md"] },
-    { title: "Kode Pelanggan", dataIndex: "customer_code", responsive: ["md"] },
+    { title: "Nama", dataIndex: "item_name" },
+    { title: "Kode", dataIndex: "item_code" },
+    { title: "Berat (gr)", dataIndex: "weight_g" },
+    { title: "Harga Jual", dataIndex: "price_per_unit" },
+    { title: "Harga Produksi", dataIndex: "cost_per_unit" },
+    { title: "Tipe", dataIndex: "type" },
+    { title: "Kode Pelanggan", dataIndex: "customer_code" },
     {
       dataIndex: "action",
       render: (_, record) => (
@@ -170,7 +170,7 @@ const Item = () => {
           <Search
             placeholder="Pencarian..."
             onSearch={handleSearch}
-            style={{ width: 200 }}
+            style={{ width: "100%", maxWidth: 150 }}
           />
 
           <Button
@@ -179,7 +179,7 @@ const Item = () => {
             icon={<FileAddOutlined />}
             onClick={() => goToForm("create")}
           >
-            Tambah Item
+            <span className="hidden md:inline">Tambah Item</span>
           </Button>
         </div>
         <Table
@@ -188,6 +188,7 @@ const Item = () => {
           columns={columns}
           loading={isLoading}
           pagination={tableParams.pagination}
+          scroll={{ x: "max-content" }}
           onChange={handleTableChange}
         />
       </Content>

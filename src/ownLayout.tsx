@@ -11,6 +11,7 @@ import { Header } from "antd/es/layout/layout";
 import { ItemType, MenuItemType } from "antd/es/menu/interface";
 import { Outlet, useNavigate } from "react-router-dom";
 import { BreadcrumbContext } from "./context/breadcrumb";
+import useWindowDimensions from "./libs/useWindowDimensions";
 
 const OwnLayout = () => {
   let menus: ItemType<MenuItemType>[] = [
@@ -71,6 +72,7 @@ const OwnLayout = () => {
   const navigate = useNavigate();
   // const [_, contextHolder] = message.useMessage();
   const { breadcrumb } = useContext(BreadcrumbContext);
+  const { width } = useWindowDimensions();
 
   const clickMenuHandler = (val: any) => {
     if (val.key) {
@@ -85,8 +87,15 @@ const OwnLayout = () => {
         trigger={null}
         collapsible
         collapsed={collapsed}
-        className="py-6"
-        style={{ background: "#014F42" }}
+        className="py-6 !fixed"
+        breakpoint="sm"
+        collapsedWidth={width < 576 ? "0" : "80"}
+        onCollapse={setCollapsed}
+        style={{
+          background: "#014F42",
+          height: "100%",
+          zIndex: "100",
+        }}
       >
         <div className="flex gap-2 mb-10 px-4">
           <div className="my-auto mx-0">
@@ -95,8 +104,8 @@ const OwnLayout = () => {
 
           {!collapsed && (
             <div>
-              <p className="text-xl font-bold">User Name</p>
-              <p className="text-sm font-bold">Jabatan</p>
+              <p className="text-sm font-bold">User Name</p>
+              <p className="text-xs font-bold">Jabatan</p>
             </div>
           )}
         </div>
@@ -106,12 +115,11 @@ const OwnLayout = () => {
           mode="inline"
           defaultSelectedKeys={["1"]}
           items={menus}
-          color="#fffff"
           style={{ background: "#014F42", color: "#ffffff" }}
           onClick={clickMenuHandler}
         />
       </Sider>
-      <Layout>
+      <Layout className={collapsed ? "sm:ml-[80px]" : "sm:ml-[200px]"}>
         <Header
           style={{ padding: 0, background: colorBgContainer }}
           className="flex"
@@ -130,7 +138,15 @@ const OwnLayout = () => {
           <Breadcrumb items={breadcrumb} style={{ margin: "auto 0" }} />
         </Header>
 
-        <Outlet />
+        <div
+          onClick={() => {
+            if (width < 576) {
+              setCollapsed(true);
+            }
+          }}
+        >
+          <Outlet />
+        </div>
       </Layout>
     </Layout>
   );
