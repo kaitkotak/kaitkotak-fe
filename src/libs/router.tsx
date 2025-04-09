@@ -8,6 +8,7 @@ import Customer from "../features/master-data/customer/pages/customer";
 import CustomerForm from "../features/master-data/customer/pages/customerForm";
 import Item from "../features/master-data/item/pages/item";
 import ItemForm from "../features/master-data/item/pages/itemForm";
+import RawMaterial from "../features/raw-material/pages/rawMaterial";
 
 export const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ export const router = createBrowserRouter([
       {
         path: "",
         element: <Navigate to="/master/item" />,
+      },
+      {
+        path: "raw-material",
+        element: <RawMaterial />,
       },
       {
         path: "master",

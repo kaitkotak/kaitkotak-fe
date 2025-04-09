@@ -3,6 +3,7 @@ import {
   DatabaseOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  SwitcherOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import Sider from "antd/es/layout/Sider";
@@ -30,11 +31,11 @@ const OwnLayout = () => {
     //   label: "Penjualan",
     //   icon: <ShopOutlined />,
     // },
-    // {
-    //   key: "4",
-    //   label: "Bahan Baku",
-    //   icon: <SwitcherOutlined />,
-    // },
+    {
+      key: "/raw-material",
+      label: "Bahan Baku",
+      icon: <SwitcherOutlined />,
+    },
     // {
     //   key: "5",
     //   label: "Pengguna",
