@@ -25,6 +25,8 @@ import { format } from "date-fns";
 import id from "antd/es/date-picker/locale/id_ID";
 import UseGetProductions from "../hooks/useGetProductions";
 import { useNavigate } from "react-router-dom";
+import { parseDateDDMMYYYY } from "../../../libs/dateParser";
+import useDeleteProduction from "../hooks/useDeleteProduction";
 
 interface IData {
   id: number;
@@ -43,10 +45,11 @@ const Production = () => {
       pageSize: 10,
     },
   });
-  const [paginationParams, _] = useState<ICustomTablePaginationConfig>({
-    page: tableParams.pagination.current,
-    limit: tableParams.pagination.pageSize,
-  });
+  const [paginationParams, setPaginationParams] =
+    useState<ICustomTablePaginationConfig>({
+      page: tableParams.pagination.current,
+      limit: tableParams.pagination.pageSize,
+    });
   const { data, isLoading } = UseGetProductions(paginationParams);
   const [isOpenFormModal, setIsOpenFormModal] = useState<boolean>(false);
   const { setBreadcrumb } = useContext(BreadcrumbContext);
@@ -63,6 +66,10 @@ const Production = () => {
     },
   };
   const navigate = useNavigate();
+  const [isOpenConfirmationModal, setIsOpenConfirmationModal] =
+    useState<boolean>(false);
+  const [selectedRowId, setSelectedRowId] = useState<number>(0);
+  const { mutateAsync: deleteAction } = useDeleteProduction();
 
   useEffect(() => {
     setBreadcrumb([
@@ -108,7 +115,7 @@ const Production = () => {
           <Tooltip title="Hapus">
             <DeleteOutlined
               className="cursor-pointer"
-              // onClick={() => openDeleteConfirmation(record.id)}
+              onClick={() => openDeleteConfirmation(record.id)}
             />
           </Tooltip>
         </Space>
@@ -122,9 +129,27 @@ const Production = () => {
     });
   };
 
-  // const handleDateFilter: DatePickerProps["onChange"] = (_, dateStr) => {
-  //   console.log("date", dateStr);
-  // };
+  const handleDateFilter = (_: any, dateStrings: string[]) => {
+    if (dateStrings[0] !== "" && dateStrings[1] !== "") {
+      setPaginationParams((prevVal) => ({
+        ...prevVal,
+        date_from: format(
+          new Date(parseDateDDMMYYYY(dateStrings[0])),
+          "yyyy-MM-dd"
+        ),
+        date_to: format(
+          new Date(parseDateDDMMYYYY(dateStrings[1])),
+          "yyyy-MM-dd"
+        ),
+      }));
+    } else {
+      setPaginationParams((prevVal) => ({
+        ...prevVal,
+        date_from: "",
+        date_to: "",
+      }));
+    }
+  };
 
   const submit: FormProps<any>["onFinish"] = (values) => {
     localStorage.setItem("productionDate", values["production_date"]["$d"]);
@@ -138,6 +163,16 @@ const Production = () => {
 
   const goToForm = (id?: number) => {
     navigate(`edit/${id}`);
+  };
+
+  const openDeleteConfirmation = (id: number) => {
+    setIsOpenConfirmationModal(true);
+    setSelectedRowId(id);
+  };
+
+  const handleOk = () => {
+    deleteAction({ id: selectedRowId });
+    setIsOpenConfirmationModal(false);
   };
 
   return (
@@ -154,7 +189,7 @@ const Production = () => {
           <RangePicker
             locale={idLocale}
             format={"DD/MM/YYYY"}
-            // onChange={handleDateFilter}
+            onChange={handleDateFilter}
           />
 
           <Button
@@ -212,6 +247,17 @@ const Production = () => {
             </Form.Item>
           </Flex>
         </Form>
+      </Modal>
+
+      <Modal
+        title="Hapus Data Produksi"
+        open={isOpenConfirmationModal}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Hapus"
+        cancelText="Batal"
+      >
+        <p>Anda yakin ingin menghapus data ini?</p>
       </Modal>
     </Spin>
   );

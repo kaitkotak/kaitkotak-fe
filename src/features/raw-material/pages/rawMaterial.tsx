@@ -119,7 +119,6 @@ const RawMaterial = () => {
   };
 
   const handleDateFilter = (_: any, dateStrings: string[]) => {
-    console.log(dateStrings);
     if (dateStrings[0] !== "" && dateStrings[1] !== "") {
       setPaginationParams((prevVal) => ({
         ...prevVal,
