@@ -3,6 +3,7 @@ import {
   DatabaseOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  ProductOutlined,
   SwitcherOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -16,11 +17,11 @@ import useWindowDimensions from "./libs/useWindowDimensions";
 
 const OwnLayout = () => {
   let menus: ItemType<MenuItemType>[] = [
-    // {
-    //   key: "1",
-    //   label: "Produksi",
-    //   icon: <ProductOutlined />,
-    // },
+    {
+      key: "/production",
+      label: "Produksi",
+      icon: <ProductOutlined />,
+    },
     // {
     //   key: "2",
     //   label: "Purchase Order",

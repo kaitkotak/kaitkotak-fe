@@ -1,36 +1,27 @@
-import {
-  FileAddOutlined,
-  EditOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { FileAddOutlined, EditOutlined } from "@ant-design/icons";
 import {
   Button,
   DatePicker,
-  DatePickerProps,
   Flex,
   Form,
   FormProps,
-  Input,
   InputNumber,
   Modal,
-  Space,
   Spin,
   Table,
   TableColumnsType,
   TableProps,
   theme,
-  Tooltip,
 } from "antd";
-import Search from "antd/es/input/Search";
 import { Content } from "antd/es/layout/layout";
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import UseGetRawMaterials from "../hooks/useGetRawMaterials";
 import { BreadcrumbContext } from "../../../context/breadcrumb";
 import { format } from "date-fns";
 import TextArea from "antd/es/input/TextArea";
 import useCreateRawMaterial from "../hooks/useCreateRawMaterial";
 import id from "antd/es/date-picker/locale/id_ID";
+import { parseDateDDMMYYYY } from "../../../libs/dateParser";
 
 interface IData {
   stock_date: string;
@@ -127,12 +118,27 @@ const RawMaterial = () => {
     });
   };
 
-  const handleDateFilter: DatePickerProps["onChange"] = (_, dateStr) => {
-    console.log("date", dateStr);
-    // setPaginationParams((val: ICustomTablePaginationConfig) => ({
-    //   ...val,
-    //   filter: keyword,
-    // }));
+  const handleDateFilter = (_: any, dateStrings: string[]) => {
+    console.log(dateStrings);
+    if (dateStrings[0] !== "" && dateStrings[1] !== "") {
+      setPaginationParams((prevVal) => ({
+        ...prevVal,
+        date_from: format(
+          new Date(parseDateDDMMYYYY(dateStrings[0])),
+          "yyyy-MM-dd"
+        ),
+        date_to: format(
+          new Date(parseDateDDMMYYYY(dateStrings[1])),
+          "yyyy-MM-dd"
+        ),
+      }));
+    } else {
+      setPaginationParams((prevVal) => ({
+        ...prevVal,
+        date_from: "",
+        date_to: "",
+      }));
+    }
   };
 
   const submit: FormProps<IRawMaterialPayload>["onFinish"] = (values) => {

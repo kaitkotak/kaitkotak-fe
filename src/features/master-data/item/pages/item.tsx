@@ -21,28 +21,11 @@ import UseGetItems from "../hooks/useGetItems";
 import useDeleteItem from "../hooks/useDeleteItem";
 import { BreadcrumbContext } from "../../../../context/breadcrumb";
 
-interface IData {
-  cost_per_g: number;
-  cost_per_kg: number;
-  cost_per_unit: number;
-  customer_code: string;
-  description: string;
-  id: number;
-  image: string;
-  item_code: string;
-  item_name: string;
-  price_per_g: number;
-  price_per_kg: number;
-  price_per_unit: number;
-  type: string;
-  weight_g: number;
-}
-
 const Item = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const [items, setItems] = useState<IData[]>([]);
+  const [items, setItems] = useState<IItem[]>([]);
   const [tableParams, setTableParams] = useState<ITableParams>({
     pagination: {
       current: 1,
@@ -83,7 +66,7 @@ const Item = () => {
     });
   }, [data]);
 
-  const columns: TableColumnsType<IData> = [
+  const columns: TableColumnsType<IItem> = [
     { title: "Nama", dataIndex: "item_name" },
     { title: "Kode", dataIndex: "item_code" },
     { title: "Berat (gr)", dataIndex: "weight_g" },
@@ -118,7 +101,7 @@ const Item = () => {
     setSelectedRowId(id);
   };
 
-  const handleTableChange: TableProps<IData>["onChange"] = (pagination) => {
+  const handleTableChange: TableProps<IItem>["onChange"] = (pagination) => {
     setTableParams({
       pagination,
     });

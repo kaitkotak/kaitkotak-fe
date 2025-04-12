@@ -21,3 +21,20 @@ interface IItemnForm {
   description: string;
   image?: string;
 }
+
+interface IItem {
+  cost_per_g: number;
+  cost_per_kg: number;
+  cost_per_unit: number;
+  customer_code: string;
+  description: string;
+  id: number;
+  image: string;
+  item_code: string;
+  item_name: string;
+  price_per_g: number;
+  price_per_kg: number;
+  price_per_unit: number;
+  type: string;
+  weight_g: number;
+}
