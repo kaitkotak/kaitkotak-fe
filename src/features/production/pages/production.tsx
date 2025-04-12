@@ -254,7 +254,7 @@ const Production = () => {
         title="Hapus Data Produksi"
         open={isOpenConfirmationModal}
         onOk={handleOk}
-        onCancel={handleCancel}
+        onCancel={() => setIsOpenConfirmationModal(false)}
         okText="Hapus"
         cancelText="Batal"
       >
