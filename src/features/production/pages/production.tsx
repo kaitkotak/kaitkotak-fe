@@ -189,6 +189,7 @@ const Production = () => {
           <RangePicker
             locale={idLocale}
             format={"DD/MM/YYYY"}
+            className="w-[12.5rem] md:w-auto"
             onChange={handleDateFilter}
           />
 

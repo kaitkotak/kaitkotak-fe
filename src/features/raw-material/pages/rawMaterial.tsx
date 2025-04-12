@@ -207,42 +207,44 @@ const RawMaterial = () => {
           borderRadius: borderRadiusLG,
         }}
       >
-        <div className="flex justify-between">
+        <div className="flex flex-col lg:flex-row justify-between gap-5 lg:gap-0">
           <RangePicker
             locale={idLocale}
             format={"DD/MM/YYYY"}
             onChange={handleDateFilter}
           />
 
-          <Flex gap={4}>
-            <div className="px-3 py-1 m-auto border rounded">
+          <div className="flex justify-between lg:justify-end gap-0 lg:gap-2">
+            <div className="px-3 py-1 my-auto border rounded">
               Stok : {currentStock}kg
             </div>
 
-            <Button
-              color="primary"
-              variant="solid"
-              icon={<FileAddOutlined />}
-              onClick={() => {
-                setFormTitle("Stok Masuk");
-                setIsOpenFormModal(true);
-              }}
-            >
-              <span className="hidden md:inline">Tambah Stok</span>
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                color="primary"
+                variant="solid"
+                icon={<FileAddOutlined />}
+                onClick={() => {
+                  setFormTitle("Stok Masuk");
+                  setIsOpenFormModal(true);
+                }}
+              >
+                <span className="hidden md:inline">Tambah Stok</span>
+              </Button>
 
-            <Button
-              color="primary"
-              variant="solid"
-              icon={<EditOutlined />}
-              onClick={() => {
-                setFormTitle("Stok Opname");
-                setIsOpenFormModal(true);
-              }}
-            >
-              <span className="hidden md:inline">Stok Opname</span>
-            </Button>
-          </Flex>
+              <Button
+                color="primary"
+                variant="solid"
+                icon={<EditOutlined />}
+                onClick={() => {
+                  setFormTitle("Stok Opname");
+                  setIsOpenFormModal(true);
+                }}
+              >
+                <span className="hidden md:inline">Stok Opname</span>
+              </Button>
+            </div>
+          </div>
         </div>
         <Table
           className="mt-8"
