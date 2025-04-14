@@ -108,6 +108,12 @@ const SalesPeople = () => {
     setTableParams({
       pagination,
     });
+
+    setPaginationParams((prevVal) => ({
+      ...prevVal,
+      page: pagination.current ?? 1,
+      limit: pagination.pageSize ?? 10,
+    }));
   };
 
   const handleSearch = (keyword: string) => {
