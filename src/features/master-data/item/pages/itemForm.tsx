@@ -136,7 +136,6 @@ const ItemForm = () => {
   };
 
   const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
-    console.log("change", newFileList);
     setPhotoList(newFileList);
 
     if (newFileList.length) {
@@ -158,66 +157,94 @@ const ItemForm = () => {
 
     switch (key) {
       case "cost_per_g":
-        form.setFieldValue("cost_per_kg", val * 1000);
+        form.setFieldValue(
+          "cost_per_kg",
+          Number(`${parseFloat((val * 1000).toString()).toFixed(2)}`)
+        );
         form.setFieldValue(
           "cost_per_unit",
-          val * form.getFieldValue("weight_g")
+          Number(
+            `${parseFloat(
+              (val * form.getFieldValue("weight_g")).toString()
+            ).toFixed(2)}`
+          )
         );
         break;
 
       case "cost_per_kg":
-        form.setFieldValue("cost_per_g", val / 1000);
+        form.setFieldValue(
+          "cost_per_g",
+          Number(`${parseFloat((val / 1000).toString()).toFixed(2)}`)
+        );
         form.setFieldValue(
           "cost_per_unit",
-          (val / 1000) * form.getFieldValue("weight_g")
+          Number(
+            `${parseFloat(
+              ((val / 1000) * form.getFieldValue("weight_g")).toString()
+            ).toFixed(2)}`
+          )
         );
         break;
 
       case "cost_per_unit":
         const costPerGr = val / form.getFieldValue("weight_g");
-        form.setFieldValue("cost_per_g", costPerGr);
-        form.setFieldValue("cost_per_kg", costPerGr * 1000);
+        form.setFieldValue(
+          "cost_per_g",
+          Number(`${parseFloat(costPerGr.toString()).toFixed(2)}`)
+        );
+        form.setFieldValue(
+          "cost_per_kg",
+          Number(`${parseFloat((costPerGr * 1000).toString()).toFixed(2)}`)
+        );
         break;
 
       case "price_per_g":
-        form.setFieldValue("price_per_kg", val * 1000);
+        form.setFieldValue(
+          "price_per_kg",
+          Number(`${parseFloat((val * 1000).toString()).toFixed(2)}`)
+        );
         form.setFieldValue(
           "price_per_unit",
-          val * form.getFieldValue("weight_g")
+          Number(
+            `${parseFloat(
+              (val * form.getFieldValue("weight_g")).toString()
+            ).toFixed(2)}`
+          )
         );
         break;
 
       case "price_per_kg":
-        form.setFieldValue("price_per_g", val / 1000);
+        form.setFieldValue(
+          "price_per_g",
+          Number(`${parseFloat((val / 1000).toString()).toFixed(2)}`)
+        );
         form.setFieldValue(
           "price_per_unit",
-          (val / 1000) * form.getFieldValue("weight_g")
+
+          Number(
+            `${parseFloat(
+              ((val / 1000) * form.getFieldValue("weight_g")).toString()
+            ).toFixed(2)}`
+          )
         );
         break;
 
       case "price_per_unit":
         const pricePerGr = val / form.getFieldValue("weight_g");
-        form.setFieldValue("price_per_g", pricePerGr);
-        form.setFieldValue("price_per_kg", pricePerGr * 1000);
+        form.setFieldValue(
+          "price_per_g",
+          Number(`${parseFloat(pricePerGr.toString()).toFixed(2)}`)
+        );
+        form.setFieldValue(
+          "price_per_kg",
+          Number(`${parseFloat((pricePerGr * 1000).toString()).toFixed(2)}`)
+        );
         break;
 
       default:
         break;
     }
   };
-
-  // const convertToRupiah = (value: number | undefined) => {
-  //   const newValue = value?.toString() ?? "0";
-
-  //   return (
-  //     `${newValue}`
-  //       // .replace(".", ",")
-  //       .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-  //     // .replace(/\./g, "#")
-  //     // .replace(/#(\d{2})$/, ",$1")
-  //     // .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-  //   );
-  // };
 
   const limitFraction = (event: React.FocusEvent, key: string) => {
     const val: string = Number(
@@ -233,7 +260,7 @@ const ItemForm = () => {
       // .replace(/\B(?=(\d{3})+(?!\d))/g, ".") // add thousand separator
     );
 
-    calculatePrice(Number(`${parseFloat(val).toFixed(2)}`), key);
+    // calculatePrice(Number(`${parseFloat(val).toFixed(2)}`), key);
   };
 
   return (
