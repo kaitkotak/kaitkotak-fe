@@ -3,6 +3,8 @@ import {
   DatabaseOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  ProductOutlined,
+  SwitcherOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import Sider from "antd/es/layout/Sider";
@@ -15,11 +17,11 @@ import useWindowDimensions from "./libs/useWindowDimensions";
 
 const OwnLayout = () => {
   let menus: ItemType<MenuItemType>[] = [
-    // {
-    //   key: "1",
-    //   label: "Produksi",
-    //   icon: <ProductOutlined />,
-    // },
+    {
+      key: "/production",
+      label: "Produksi",
+      icon: <ProductOutlined />,
+    },
     // {
     //   key: "2",
     //   label: "Purchase Order",
@@ -30,11 +32,11 @@ const OwnLayout = () => {
     //   label: "Penjualan",
     //   icon: <ShopOutlined />,
     // },
-    // {
-    //   key: "4",
-    //   label: "Bahan Baku",
-    //   icon: <SwitcherOutlined />,
-    // },
+    {
+      key: "/raw-material",
+      label: "Bahan Baku",
+      icon: <SwitcherOutlined />,
+    },
     // {
     //   key: "5",
     //   label: "Pengguna",

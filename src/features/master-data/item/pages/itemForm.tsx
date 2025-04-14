@@ -27,6 +27,7 @@ import { getBase64 } from "../../../../libs/getBase64";
 import useUpload from "../../../../hooks/useUpload";
 import { PlusOutlined } from "@ant-design/icons";
 import UseGetCustomers from "../../customer/hooks/useGetCustomers";
+import ImgCrop from "antd-img-crop";
 
 const ItemForm = () => {
   const {
@@ -135,6 +136,7 @@ const ItemForm = () => {
   };
 
   const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
+    console.log("change", newFileList);
     setPhotoList(newFileList);
 
     if (newFileList.length) {
@@ -225,7 +227,7 @@ const ItemForm = () => {
 
     form.setFieldValue(
       key,
-      `${parseFloat(val).toFixed(2)}`
+      Number(`${parseFloat(val).toFixed(2)}`)
       // .replace(/\./g, "#") // temporarily replace dot to avoid confusion
       // .replace(/#(\d{2})$/, ",$1") // convert last 2 digits to decimal with comma
       // .replace(/\B(?=(\d{3})+(?!\d))/g, ".") // add thousand separator
@@ -436,17 +438,25 @@ const ItemForm = () => {
           </Row>
 
           <FormItem<IItemnForm> label="Foto Item" name="image" rules={[]}>
-            <Upload
-              action=""
-              listType="picture-card"
-              fileList={photoList}
-              accept=".png,.jpg,.jpeg,.webp"
-              onPreview={handlePreview}
-              onChange={handleChange}
-              beforeUpload={() => false}
-            >
-              {photoList.length >= 1 ? null : uploadButton}
-            </Upload>
+            <ImgCrop rotationSlider>
+              <Upload
+                action=""
+                listType="picture-card"
+                fileList={photoList}
+                accept=".png,.jpg,.jpeg,.webp"
+                onPreview={handlePreview}
+                onChange={handleChange}
+                customRequest={({ onSuccess }) => {
+                  setTimeout(() => {
+                    if (onSuccess) {
+                      onSuccess("ok");
+                    }
+                  }, 0);
+                }}
+              >
+                {photoList.length >= 1 ? null : uploadButton}
+              </Upload>
+            </ImgCrop>
 
             {previewImage && (
               <Image
