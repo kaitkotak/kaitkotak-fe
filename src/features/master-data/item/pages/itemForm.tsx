@@ -84,6 +84,7 @@ const ItemForm = () => {
   useEffect(() => {
     if (params.id) {
       form.setFieldsValue(data?.data.data);
+      setSelectedType(data?.data.data.type);
 
       if (data?.data.data.image) {
         setPhotoList([
@@ -445,7 +446,7 @@ const ItemForm = () => {
               <Col span={12}>
                 <Form.Item<IItemnForm>
                   label="Kode Pelanggan"
-                  name="customer_code"
+                  name="customer"
                   rules={[
                     { required: true, message: "Silahkan pilih pelanggan!" },
                   ]}
