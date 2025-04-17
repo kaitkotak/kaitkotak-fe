@@ -84,6 +84,7 @@ const ItemForm = () => {
   useEffect(() => {
     if (params.id) {
       form.setFieldsValue(data?.data.data);
+      form.setFieldValue("customer", data?.data.data.customer_id);
       setSelectedType(data?.data.data.type);
 
       if (data?.data.data.image) {

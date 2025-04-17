@@ -1,6 +1,15 @@
 import { useContext, useEffect, useState } from "react";
 import UseGetItems from "../../master-data/item/hooks/useGetItems";
-import { Button, Card, Flex, InputNumber, Space, Spin, theme } from "antd";
+import {
+  Button,
+  Card,
+  DatePicker,
+  Flex,
+  InputNumber,
+  Space,
+  Spin,
+  theme,
+} from "antd";
 import { Content } from "antd/es/layout/layout";
 import { useNavigate, useParams } from "react-router-dom";
 import useCreateProduction from "../hooks/useCreateProduction";
@@ -8,6 +17,8 @@ import { format } from "date-fns";
 import { BreadcrumbContext } from "../../../context/breadcrumb";
 import UseGetProduction from "../hooks/useGetProduction";
 import useUpdateProduction from "../hooks/useUpdateProduction";
+import { parseDateDDMMYYYY } from "../../../libs/dateParser";
+import dayjs, { Dayjs } from "dayjs";
 
 const ProductionForm = () => {
   const { data: itemResponse } = UseGetItems({
@@ -27,6 +38,7 @@ const ProductionForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { mutateAsync: update } = useUpdateProduction();
   const submitButtonText: string = id ? "Simpan Perubahan" : "Proses Produksi";
+  const [productionDate, setProductionDate] = useState<Dayjs | null>(null);
 
   useEffect(() => {
     if (!localStorage.getItem("productionDate") && !id) {
@@ -61,6 +73,7 @@ const ProductionForm = () => {
       };
     });
 
+    setProductionDate(dayjs(data?.data.data.production_date));
     setItems(baseItems);
     setProductionItems(productionItems);
     setIsLoading(false);
@@ -104,7 +117,7 @@ const ProductionForm = () => {
 
   const submit = () => {
     const payload: IProductionPayload = {
-      production_date: format(new Date(), "yyyy-MM-dd"),
+      production_date: dayjs(productionDate).format("YYYY-MM-DD"),
       production_items: productionItems.map(
         (productionItem: IProductionItem) => ({
           item_id: productionItem.id,
@@ -130,6 +143,13 @@ const ProductionForm = () => {
           borderRadius: borderRadiusLG,
         }}
       >
+        <DatePicker
+          style={{ width: "30%", marginBottom: "16px" }}
+          format="DD-MM-YYYY"
+          value={productionDate}
+          onChange={setProductionDate}
+        />
+
         <div className="flex gap-3 mb-6 flex-wrap">
           {productionItems.map((item: IProductionItem) => (
             <Card
@@ -143,6 +163,7 @@ const ProductionForm = () => {
                   style={{ height: "9.375rem" }}
                 />
               }
+              key={item.id}
             >
               <p className="text-lg font-bold">{item.name}</p>
               <p
