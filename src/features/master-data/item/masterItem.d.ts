@@ -20,6 +20,7 @@ interface IItemnForm {
   customer_code: string;
   description: string;
   image?: string;
+  customer: number;
 }
 
 interface IItem {

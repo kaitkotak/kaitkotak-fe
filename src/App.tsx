@@ -45,6 +45,7 @@ const queryClient = new QueryClient({
     queries: {
       retry: false,
       throwOnError: true,
+      refetchOnWindowFocus: false,
     },
     mutations: {
       retry: false,
