@@ -432,6 +432,16 @@ const ItemForm = () => {
             />
           </Form.Item>
 
+          <Form.Item<IItemnForm>
+            label="Berat Bahan Baku"
+            name="raw_material_quantity"
+            rules={[
+              { required: true, message: "Silahkan masukan berat bahan baku!" },
+            ]}
+          >
+            <InputNumber style={{ width: "100%" }} addonAfter="gr" />
+          </Form.Item>
+
           <Row gutter={16}>
             <Col span={selectedType !== "custom" ? 24 : 12}>
               <Form.Item<IItemnForm>

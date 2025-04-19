@@ -21,6 +21,7 @@ interface IItemnForm {
   description: string;
   image?: string;
   customer: number;
+  raw_material_quantity: number;
 }
 
 interface IItem {
