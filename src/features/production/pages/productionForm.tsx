@@ -142,13 +142,18 @@ const ProductionForm = () => {
         }}
       >
         {id && (
-          <DatePicker
-            style={{ width: "30%", marginBottom: "16px" }}
-            format="DD-MM-YYYY"
-            value={productionDate}
-            onChange={setProductionDate}
-          />
+          <div className="flex flex-col gap-1">
+            <label>Date</label>
+            <DatePicker
+              style={{ width: "30%", marginBottom: "16px" }}
+              format="DD-MM-YYYY"
+              value={productionDate}
+              onChange={setProductionDate}
+            />
+          </div>
         )}
+
+        {id && <p className="text-lg font-bold mb-3">Item</p>}
 
         <div className="flex gap-3 mb-6 flex-wrap">
           {productionItems.map((item: IProductionItem) => (
