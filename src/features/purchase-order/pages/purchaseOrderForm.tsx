@@ -83,7 +83,7 @@ const PurchaseOrderForm = () => {
   };
 
   const back = () => {
-    navigate("/purchase_order");
+    navigate("/purchase-order");
   };
 
   const calculateSubstotal = (idx: number) => {
