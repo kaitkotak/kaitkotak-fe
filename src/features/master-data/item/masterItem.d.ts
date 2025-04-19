@@ -39,3 +39,11 @@ interface IItem {
   type: string;
   weight_g: number;
 }
+
+interface IItemList {
+  id: number;
+  item_name: string;
+  item_code: string;
+  price_per_unit: string;
+  image: string;
+}

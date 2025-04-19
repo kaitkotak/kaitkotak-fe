@@ -13,11 +13,9 @@ import {
 import { Content } from "antd/es/layout/layout";
 import { useNavigate, useParams } from "react-router-dom";
 import useCreateProduction from "../hooks/useCreateProduction";
-import { format } from "date-fns";
 import { BreadcrumbContext } from "../../../context/breadcrumb";
 import UseGetProduction from "../hooks/useGetProduction";
 import useUpdateProduction from "../hooks/useUpdateProduction";
-import { parseDateDDMMYYYY } from "../../../libs/dateParser";
 import dayjs, { Dayjs } from "dayjs";
 
 const ProductionForm = () => {

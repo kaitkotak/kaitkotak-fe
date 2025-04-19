@@ -1,6 +1,7 @@
 import { Avatar, Breadcrumb, Button, Layout, Menu, theme } from "antd";
 import {
   DatabaseOutlined,
+  FileProtectOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   ProductOutlined,
@@ -22,11 +23,11 @@ const OwnLayout = () => {
       label: "Produksi",
       icon: <ProductOutlined />,
     },
-    // {
-    //   key: "2",
-    //   label: "Purchase Order",
-    //   icon: <FileProtectOutlined />,
-    // },
+    {
+      key: "/purchase-order",
+      label: "Purchase Order",
+      icon: <FileProtectOutlined />,
+    },
     // {
     //   key: "3",
     //   label: "Penjualan",
