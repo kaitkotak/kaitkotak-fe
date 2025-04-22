@@ -13,6 +13,7 @@ import Production from "../features/production/pages/production";
 import ProductionForm from "../features/production/pages/productionForm";
 import PurchaseOrder from "../features/purchase-order/pages/purchaseOrder";
 import PurchaseOrderForm from "../features/purchase-order/pages/purchaseOrderForm";
+import ProductionPlan from "../features/production/pages/productionPlan";
 
 export const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
           {
             path: "",
             element: <Production />,
+          },
+          {
+            path: "plan",
+            element: <ProductionPlan />,
           },
           {
             path: "create",

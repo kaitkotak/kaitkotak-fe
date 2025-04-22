@@ -17,7 +17,6 @@ import { BreadcrumbContext } from "../../../context/breadcrumb";
 import UseGetProduction from "../hooks/useGetProduction";
 import useUpdateProduction from "../hooks/useUpdateProduction";
 import dayjs, { Dayjs } from "dayjs";
-import { calc } from "antd/es/theme/internal";
 
 const ProductionForm = () => {
   const { data: itemResponse } = UseGetItems({
