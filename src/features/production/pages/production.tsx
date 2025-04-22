@@ -2,6 +2,7 @@ import {
   FileAddOutlined,
   EditOutlined,
   DeleteOutlined,
+  BookOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -199,16 +200,29 @@ const Production = () => {
             onChange={handleDateFilter}
           />
 
-          <Button
-            color="primary"
-            variant="solid"
-            icon={<FileAddOutlined />}
-            onClick={() => {
-              setIsOpenFormModal(true);
-            }}
-          >
-            <span className="hidden md:inline">Tambah Produksi</span>
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              color="primary"
+              variant="solid"
+              icon={<BookOutlined />}
+              onClick={() => {
+                navigate("plan");
+              }}
+            >
+              <span className="hidden md:inline">Rencana Produksi</span>
+            </Button>
+
+            <Button
+              color="primary"
+              variant="solid"
+              icon={<FileAddOutlined />}
+              onClick={() => {
+                setIsOpenFormModal(true);
+              }}
+            >
+              <span className="hidden md:inline">Tambah Produksi</span>
+            </Button>
+          </div>
         </div>
         <Table
           className="mt-8"
