@@ -477,7 +477,7 @@ const ItemForm = () => {
           </Row>
 
           <FormItem<IItemnForm> label="Foto Item" name="image" rules={[]}>
-            <ImgCrop rotationSlider>
+            <ImgCrop rotationSlider aspect={1 / 1}>
               <Upload
                 action=""
                 listType="picture-card"

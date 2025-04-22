@@ -108,6 +108,19 @@ const PurchaseOrderForm = () => {
     form.setFieldValue("price_total", totalAmount);
   };
 
+  const selectItem = (idx: number, value: number) => {
+    const selectedItem: IItemList = itemList.filter(
+      (item: IItemList) => item.id === value
+    )[0];
+
+    form.setFieldValue(
+      [`purchase_order_items`, idx, "price_per_unit"],
+      selectedItem.price_per_unit
+    );
+
+    calculateSubstotal(idx);
+  };
+
   return (
     <Spin spinning={isLoading || isPendingCreate || isPendingUpdate}>
       <Content
@@ -232,6 +245,7 @@ const PurchaseOrderForm = () => {
                             value: s.id,
                             label: s.item_name,
                           }))}
+                          onChange={(value: number) => selectItem(index, value)}
                         />
                       </Form.Item>
                     </Col>
@@ -292,7 +306,10 @@ const PurchaseOrderForm = () => {
                         <MinusCircleOutlined
                           className="dynamic-delete-button"
                           style={index === 0 ? { marginTop: "35px" } : {}}
-                          onClick={() => remove(name)}
+                          onClick={() => {
+                            remove(index);
+                            calculateTotalAmount();
+                          }}
                         />
                       </Col>
                     ) : null}
