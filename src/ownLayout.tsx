@@ -7,6 +7,7 @@ import {
   ProductOutlined,
   ShopOutlined,
   SwitcherOutlined,
+  TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import Sider from "antd/es/layout/Sider";
@@ -39,11 +40,11 @@ const OwnLayout = () => {
       label: "Bahan Baku",
       icon: <SwitcherOutlined />,
     },
-    // {
-    //   key: "5",
-    //   label: "Pengguna",
-    //   icon: <TeamOutlined />,
-    // },
+    {
+      key: "/user",
+      label: "Pengguna",
+      icon: <TeamOutlined />,
+    },
     {
       key: "",
       label: "Data Master",

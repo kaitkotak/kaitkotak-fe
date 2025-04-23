@@ -215,7 +215,7 @@ const PurchaseOrderForm = () => {
               {
                 validator: async (_, names) => {
                   if (!names || names.length < 1) {
-                    return Promise.reject(new Error("At least 2 passengers"));
+                    return Promise.reject(new Error("At least 1 Item"));
                   }
                 },
               },

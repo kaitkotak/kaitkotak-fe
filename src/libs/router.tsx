@@ -16,6 +16,8 @@ import PurchaseOrderForm from "../features/purchase-order/pages/purchaseOrderFor
 import ProductionPlan from "../features/production/pages/productionPlan";
 import Sales from "../features/sales/pages/sales";
 import SalesForm from "../features/sales/pages/salesForm";
+import User from "../features/user/pages/user";
+import UserForm from "../features/user/pages/userForm";
 
 export const router = createBrowserRouter([
   {
@@ -84,6 +86,23 @@ export const router = createBrowserRouter([
       {
         path: "raw-material",
         element: <RawMaterial />,
+      },
+      {
+        path: "user",
+        children: [
+          {
+            path: "",
+            element: <User />,
+          },
+          {
+            path: "create",
+            element: <UserForm />,
+          },
+          // {
+          //   path: "edit/:id",
+          //   element: <PurchaseOrderForm />,
+          // },
+        ],
       },
       {
         path: "master",
