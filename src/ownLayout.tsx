@@ -5,6 +5,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   ProductOutlined,
+  ShopOutlined,
   SwitcherOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -28,11 +29,11 @@ const OwnLayout = () => {
       label: "Purchase Order",
       icon: <FileProtectOutlined />,
     },
-    // {
-    //   key: "3",
-    //   label: "Penjualan",
-    //   icon: <ShopOutlined />,
-    // },
+    {
+      key: "/sales",
+      label: "Penjualan",
+      icon: <ShopOutlined />,
+    },
     {
       key: "/raw-material",
       label: "Bahan Baku",
