@@ -21,6 +21,8 @@ import { BreadcrumbContext } from "../../../context/breadcrumb";
 import { MinusCircleOutlined } from "@ant-design/icons";
 import UseGetCustomerList from "../../master-data/customer/hooks/useGetCustomerList";
 import UseGetItemList from "../../master-data/item/hooks/useGetItemList";
+import UseGetSalesPeopleList from "../../master-data/salesPeople/hooks/useGetSalesPeopleList";
+import UseGetTransportatonList from "../../master-data/transportation/hooks/useGetTransportationList";
 
 const SalesForm = () => {
   const {
@@ -42,6 +44,12 @@ const SalesForm = () => {
   const { data: itemListResponse } = UseGetItemList();
   const [itemList, setItemList] = useState<IItemList[]>([]);
   const [purchaseOrderNo, setPurchaseOrderNo] = useState<string | null>(null);
+  const { data: salesPeopleListResponse } = UseGetSalesPeopleList();
+  const [salesPeople, setSalesPeople] = useState<ISalesPeopleList[]>([]);
+  const { data: transportationListResponse } = UseGetTransportatonList();
+  const [transportations, setTransportations] = useState<ITransportationList[]>(
+    []
+  );
 
   useEffect(() => {
     setBreadcrumb([
@@ -72,6 +80,18 @@ const SalesForm = () => {
       setItemList(itemListResponse.data.data);
     }
   }, [itemListResponse]);
+
+  useEffect(() => {
+    if (salesPeopleListResponse) {
+      setSalesPeople(salesPeopleListResponse.data.data);
+    }
+  }, [salesPeopleListResponse]);
+
+  useEffect(() => {
+    if (transportationListResponse) {
+      setTransportations(transportationListResponse.data.data);
+    }
+  }, [transportationListResponse]);
 
   const submit: FormProps<IPurchaseOrderForm>["onFinish"] = (values) => {
     console.log(values);
@@ -131,7 +151,16 @@ const SalesForm = () => {
           borderRadius: borderRadiusLG,
         }}
       >
-        <Form form={form} layout="vertical" onFinish={submit}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={submit}
+          initialValues={{
+            purchase_order_items: [
+              { item_id: "", quantity: 0, price_per_unit: 0, price_total: 0 },
+            ],
+          }}
+        >
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item<IPurchaseOrderForm>
@@ -240,7 +269,7 @@ const SalesForm = () => {
                         <Select
                           placeholder="Pilih Sales"
                           optionFilterProp="label"
-                          options={customerList.map((s: ICustomerList) => ({
+                          options={salesPeople.map((s: ISalesPeopleList) => ({
                             value: s.id,
                             label: s.full_name,
                           }))}
@@ -262,10 +291,12 @@ const SalesForm = () => {
                         <Select
                           placeholder="Pilih Transportasi"
                           optionFilterProp="label"
-                          options={customerList.map((s: ICustomerList) => ({
-                            value: s.id,
-                            label: s.full_name,
-                          }))}
+                          options={transportations.map(
+                            (s: ITransportationList) => ({
+                              value: s.id,
+                              label: s.driver_name,
+                            })
+                          )}
                         />
                       </Form.Item>
                     </Col>

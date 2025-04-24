@@ -11,3 +11,10 @@ interface ITransportationForm {
   phone_number: string;
   vehicle_number: strinf;
 }
+
+interface ITransportationList {
+  id: number;
+  driver_name: string;
+  vehicle_number: string;
+  phone_number: string;
+}

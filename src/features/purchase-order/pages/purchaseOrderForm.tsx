@@ -131,7 +131,16 @@ const PurchaseOrderForm = () => {
           borderRadius: borderRadiusLG,
         }}
       >
-        <Form form={form} layout="vertical" onFinish={submit}>
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={{
+            purchase_order_items: [
+              { item_id: "", quantity: 0, price_per_unit: 0, price_total: 0 },
+            ],
+          }}
+          onFinish={submit}
+        >
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item<IPurchaseOrderForm>
