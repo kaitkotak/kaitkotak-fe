@@ -24,37 +24,32 @@ import { useNavigate } from "react-router-dom";
 import Search from "antd/es/input/Search";
 import id from "antd/es/date-picker/locale/id_ID";
 import { parseDateDDMMYYYY } from "../../../libs/dateParser";
-
-interface IData {
-  id: number;
-  order_number: string;
-  customer_name: string;
-  order_date: string;
-  price_total: number;
-}
+import UseGetSales from "../hooks/useGetSales";
+import useDeleteSales from "../hooks/useDeleteSales";
 
 const Sales = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const [sales, _] = useState<IData[]>([]);
+  const [sales, setSales] = useState<ISales[]>([]);
   const [tableParams, setTableParams] = useState<ITableParams>({
     pagination: {
       current: 1,
       pageSize: 10,
     },
   });
-  const [__, setPaginationParams] = useState<ICustomTablePaginationConfig>({
-    page: tableParams.pagination.current,
-    limit: tableParams.pagination.pageSize,
-  });
-  // const { data, isLoading } = UseGetPurchaseOrders(paginationParams);
+  const [paginationParams, setPaginationParams] =
+    useState<ICustomTablePaginationConfig>({
+      page: tableParams.pagination.current,
+      limit: tableParams.pagination.pageSize,
+    });
+  const { data, isLoading } = UseGetSales(paginationParams);
   const { setBreadcrumb } = useContext(BreadcrumbContext);
   const navigate = useNavigate();
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] =
     useState<boolean>(false);
-  const [___, setSelectedRowId] = useState<number>(0);
-  // const { mutateAsync: deleteAction } = useDeletePurchaseOrder();
+  const [selectedRowId, setSelectedRowId] = useState<number>(0);
+  const { mutateAsync: deleteAction } = useDeleteSales();
   const idLocale: typeof id = {
     ...id,
     lang: {
@@ -75,31 +70,31 @@ const Sales = () => {
     ]);
   }, []);
 
-  // useEffect(() => {
-  //   setSales(() => {
-  //     return data?.data.data.map((purchaseOrder: IData) => {
-  //       let date = new Date(purchaseOrder.order_date);
-  //       return {
-  //         ...purchaseOrder,
-  //         order_date: format(date, "dd/MM/yyyy"),
-  //       };
-  //     });
-  //   });
+  useEffect(() => {
+    setSales(() => {
+      return data?.data.data.map((purchaseOrder: ISales) => {
+        let date = new Date(purchaseOrder.invoice_date);
+        return {
+          ...purchaseOrder,
+          invoice_date: format(date, "dd/MM/yyyy"),
+        };
+      });
+    });
 
-  //   setTableParams({
-  //     pagination: {
-  //       ...tableParams.pagination,
-  //       total: data?.data.meta.total,
-  //     },
-  //   });
-  // }, [data]);
+    setTableParams({
+      pagination: {
+        ...tableParams.pagination,
+        total: data?.data.meta.total,
+      },
+    });
+  }, [data]);
 
-  const columns: TableColumnsType<IData> = [
+  const columns: TableColumnsType<ISales> = [
     { title: "No Invoice", dataIndex: "order_number" },
-    { title: "No PO", dataIndex: "customer_name" },
-    { title: "Tanggal", dataIndex: "order_date" },
-    { title: "Pelanggan", dataIndex: "price_total" },
-    { title: "Sales", dataIndex: "price_total" },
+    { title: "No PO", dataIndex: "purchase_order_no" },
+    { title: "Tanggal", dataIndex: "invoice_date" },
+    { title: "Pelanggan", dataIndex: "customer_name" },
+    { title: "Sales", dataIndex: "sales_rep_name" },
     {
       dataIndex: "action",
       render: (_, record) => (
@@ -122,7 +117,7 @@ const Sales = () => {
     },
   ];
 
-  const handleTableChange: TableProps<IData>["onChange"] = (pagination) => {
+  const handleTableChange: TableProps<ISales>["onChange"] = (pagination) => {
     setTableParams({
       pagination,
     });
@@ -152,7 +147,7 @@ const Sales = () => {
   };
 
   const handleOk = () => {
-    // deleteAction({ id: selectedRowId });
+    deleteAction({ id: selectedRowId });
     setIsOpenConfirmationModal(false);
   };
 
@@ -179,7 +174,7 @@ const Sales = () => {
   };
 
   return (
-    <Spin spinning={false}>
+    <Spin spinning={isLoading}>
       <Content
         style={{
           margin: "24px 16px",

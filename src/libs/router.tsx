@@ -8,7 +8,6 @@ import Customer from "../features/master-data/customer/pages/customer";
 import CustomerForm from "../features/master-data/customer/pages/customerForm";
 import Item from "../features/master-data/item/pages/item";
 import ItemForm from "../features/master-data/item/pages/itemForm";
-import RawMaterial from "../features/raw-material/pages/rawMaterial";
 import Production from "../features/production/pages/production";
 import ProductionForm from "../features/production/pages/productionForm";
 import PurchaseOrder from "../features/purchase-order/pages/purchaseOrder";
@@ -18,6 +17,7 @@ import Sales from "../features/sales/pages/sales";
 import SalesForm from "../features/sales/pages/salesForm";
 import User from "../features/user/pages/user";
 import UserForm from "../features/user/pages/userForm";
+import RawMaterial from "../features/raw-material/pages/rawMaterial";
 
 export const router = createBrowserRouter([
   {
@@ -77,10 +77,10 @@ export const router = createBrowserRouter([
             path: "create",
             element: <SalesForm />,
           },
-          // {
-          //   path: "edit/:id",
-          //   element: <PurchaseOrderForm />,
-          // },
+          {
+            path: "edit/:id",
+            element: <SalesForm />,
+          },
         ],
       },
       {

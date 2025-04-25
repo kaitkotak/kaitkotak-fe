@@ -23,20 +23,22 @@ import UseGetCustomerList from "../../master-data/customer/hooks/useGetCustomerL
 import UseGetItemList from "../../master-data/item/hooks/useGetItemList";
 import UseGetSalesPeopleList from "../../master-data/salesPeople/hooks/useGetSalesPeopleList";
 import UseGetTransportatonList from "../../master-data/transportation/hooks/useGetTransportationList";
+import useGetSalesDetail from "../hooks/useGetSalesDetail";
+import dayjs from "dayjs";
+import useCreateSales from "../hooks/useCreateSales";
+import useUpdateSales from "../hooks/useUpdateSales";
 
 const SalesForm = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  // const { mutateAsync: create, isPending: isPendingCreate } =
-  //   useCreatePurchaseOrder();
-  // const { mutateAsync: update, isPending: isPendingUpdate } =
-  //   useUpdatePurchaseOrder();
+  const { mutateAsync: create, isPending: isPendingCreate } = useCreateSales();
+  const { mutateAsync: update, isPending: isPendingUpdate } = useUpdateSales();
   const navigate = useNavigate();
   const params = useParams();
-  // const { data, isLoading } = UseGetPurchaseOrder({
-  //   id: params.id ?? "",
-  // });
+  const { data, isLoading } = useGetSalesDetail({
+    id: params.id ?? "",
+  });
   const [form] = Form.useForm();
   const { setBreadcrumb } = useContext(BreadcrumbContext);
   const { data: customerListResponse } = UseGetCustomerList();
@@ -62,12 +64,14 @@ const SalesForm = () => {
     ]);
   }, []);
 
-  // useEffect(() => {
-  //   if (params.id) {
-  //     form.setFieldsValue(data?.data.data);
-  //     form.setFieldValue("order_date", dayjs(data?.data.data.order_date));
-  //   }
-  // }, [data]);
+  useEffect(() => {
+    if (params.id) {
+      form.setFieldsValue(data?.data.data);
+      form.setFieldValue("invoice_date", dayjs(data?.data.data.invoice_date));
+      form.setFieldValue("due_date", dayjs(data?.data.data.due_date));
+      setPurchaseOrderNo(data?.data.data.purchase_order_id);
+    }
+  }, [data]);
 
   useEffect(() => {
     if (customerListResponse) {
@@ -93,13 +97,20 @@ const SalesForm = () => {
     }
   }, [transportationListResponse]);
 
-  const submit: FormProps<IPurchaseOrderForm>["onFinish"] = (values) => {
+  const submit: FormProps<ISalesForm>["onFinish"] = (values) => {
+    values.invoice_date = dayjs(values.invoice_date).format("YYYY-MM-DD");
+    values.due_date = dayjs(values.due_date).format("YYYY-MM-DD");
+    values.invoice_items = values.invoice_items.map((item: ISalesItem) => {
+      item.po_item_id = item.id;
+      return item;
+    });
     console.log(values);
-    // if (params.id) {
-    //   update({ ...values, id: params.id });
-    // } else {
-    //   create(values);
-    // }
+
+    if (params.id) {
+      update({ ...values, id: params.id });
+    } else {
+      create(values);
+    }
   };
 
   const back = () => {
@@ -142,7 +153,7 @@ const SalesForm = () => {
   };
 
   return (
-    <Spin spinning={false}>
+    <Spin spinning={isLoading || isPendingCreate || isPendingUpdate}>
       <Content
         style={{
           margin: "24px 16px",
@@ -163,9 +174,9 @@ const SalesForm = () => {
         >
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item<IPurchaseOrderForm>
+              <Form.Item<ISalesForm>
                 label="Tanggal"
-                name="order_date"
+                name="invoice_date"
                 rules={[
                   { required: true, message: "Silahkan masukan kode item!" },
                 ]}
@@ -175,9 +186,9 @@ const SalesForm = () => {
             </Col>
 
             <Col span={12}>
-              <Form.Item<IPurchaseOrderForm>
+              <Form.Item<ISalesForm>
                 label="No Purchase Order"
-                name="order_number"
+                name="purchase_order_id"
                 rules={[{ required: true, message: "Silahkan masukan berat!" }]}
               >
                 <Select
@@ -196,8 +207,8 @@ const SalesForm = () => {
           {purchaseOrderNo && (
             <>
               <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item<IPurchaseOrderForm>
+                <Col xs={{ span: 24 }} lg={{ span: 12 }}>
+                  <Form.Item<ISalesForm>
                     label="Nama Pelanggan"
                     name="customer_id"
                     rules={[
@@ -219,10 +230,10 @@ const SalesForm = () => {
                   </Form.Item>
                 </Col>
 
-                <Col span={12}>
+                <Col xs={{ span: 24 }} lg={{ span: 12 }}>
                   <Row gutter={16}>
                     <Col span={12}>
-                      <Form.Item<IPurchaseOrderForm>
+                      <Form.Item<ISalesForm>
                         label="Tax"
                         name="tax"
                         rules={[
@@ -240,7 +251,7 @@ const SalesForm = () => {
                     </Col>
 
                     <Col span={12}>
-                      <Form.Item<IPurchaseOrderForm>
+                      <Form.Item<ISalesForm>
                         label="Total Harga"
                         name="price_total"
                       >
@@ -256,12 +267,12 @@ const SalesForm = () => {
               </Row>
 
               <Row gutter={16}>
-                <Col span={12}>
+                <Col xs={{ span: 24 }} lg={{ span: 12 }}>
                   <Row gutter={16}>
                     <Col span={12}>
-                      <Form.Item<IPurchaseOrderForm>
+                      <Form.Item<ISalesForm>
                         label="Sales"
-                        name="tax"
+                        name="sales_rep_id"
                         rules={[
                           { required: true, message: "Silahkan pilih sales!" },
                         ]}
@@ -278,9 +289,9 @@ const SalesForm = () => {
                     </Col>
 
                     <Col span={12}>
-                      <Form.Item<IPurchaseOrderForm>
+                      <Form.Item<ISalesForm>
                         label="Transportasi"
-                        name="price_total"
+                        name="transport_vehicle_id"
                         rules={[
                           {
                             required: true,
@@ -303,12 +314,12 @@ const SalesForm = () => {
                   </Row>
                 </Col>
 
-                <Col span={12}>
+                <Col xs={{ span: 24 }} lg={{ span: 12 }}>
                   <Row gutter={16}>
                     <Col span={18}>
-                      <Form.Item<IPurchaseOrderForm>
+                      <Form.Item<ISalesForm>
                         label="Tanggal Jatuh Tempo"
-                        name="tax"
+                        name="due_date"
                         rules={[
                           {
                             required: true,
@@ -324,10 +335,7 @@ const SalesForm = () => {
                     </Col>
 
                     <Col span={6}>
-                      <Form.Item<IPurchaseOrderForm>
-                        label="Hari"
-                        name="price_total"
-                      >
+                      <Form.Item<ISalesForm> label="Hari" name="due_days">
                         <InputNumber style={{ width: "100%" }} />
                       </Form.Item>
                     </Col>
@@ -338,14 +346,12 @@ const SalesForm = () => {
               <h2 className="text-lg font-bold mb-3">Items</h2>
 
               <Form.List
-                name="purchase_order_items"
+                name="invoice_items"
                 rules={[
                   {
                     validator: async (_, names) => {
                       if (!names || names.length < 1) {
-                        return Promise.reject(
-                          new Error("At least 2 passengers")
-                        );
+                        return Promise.reject(new Error("Minimal 1 Item"));
                       }
                     },
                   },

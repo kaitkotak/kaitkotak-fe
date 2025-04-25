@@ -3,9 +3,9 @@ import { axiosInstance } from "../../../libs/axios";
 import { generateUrlWithParams } from "../../../libs/generateUrlWithParams";
 
 const UseGetSales = (props: ICustomTablePaginationConfig) => {
-  const url: string = generateUrlWithParams(`/purchase_order?`, props);
+  const url: string = generateUrlWithParams(`/invoice?`, props);
   return useQuery({
-    queryKey: ["purchaseOrders", props],
+    queryKey: ["sales", props],
     queryFn: async () => axiosInstance.get(url),
   });
 };
