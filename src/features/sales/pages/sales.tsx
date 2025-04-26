@@ -7,6 +7,9 @@ import {
 import {
   Button,
   DatePicker,
+  Flex,
+  Form,
+  FormProps,
   Modal,
   Space,
   Spin,
@@ -61,6 +64,8 @@ const Sales = () => {
     },
   };
   const { RangePicker } = DatePicker;
+  const [isOpenFormModal, setIsOpenFormModal] = useState<boolean>(false);
+  const [form] = Form.useForm();
 
   useEffect(() => {
     setBreadcrumb([
@@ -173,6 +178,15 @@ const Sales = () => {
     }
   };
 
+  const handleCancel = () => {
+    form.resetFields();
+    setIsOpenFormModal(false);
+  };
+
+  const submit: FormProps<any>["onFinish"] = (values) => {
+    console.log(values);
+  };
+
   return (
     <Spin spinning={isLoading}>
       <Content
@@ -206,7 +220,7 @@ const Sales = () => {
               variant="solid"
               icon={<FileExcelOutlined />}
               onClick={() => {
-                goToForm("create");
+                setIsOpenFormModal(true);
               }}
             >
               <span className="hidden sm:inline md:hidden lg:inline">
@@ -248,6 +262,40 @@ const Sales = () => {
         cancelText="Batal"
       >
         <p>Anda yakin ingin menghapus data ini?</p>
+      </Modal>
+
+      <Modal
+        title="Pilih Tanggal Laporan"
+        open={isOpenFormModal}
+        onCancel={handleCancel}
+        okText="Simpan"
+        cancelText="Batal"
+        footer={null}
+      >
+        <Form
+          form={form}
+          autoComplete="off"
+          layout="vertical"
+          onFinish={submit}
+          className="!mt-4"
+        >
+          <Form.Item<any>
+            name="production_date"
+            rules={[
+              { required: true, message: "Silahkan masukan tanggal produksi" },
+            ]}
+          >
+            <RangePicker style={{ width: "100%" }} format="DD-MM-YYYY" />
+          </Form.Item>
+
+          <Flex gap="middle" justify="end">
+            <Form.Item label={null}>
+              <Button type="primary" htmlType="submit">
+                Download
+              </Button>
+            </Form.Item>
+          </Flex>
+        </Form>
       </Modal>
     </Spin>
   );

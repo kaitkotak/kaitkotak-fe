@@ -115,7 +115,7 @@ const PurchaseOrderForm = () => {
 
     form.setFieldValue(
       [`purchase_order_items`, idx, "price_per_unit"],
-      selectedItem.price_per_unit
+      Number(selectedItem.price_per_unit)
     );
 
     calculateSubstotal(idx);
@@ -196,7 +196,11 @@ const PurchaseOrderForm = () => {
                       { required: true, message: "Silahkan masukan berat!" },
                     ]}
                   >
-                    <InputNumber style={{ width: "100%" }} addonBefore="Rp" />
+                    <InputNumber
+                      style={{ width: "100%" }}
+                      addonAfter="%"
+                      max={100}
+                    />
                   </Form.Item>
                 </Col>
 

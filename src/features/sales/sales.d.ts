@@ -38,6 +38,7 @@ interface ISalesForm {
   price_total: number;
   price_after_tax: number;
   invoice_items: ISalesItem[];
+  po_id: number;
 }
 
 interface ISalesItem {

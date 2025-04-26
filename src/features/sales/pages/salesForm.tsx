@@ -14,11 +14,12 @@ import {
 import { Content } from "antd/es/layout/layout";
 import { useNavigate, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-// import useCreatePurchaseOrder from "../hooks/useCreatePurchaseOrder";
-// import useUpdatePurchaseOrder from "../hooks/useUpdatePurchaseOrder";
-// import UseGetPurchaseOrder from "../hooks/useGetPurchaseOrder";
 import { BreadcrumbContext } from "../../../context/breadcrumb";
-import { MinusCircleOutlined } from "@ant-design/icons";
+import {
+  FileDoneOutlined,
+  MinusCircleOutlined,
+  ProfileOutlined,
+} from "@ant-design/icons";
 import UseGetCustomerList from "../../master-data/customer/hooks/useGetCustomerList";
 import UseGetItemList from "../../master-data/item/hooks/useGetItemList";
 import UseGetSalesPeopleList from "../../master-data/salesPeople/hooks/useGetSalesPeopleList";
@@ -27,6 +28,7 @@ import useGetSalesDetail from "../hooks/useGetSalesDetail";
 import dayjs from "dayjs";
 import useCreateSales from "../hooks/useCreateSales";
 import useUpdateSales from "../hooks/useUpdateSales";
+import UseGetPurchaseOrderList from "../../purchase-order/hooks/useGetPurchaseOrderList";
 
 const SalesForm = () => {
   const {
@@ -50,6 +52,10 @@ const SalesForm = () => {
   const [salesPeople, setSalesPeople] = useState<ISalesPeopleList[]>([]);
   const { data: transportationListResponse } = UseGetTransportatonList();
   const [transportations, setTransportations] = useState<ITransportationList[]>(
+    []
+  );
+  const { data: purchaseOrderResponse } = UseGetPurchaseOrderList();
+  const [purchaseOrders, setPurchaseOrders] = useState<IPurchaseOrderList[]>(
     []
   );
 
@@ -97,6 +103,12 @@ const SalesForm = () => {
     }
   }, [transportationListResponse]);
 
+  useEffect(() => {
+    if (purchaseOrderResponse) {
+      setPurchaseOrders(purchaseOrderResponse.data.data);
+    }
+  }, [purchaseOrderResponse]);
+
   const submit: FormProps<ISalesForm>["onFinish"] = (values) => {
     values.invoice_date = dayjs(values.invoice_date).format("YYYY-MM-DD");
     values.due_date = dayjs(values.due_date).format("YYYY-MM-DD");
@@ -104,7 +116,7 @@ const SalesForm = () => {
       item.po_item_id = item.id;
       return item;
     });
-    console.log(values);
+    values.po_id = values.purchase_order_id;
 
     if (params.id) {
       update({ ...values, id: params.id });
@@ -119,12 +131,13 @@ const SalesForm = () => {
 
   const calculateSubstotal = (idx: number) => {
     const qty: number =
-      form.getFieldValue([`purchase_order_items`, idx, "quantity"]) ?? 0;
+      form.getFieldValue([`invoice_items`, idx, "quantity"]) ?? 0;
     const pricePerUnit: number =
-      form.getFieldValue([`purchase_order_items`, idx, "price_per_unit"]) ?? 0;
+      form.getFieldValue([`invoice_items`, idx, "price_per_unit"]) ?? 0;
+    console.log(qty, pricePerUnit);
 
     form.setFieldValue(
-      [`purchase_order_items`, idx, "price_total"],
+      [`invoice_items`, idx, "price_total"],
       qty * pricePerUnit
     );
 
@@ -133,24 +146,61 @@ const SalesForm = () => {
 
   const calculateTotalAmount = () => {
     let totalAmount: number = 0;
-    form.getFieldValue("purchase_order_items").forEach((element: any) => {
+    form.getFieldValue("invoice_items").forEach((element: any) => {
+      // console.log(element.price_total);
       totalAmount += element.price_total;
     });
     form.setFieldValue("price_total", totalAmount);
   };
 
   const selectItem = (idx: number, value: number) => {
+    console.log("idx", idx);
     const selectedItem: IItemList = itemList.filter(
       (item: IItemList) => item.id === value
     )[0];
 
     form.setFieldValue(
-      [`purchase_order_items`, idx, "price_per_unit"],
-      selectedItem.price_per_unit
+      [`invoice_items`, idx, "price_per_unit"],
+      Number(selectedItem.price_per_unit)
     );
+    form.setFieldValue([`invoice_items`, idx, "quantity"], 0);
+    console.log(selectedItem);
 
     calculateSubstotal(idx);
+    // renewItemList();
   };
+
+  const handlePurchaseOrderChange = (val: string) => {
+    const selectedPurchaseOrder: IPurchaseOrderList = purchaseOrders.filter(
+      (purchaseOrder: IPurchaseOrderList) => purchaseOrder.id === Number(val)
+    )[0];
+
+    setPurchaseOrderNo(val);
+    form.setFieldsValue({
+      customer_id: selectedPurchaseOrder.customer_id,
+      tax: selectedPurchaseOrder.tax,
+      price_total: selectedPurchaseOrder.price_total,
+      invoice_items: selectedPurchaseOrder.purchase_order_items,
+    });
+  };
+
+  const handleDueDateChange = (val: any) => {
+    form.setFieldValue("due_days", dayjs(new Date()).diff(dayjs(val), "day"));
+  };
+
+  // const renewItemList = () => {
+  //   let newItemList: IItemList[] = itemList;
+
+  //   form
+  //     .getFieldValue("invoice_items")
+  //     .forEach((invoiceItem: IPurchaseOrderItems) => {
+  //       newItemList = newItemList.filter(
+  //         (newItem: IItemList) => newItem.id !== invoiceItem.item_id
+  //       );
+  //     });
+
+  //   setItemList(newItemList);
+  // };
 
   return (
     <Spin spinning={isLoading || isPendingCreate || isPendingUpdate}>
@@ -162,12 +212,52 @@ const SalesForm = () => {
           borderRadius: borderRadiusLG,
         }}
       >
+        {params.id && (
+          <div className="flex justify-end gap-3 mb-5">
+            <Button
+              color="primary"
+              variant="solid"
+              icon={<FileDoneOutlined />}
+              onClick={() => {
+                window.open(
+                  `${import.meta.env.VITE_API_URL}/invoice/download/invoice/${
+                    params.id
+                  }`,
+                  "_blank"
+                );
+              }}
+            >
+              <span className="hidden sm:inline md:inline">
+                Download Invoice
+              </span>
+            </Button>
+
+            <Button
+              color="primary"
+              variant="solid"
+              icon={<ProfileOutlined />}
+              onClick={() => {
+                window.open(
+                  `${
+                    import.meta.env.VITE_API_URL
+                  }/invoice/download/surat-jalan/${params.id}`,
+                  "_blank"
+                );
+              }}
+            >
+              <span className="hidden sm:inline md:inline">
+                Download Surat Jalan
+              </span>
+            </Button>
+          </div>
+        )}
+
         <Form
           form={form}
           layout="vertical"
           onFinish={submit}
           initialValues={{
-            purchase_order_items: [
+            invoice_items: [
               { item_id: "", quantity: 0, price_per_unit: 0, price_total: 0 },
             ],
           }}
@@ -194,11 +284,11 @@ const SalesForm = () => {
                 <Select
                   placeholder="Pilih Purchase Order"
                   optionFilterProp="label"
-                  options={customerList.map((s: ICustomerList) => ({
+                  options={purchaseOrders.map((s: IPurchaseOrderList) => ({
                     value: s.id,
-                    label: s.full_name,
+                    label: s.order_number,
                   }))}
-                  onChange={setPurchaseOrderNo}
+                  onChange={handlePurchaseOrderChange}
                 />
               </Form.Item>
             </Col>
@@ -245,7 +335,8 @@ const SalesForm = () => {
                       >
                         <InputNumber
                           style={{ width: "100%" }}
-                          addonBefore="Rp"
+                          addonAfter="%"
+                          max={100}
                         />
                       </Form.Item>
                     </Col>
@@ -330,6 +421,7 @@ const SalesForm = () => {
                         <DatePicker
                           style={{ width: "100%" }}
                           format="DD-MM-YYYY"
+                          onChange={handleDueDateChange}
                         />
                       </Form.Item>
                     </Col>
@@ -360,7 +452,7 @@ const SalesForm = () => {
                 {(fields, { add, remove }) => (
                   <>
                     {fields.map(({ key, name, ...restField }, index) => (
-                      <Row gutter={16}>
+                      <Row gutter={16} key={index}>
                         <Col xs={{ span: 24 }} lg={{ span: 10 }}>
                           <Form.Item
                             label={index === 0 ? "Kode Item" : ""}
