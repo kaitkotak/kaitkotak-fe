@@ -88,7 +88,8 @@ const PurchaseOrderForm = () => {
 
   const calculateSubstotal = (idx: number) => {
     const qty: number =
-      form.getFieldValue([`purchase_order_items`, idx, "quantity"]) ?? 0;
+      form.getFieldValue([`purchase_order_items`, idx, "remaining_quantity"]) ??
+      0;
     const pricePerUnit: number =
       form.getFieldValue([`purchase_order_items`, idx, "price_per_unit"]) ?? 0;
 
@@ -136,7 +137,12 @@ const PurchaseOrderForm = () => {
           layout="vertical"
           initialValues={{
             purchase_order_items: [
-              { item_id: "", quantity: 0, price_per_unit: 0, price_total: 0 },
+              {
+                item_id: "",
+                remaining_quantity: 0,
+                price_per_unit: 0,
+                price_total: 0,
+              },
             ],
           }}
           onFinish={submit}
@@ -266,7 +272,7 @@ const PurchaseOrderForm = () => {
                     <Col xs={{ span: 12 }} lg={{ span: 4 }}>
                       <Form.Item
                         label={index === 0 ? "Jumlah Item" : ""}
-                        name={[name, "quantity"]}
+                        name={[name, "remaining_quantity"]}
                         rules={[
                           {
                             required: true,
