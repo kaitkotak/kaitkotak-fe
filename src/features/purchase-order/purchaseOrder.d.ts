@@ -13,6 +13,7 @@ interface IPurchaseOrderItems {
   quantity: number;
   price_per_unit: number;
   price_total: number;
+  remaining_quantity: number;
 }
 
 interface IPurchaseOrderList {

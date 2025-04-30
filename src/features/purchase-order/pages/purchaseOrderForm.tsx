@@ -75,6 +75,13 @@ const PurchaseOrderForm = () => {
   }, [itemListResponse]);
 
   const submit: FormProps<IPurchaseOrderForm>["onFinish"] = (values) => {
+    values.purchase_order_items = values.purchase_order_items.map(
+      (item: IPurchaseOrderItems) => ({
+        ...item,
+        quantity: item.remaining_quantity,
+      })
+    );
+
     if (params.id) {
       update({ ...values, id: params.id });
     } else {
@@ -118,6 +125,7 @@ const PurchaseOrderForm = () => {
       [`purchase_order_items`, idx, "price_per_unit"],
       Number(selectedItem.price_per_unit)
     );
+    form.setFieldValue([`invoice_items`, idx, "remaining_quantity"], 0);
 
     calculateSubstotal(idx);
   };

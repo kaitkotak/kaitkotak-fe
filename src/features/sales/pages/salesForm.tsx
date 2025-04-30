@@ -154,7 +154,6 @@ const SalesForm = () => {
   };
 
   const selectItem = (idx: number, value: number) => {
-    console.log("idx", idx);
     const selectedItem: IItemList = itemList.filter(
       (item: IItemList) => item.id === value
     )[0];
@@ -164,7 +163,6 @@ const SalesForm = () => {
       Number(selectedItem.price_per_unit)
     );
     form.setFieldValue([`invoice_items`, idx, "quantity"], 0);
-    console.log(selectedItem);
 
     calculateSubstotal(idx);
     // renewItemList();
