@@ -28,6 +28,7 @@ import useUpload from "../../../../hooks/useUpload";
 import { PlusOutlined } from "@ant-design/icons";
 import UseGetCustomers from "../../customer/hooks/useGetCustomers";
 import ImgCrop from "antd-img-crop";
+import TextArea from "antd/es/input/TextArea";
 
 const ItemForm = () => {
   const {
@@ -311,6 +312,10 @@ const ItemForm = () => {
               </Form.Item>
             </Col>
           </Row>
+
+          <Form.Item<IItemnForm> label="Deskripsi" name="description">
+            <TextArea />
+          </Form.Item>
 
           <Form.Item<IItemnForm>
             label="Harga Jual (unit)"
