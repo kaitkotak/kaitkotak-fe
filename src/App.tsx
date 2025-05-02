@@ -1,6 +1,5 @@
 import "./App.css";
 import { ConfigProvider } from "antd";
-import OwnLayout from "./ownLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BreadcrumbProvider } from "./context/breadcrumb";
