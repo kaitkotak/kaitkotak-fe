@@ -4,6 +4,7 @@ import OwnLayout from "./ownLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BreadcrumbProvider } from "./context/breadcrumb";
+import { Outlet } from "react-router-dom";
 
 // const { toast } = useToast();
 // const jwtTokenErrors: string[] = [
@@ -86,7 +87,8 @@ function App() {
             },
           }}
         >
-          <OwnLayout />
+          <Outlet />
+          {/* <OwnLayout /> */}
         </ConfigProvider>
       </BreadcrumbProvider>
       <ReactQueryDevtools initialIsOpen={false} />

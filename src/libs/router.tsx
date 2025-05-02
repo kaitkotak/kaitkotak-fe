@@ -18,6 +18,8 @@ import SalesForm from "../features/sales/pages/salesForm";
 import User from "../features/user/pages/user";
 import UserForm from "../features/user/pages/userForm";
 import RawMaterial from "../features/raw-material/pages/rawMaterial";
+import Login from "../features/login/pages/login";
+import OwnLayout from "../ownLayout";
 
 export const router = createBrowserRouter([
   {
@@ -26,152 +28,162 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <Navigate to="/master/item" />,
+        element: <Navigate to="login" />,
       },
       {
-        path: "production",
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "/",
+        element: <OwnLayout />,
         children: [
           {
-            path: "",
-            element: <Production />,
-          },
-          {
-            path: "plan",
-            element: <ProductionPlan />,
-          },
-          {
-            path: "create",
-            element: <ProductionForm />,
-          },
-          {
-            path: "edit/:id",
-            element: <ProductionForm />,
-          },
-        ],
-      },
-      {
-        path: "purchase-order",
-        children: [
-          {
-            path: "",
-            element: <PurchaseOrder />,
-          },
-          {
-            path: "create",
-            element: <PurchaseOrderForm />,
-          },
-          {
-            path: "edit/:id",
-            element: <PurchaseOrderForm />,
-          },
-        ],
-      },
-      {
-        path: "sales",
-        children: [
-          {
-            path: "",
-            element: <Sales />,
-          },
-          {
-            path: "create",
-            element: <SalesForm />,
-          },
-          {
-            path: "edit/:id",
-            element: <SalesForm />,
-          },
-        ],
-      },
-      {
-        path: "raw-material",
-        element: <RawMaterial />,
-      },
-      {
-        path: "user",
-        children: [
-          {
-            path: "",
-            element: <User />,
-          },
-          {
-            path: "create",
-            element: <UserForm />,
-          },
-          {
-            path: "edit/:id",
-            element: <UserForm />,
-          },
-        ],
-      },
-      {
-        path: "master",
-        children: [
-          {
-            path: "transportation",
+            path: "production",
             children: [
               {
                 path: "",
-                element: <Transportation />,
+                element: <Production />,
+              },
+              {
+                path: "plan",
+                element: <ProductionPlan />,
               },
               {
                 path: "create",
-                element: <TransportationForm />,
+                element: <ProductionForm />,
               },
               {
                 path: "edit/:id",
-                element: <TransportationForm />,
+                element: <ProductionForm />,
               },
             ],
           },
           {
-            path: "sales-people",
+            path: "purchase-order",
             children: [
               {
                 path: "",
-                element: <SalesPeople />,
+                element: <PurchaseOrder />,
               },
               {
                 path: "create",
-                element: <SalesPeopleForm />,
+                element: <PurchaseOrderForm />,
               },
               {
                 path: "edit/:id",
-                element: <SalesPeopleForm />,
+                element: <PurchaseOrderForm />,
               },
             ],
           },
           {
-            path: "customer",
+            path: "sales",
             children: [
               {
                 path: "",
-                element: <Customer />,
+                element: <Sales />,
               },
               {
                 path: "create",
-                element: <CustomerForm />,
+                element: <SalesForm />,
               },
               {
                 path: "edit/:id",
-                element: <CustomerForm />,
+                element: <SalesForm />,
               },
             ],
           },
           {
-            path: "item",
+            path: "raw-material",
+            element: <RawMaterial />,
+          },
+          {
+            path: "user",
             children: [
               {
                 path: "",
-                element: <Item />,
+                element: <User />,
               },
               {
                 path: "create",
-                element: <ItemForm />,
+                element: <UserForm />,
               },
               {
                 path: "edit/:id",
-                element: <ItemForm />,
+                element: <UserForm />,
+              },
+            ],
+          },
+          {
+            path: "master",
+            children: [
+              {
+                path: "transportation",
+                children: [
+                  {
+                    path: "",
+                    element: <Transportation />,
+                  },
+                  {
+                    path: "create",
+                    element: <TransportationForm />,
+                  },
+                  {
+                    path: "edit/:id",
+                    element: <TransportationForm />,
+                  },
+                ],
+              },
+              {
+                path: "sales-people",
+                children: [
+                  {
+                    path: "",
+                    element: <SalesPeople />,
+                  },
+                  {
+                    path: "create",
+                    element: <SalesPeopleForm />,
+                  },
+                  {
+                    path: "edit/:id",
+                    element: <SalesPeopleForm />,
+                  },
+                ],
+              },
+              {
+                path: "customer",
+                children: [
+                  {
+                    path: "",
+                    element: <Customer />,
+                  },
+                  {
+                    path: "create",
+                    element: <CustomerForm />,
+                  },
+                  {
+                    path: "edit/:id",
+                    element: <CustomerForm />,
+                  },
+                ],
+              },
+              {
+                path: "item",
+                children: [
+                  {
+                    path: "",
+                    element: <Item />,
+                  },
+                  {
+                    path: "create",
+                    element: <ItemForm />,
+                  },
+                  {
+                    path: "edit/:id",
+                    element: <ItemForm />,
+                  },
+                ],
               },
             ],
           },
