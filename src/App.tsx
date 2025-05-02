@@ -1,28 +1,33 @@
 import "./App.css";
 import { ConfigProvider } from "antd";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BreadcrumbProvider } from "./context/breadcrumb";
 import { Outlet } from "react-router-dom";
+import { MessageProvider } from "./context/message";
+// import useGetRefreshToken from "./features/login/hooks/useGetRefreshToken";
 
 // const { toast } = useToast();
-// const jwtTokenErrors: string[] = [
-//   "Akses ditolak. Token tidak sesuai",
-//   "Token tidak ditemukan",
-// ];
+const jwtTokenErrors: string[] = ["Anda perlu login terlebih dahulu"];
+// const { mutateAsync: getRefreshToken } = useGetRefreshToken();
 
 const queryClient = new QueryClient({
-  // queryCache: new QueryCache({
-  //   onError: (error: Error) => {
-  //     if (jwtTokenErrors.includes(error.response?.data.message)) {
-  //       window.location.replace("/login");
-  //     }
-  //     toast({
-  //       description: error.response?.data.message,
-  //       variant: "destructive",
-  //     });
-  //   },
-  // }),
+  queryCache: new QueryCache({
+    onError: (error: any) => {
+      console.log(error);
+      if (jwtTokenErrors.includes(error.response?.data.message)) {
+        // getRefreshToken();
+      }
+      // toast({
+      //   description: error.response?.data.message,
+      //   variant: "destructive",
+      // });
+    },
+  }),
   // mutationCache: new MutationCache({
   //   onError: (error: Error) => {
   //     if (error.response?.data.message) {
@@ -61,34 +66,36 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BreadcrumbProvider>
-        <ConfigProvider
-          theme={{
-            token: {
-              // colorText: "#ffffff",
-            },
-            components: {
-              Button: {
-                colorPrimary: "#25675C",
-                algorithm: true, // Enable algorithm
+        <MessageProvider>
+          <ConfigProvider
+            theme={{
+              token: {
+                // colorText: "#ffffff",
               },
-              Input: {
-                colorPrimary: "#eb2f96",
-                algorithm: true, // Enable algorithm
+              components: {
+                Button: {
+                  colorPrimary: "#25675C",
+                  algorithm: true, // Enable algorithm
+                },
+                Input: {
+                  colorPrimary: "#eb2f96",
+                  algorithm: true, // Enable algorithm
+                },
+                Menu: {
+                  colorText: "#ffffff",
+                  itemSelectedColor: "#014F42",
+                  subMenuItemSelectedColor: "#ffffff",
+                },
+                Slider: {
+                  colorBgLayout: "#014F42",
+                },
               },
-              Menu: {
-                colorText: "#ffffff",
-                itemSelectedColor: "#014F42",
-                subMenuItemSelectedColor: "#ffffff",
-              },
-              Slider: {
-                colorBgLayout: "#014F42",
-              },
-            },
-          }}
-        >
-          <Outlet />
-          {/* <OwnLayout /> */}
-        </ConfigProvider>
+            }}
+          >
+            <Outlet />
+            {/* <OwnLayout /> */}
+          </ConfigProvider>
+        </MessageProvider>
       </BreadcrumbProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

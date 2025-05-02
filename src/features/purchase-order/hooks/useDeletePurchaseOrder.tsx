@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { message } from "antd";
 import { axiosInstance } from "../../../libs/axios";
+import { useMessageApi } from "../../../context/message";
 
 interface IProps {
   id: number;
@@ -8,7 +8,7 @@ interface IProps {
 
 const useDeletePurchaseOrder = () => {
   const queryClient = useQueryClient();
-  const [messageApi, _] = message.useMessage();
+  const message = useMessageApi();
 
   return useMutation({
     mutationKey: ["deletePurchaseOrder"],
@@ -16,10 +16,10 @@ const useDeletePurchaseOrder = () => {
       const url: string = `/purchase_order/${params.id}`;
       return await axiosInstance.delete(url);
     },
-    onSuccess: () => {
-      messageApi.open({
-        type: "success",
-        content: "test",
+    onSuccess: (data) => {
+      message.success({
+        content: data.data.message,
+        duration: 3,
       });
       queryClient.invalidateQueries({
         queryKey: ["purchaseOrders"],
