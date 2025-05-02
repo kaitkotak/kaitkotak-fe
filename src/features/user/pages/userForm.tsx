@@ -11,39 +11,27 @@ import {
 import { Content } from "antd/es/layout/layout";
 import { useNavigate, useParams } from "react-router-dom";
 import { useContext, useEffect } from "react";
-// import { PlusOutlined } from "@ant-design/icons";
-// import useCreateCustomer from "../hooks/useCreateCustomer";
-// import useUpdateCustomer from "../hooks/useUpdateCustomer";
-// import UseGetCustomer from "../hooks/useGetCustomer";
-// import UseGetSalesPeople from "../../salesPeople/hooks/useGetSalesPeople";
-// import useUpload from "../../../../hooks/useUpload";
-// import { getBase64 } from "../../../../libs/getBase64";
 import { BreadcrumbContext } from "../../../context/breadcrumb";
+import UseGetUser from "../hooks/useGetUser";
+import useCreateUser from "../hooks/useCreateUser";
+import useUpdateUser from "../hooks/useUpdateUser";
+import UseGetPermissionList from "../hooks/useGetPermissionList";
 
 const UserForm = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  // const { mutateAsync: create, isPending: isPendingCreate } =
-  //   useCreateCustomer();
-  // const { mutateAsync: update, isPending: isPendingUpdate } =
-  //   useUpdateCustomer();
+  const { mutateAsync: create, isPending: isPendingCreate } = useCreateUser();
+  const { mutateAsync: update, isPending: isPendingUpdate } = useUpdateUser();
   const navigate = useNavigate();
   const params = useParams();
-  // const { data, isLoading } = UseGetCustomer({
-  //   id: params.id ?? "",
-  // });
+  const { data, isLoading } = UseGetUser({
+    id: params.id ?? "",
+  });
   const [form] = Form.useForm();
-  // const {
-  //   mutateAsync: upload,
-  //   data: uploadResponse,
-  //   isPending: isPendingUpload,
-  // } = useUpload();
-  // const { data: salesResponse } = UseGetSalesPeople({
-  //   page: SalesParams.pagination.current,
-  //   limit: SalesParams.pagination.pageSize,
-  // });
   const { setBreadcrumb } = useContext(BreadcrumbContext);
+  const { data: permissionResponse } = UseGetPermissionList();
+  const groups = Form.useWatch("permissions", form);
 
   useEffect(() => {
     setBreadcrumb([
@@ -56,45 +44,60 @@ const UserForm = () => {
     ]);
   }, []);
 
-  // useEffect(() => {
-  //   if (params.id) {
-  //     form.setFieldsValue(data?.data.data);
+  useEffect(() => {
+    if (permissionResponse) {
+      form.setFieldValue("permissions", permissionResponse.data.data);
+    }
 
-  //     if (data?.data.data.npwp_photo) {
-  //       setFileList([
-  //         {
-  //           uid: "-1",
-  //           name: "default.png",
-  //           status: "done",
-  //           url: `${import.meta.env.VITE_API_URL}/file/download/${
-  //             data?.data.data.npwp_photo
-  //           }`,
-  //         },
-  //       ]);
-  //     }
+    if (params.id) {
+      const newValue = form
+        .getFieldValue("permissions")
+        .map((permission: IPermissionList) => {
+          const matchedPermission = data?.data.data.permissions.filter(
+            (item: any) => item.code === permission.code
+          )[0];
+
+          if (matchedPermission) {
+            permission.items.forEach((permissionItem: IPermissionItem) => {
+              if (
+                matchedPermission.items.some(
+                  (item: string) => item === permissionItem.code
+                )
+              ) {
+                permissionItem.value = true;
+              }
+            });
+          }
+
+          return permission;
+        });
+      form.setFieldsValue({ ...data?.data.data, permissions: newValue });
+    }
+  }, [data, permissionResponse]);
+
+  // useEffect(() => {
+  //   if (permissionResponse) {
+  //     form.setFieldValue("permissions", permissionResponse.data.data);
   //   }
-  // }, [data]);
+  // }, [permissionResponse]);
 
-  // useEffect(() => {
-  //   if (salesResponse) {
-  //     setSalesOption(salesResponse.data.data);
-  //   }
-  // }, [salesResponse]);
+  const submit: FormProps<IUserResponse>["onFinish"] = (values) => {
+    let permissions: number[] = [];
+    values.permissions.forEach((permission: IPermissionList) => {
+      permission.items.forEach((item: IPermissionItem) => {
+        if (item.value === true) {
+          permissions.push(item.id);
+        }
+      });
+    });
 
-  // useEffect(() => {
-  //   form.setFieldValue("npwp_photo", uploadResponse?.data.data.name);
-  // }, [uploadResponse]);
+    const payload: IUserPayload = { ...values, permissions };
 
-  const submit: FormProps<ICustomer>["onFinish"] = (values) => {
-    console.log(values);
-    // if (values.npwp_photo && !values.npwp_photo.includes("temp")) {
-    //   delete values.npwp_photo;
-    // }
-    // if (params.id) {
-    //   update({ ...values, id: params.id });
-    // } else {
-    //   create(values);
-    // }
+    if (params.id) {
+      update({ ...payload, id: params.id });
+    } else {
+      create(payload);
+    }
   };
 
   const back = () => {
@@ -102,7 +105,7 @@ const UserForm = () => {
   };
 
   return (
-    <Spin spinning={false}>
+    <Spin spinning={isLoading || isPendingCreate || isPendingUpdate}>
       <Content
         style={{
           margin: "24px 16px",
@@ -116,96 +119,41 @@ const UserForm = () => {
           autoComplete="off"
           layout="vertical"
           initialValues={{
-            permission: [
-              {
-                name: "Data Master Item",
-                menu: false,
-                create: false,
-                update: false,
-                delete: true,
-              },
-              {
-                name: "Data Master Pelanggan",
-                menu: false,
-                create: false,
-                update: false,
-                delete: true,
-              },
-              {
-                name: "Data Master Sales",
-                menu: false,
-                create: false,
-                update: false,
-                delete: true,
-              },
-              {
-                name: "Data Master Transportasi",
-                menu: false,
-                create: false,
-                update: false,
-                delete: true,
-              },
-              {
-                name: "Bahan Baku",
-                menu: false,
-                create: false,
-                update: false,
-                delete: true,
-                stockOpname: false,
-              },
-              {
-                name: "Produksi",
-                menu: false,
-                create: false,
-                update: false,
-                delete: true,
-              },
-              {
-                name: "Purchase Order",
-                menu: false,
-                create: false,
-                update: false,
-                delete: true,
-              },
-              {
-                name: "Penjualan",
-                menu: false,
-                create: false,
-                update: false,
-                delete: true,
-              },
-              {
-                name: "Pengguna",
-                menu: false,
-                create: false,
-                update: false,
-                delete: true,
-              },
-            ],
+            permissions: [],
           }}
           onFinish={submit}
         >
-          <Form.Item<ICustomer>
+          <Form.Item<IUserResponse>
             label="Nama"
-            name="full_name"
+            name="name"
             rules={[{ required: true, message: "Silahkan masukan nama!" }]}
           >
             <Input />
           </Form.Item>
 
-          <Form.Item<ICustomer>
-            label="Kata Sandi"
-            name="full_name"
-            rules={[
-              { required: true, message: "Silahkan masukan kata sandi!" },
-            ]}
+          <Form.Item<IUserResponse>
+            label="Username"
+            name="username"
+            rules={[{ required: true, message: "Silahkan masukan username!" }]}
           >
             <Input />
           </Form.Item>
 
-          <Form.Item<ICustomer>
+          <Form.Item<IUserResponse>
+            label="Kata Sandi"
+            name="password"
+            rules={
+              params.id
+                ? []
+                : [{ required: true, message: "Silahkan masukan kata sandi!" }]
+            }
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item<IUserResponse>
             label="Jabatan"
-            name="full_name"
+            name="job_title"
             rules={[{ required: true, message: "Silahkan masukan jabatan!" }]}
           >
             <Input />
@@ -213,51 +161,32 @@ const UserForm = () => {
 
           <h2 className="text-xl mb-3 font-bold">Hak Akses</h2>
 
-          <Form.List name="permission">
+          <Form.List name="permissions">
             {(fields) => (
               <>
-                {fields.map(({ name }) => (
+                {fields.map(({ name }, index) => (
                   <>
                     <label className="text-lg font-bold mb-1">
-                      {form.getFieldValue(["permission", name, "name"])}
+                      {groups[index].name}
                     </label>
                     <div className="flex gap-2 flex-wrap mb-2">
-                      <Form.Item
-                        name={[name, "menu"]}
-                        style={{ marginBottom: 0 }}
-                      >
-                        <Checkbox>Akses Menu</Checkbox>
-                      </Form.Item>
-
-                      <Form.Item
-                        name={[name, "create"]}
-                        style={{ marginBottom: 0 }}
-                      >
-                        <Checkbox>Tambah Data</Checkbox>
-                      </Form.Item>
-
-                      <Form.Item
-                        name={[name, "update"]}
-                        style={{ marginBottom: 0 }}
-                      >
-                        <Checkbox>Edit Data</Checkbox>
-                      </Form.Item>
-
-                      <Form.Item
-                        name={[name, "delete"]}
-                        style={{ marginBottom: 0 }}
-                      >
-                        <Checkbox>Hapus Data</Checkbox>
-                      </Form.Item>
-
-                      {name === 4 && (
-                        <Form.Item
-                          name={[name, "stockOpname"]}
-                          style={{ marginBottom: 0 }}
-                        >
-                          <Checkbox>Stok Opname</Checkbox>
-                        </Form.Item>
-                      )}
+                      <Form.List name={[name, "items"]}>
+                        {(subFields) => (
+                          <>
+                            {subFields.map((subField, childIndex) => (
+                              <Form.Item
+                                name={[subField.name, "value"]}
+                                style={{ marginBottom: 0 }}
+                                valuePropName="checked"
+                              >
+                                <Checkbox>
+                                  {groups[index].items[childIndex].name}
+                                </Checkbox>
+                              </Form.Item>
+                            ))}
+                          </>
+                        )}
+                      </Form.List>
                     </div>
                   </>
                 ))}

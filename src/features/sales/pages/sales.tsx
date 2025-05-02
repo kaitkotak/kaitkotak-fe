@@ -95,7 +95,7 @@ const Sales = () => {
   }, [data]);
 
   const columns: TableColumnsType<ISales> = [
-    { title: "No Invoice", dataIndex: "order_number" },
+    { title: "No Invoice", dataIndex: "invoice_number" },
     { title: "No PO", dataIndex: "purchase_order_no" },
     { title: "Tanggal", dataIndex: "invoice_date" },
     { title: "Pelanggan", dataIndex: "customer_name" },
@@ -246,7 +246,7 @@ const Sales = () => {
           className="mt-8"
           dataSource={sales}
           columns={columns}
-          // loading={isLoading}
+          loading={isLoading}
           pagination={tableParams.pagination}
           scroll={{ x: "max-content" }}
           onChange={handleTableChange}
@@ -254,7 +254,7 @@ const Sales = () => {
       </Content>
 
       <Modal
-        title="Hapus Data Purchase Order"
+        title="Hapus Data Penjualan"
         open={isOpenConfirmationModal}
         onOk={handleOk}
         onCancel={() => setIsOpenConfirmationModal(false)}

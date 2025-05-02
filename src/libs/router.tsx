@@ -98,10 +98,10 @@ export const router = createBrowserRouter([
             path: "create",
             element: <UserForm />,
           },
-          // {
-          //   path: "edit/:id",
-          //   element: <PurchaseOrderForm />,
-          // },
+          {
+            path: "edit/:id",
+            element: <UserForm />,
+          },
         ],
       },
       {

@@ -19,37 +19,38 @@ import { useContext, useEffect, useState } from "react";
 import { BreadcrumbContext } from "../../../context/breadcrumb";
 import { useNavigate } from "react-router-dom";
 import Search from "antd/es/input/Search";
+import UseGetUsers from "../hooks/useGetUsers";
+import useDeleteUser from "../hooks/useDeleteUser";
 
 interface IData {
   id: number;
-  order_number: string;
-  customer_name: string;
-  order_date: string;
-  price_total: number;
+  name: string;
+  job_title: string;
 }
 
 const User = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const [sales, _] = useState<IData[]>([]);
+  const [users, setUsers] = useState<IData[]>([]);
   const [tableParams, setTableParams] = useState<ITableParams>({
     pagination: {
       current: 1,
       pageSize: 10,
     },
   });
-  const [__, setPaginationParams] = useState<ICustomTablePaginationConfig>({
-    page: tableParams.pagination.current,
-    limit: tableParams.pagination.pageSize,
-  });
-  // const { data, isLoading } = UseGetPurchaseOrders(paginationParams);
+  const [paginationParams, setPaginationParams] =
+    useState<ICustomTablePaginationConfig>({
+      page: tableParams.pagination.current,
+      limit: tableParams.pagination.pageSize,
+    });
+  const { data, isLoading } = UseGetUsers(paginationParams);
   const { setBreadcrumb } = useContext(BreadcrumbContext);
   const navigate = useNavigate();
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] =
     useState<boolean>(false);
-  const [___, setSelectedRowId] = useState<number>(0);
-  // const { mutateAsync: deleteAction } = useDeletePurchaseOrder();
+  const [selectedRowId, setSelectedRowId] = useState<number>(0);
+  const { mutateAsync: deleteAction } = useDeleteUser();
 
   useEffect(() => {
     setBreadcrumb([
@@ -59,28 +60,20 @@ const User = () => {
     ]);
   }, []);
 
-  // useEffect(() => {
-  //   setSales(() => {
-  //     return data?.data.data.map((purchaseOrder: IData) => {
-  //       let date = new Date(purchaseOrder.order_date);
-  //       return {
-  //         ...purchaseOrder,
-  //         order_date: format(date, "dd/MM/yyyy"),
-  //       };
-  //     });
-  //   });
+  useEffect(() => {
+    setUsers(data?.data.data);
 
-  //   setTableParams({
-  //     pagination: {
-  //       ...tableParams.pagination,
-  //       total: data?.data.meta.total,
-  //     },
-  //   });
-  // }, [data]);
+    setTableParams({
+      pagination: {
+        ...tableParams.pagination,
+        total: data?.data.meta.total,
+      },
+    });
+  }, [data]);
 
   const columns: TableColumnsType<IData> = [
-    { title: "Nama", dataIndex: "order_number" },
-    { title: "Jabatan", dataIndex: "customer_name" },
+    { title: "Nama", dataIndex: "name" },
+    { title: "Jabatan", dataIndex: "job_title" },
     {
       dataIndex: "action",
       render: (_, record) => (
@@ -133,7 +126,7 @@ const User = () => {
   };
 
   const handleOk = () => {
-    // deleteAction({ id: selectedRowId });
+    deleteAction({ id: selectedRowId });
     setIsOpenConfirmationModal(false);
   };
 
@@ -167,9 +160,9 @@ const User = () => {
         </div>
         <Table
           className="mt-8"
-          dataSource={sales}
+          dataSource={users}
           columns={columns}
-          // loading={isLoading}
+          loading={isLoading}
           pagination={tableParams.pagination}
           scroll={{ x: "max-content" }}
           onChange={handleTableChange}
@@ -177,7 +170,7 @@ const User = () => {
       </Content>
 
       <Modal
-        title="Hapus Data Purchase Order"
+        title="Hapus Data Pengguna"
         open={isOpenConfirmationModal}
         onOk={handleOk}
         onCancel={() => setIsOpenConfirmationModal(false)}

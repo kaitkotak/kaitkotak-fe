@@ -5,6 +5,7 @@ import {
   Flex,
   Form,
   FormProps,
+  Input,
   InputNumber,
   Row,
   Select,
@@ -117,6 +118,7 @@ const SalesForm = () => {
       return item;
     });
     values.po_id = values.purchase_order_id;
+    delete values.invoice_number;
 
     if (params.id) {
       update({ ...values, id: params.id });
@@ -183,7 +185,10 @@ const SalesForm = () => {
   };
 
   const handleDueDateChange = (val: any) => {
-    form.setFieldValue("due_days", dayjs(new Date()).diff(dayjs(val), "day"));
+    form.setFieldValue(
+      "due_days",
+      dayjs(val).startOf("day").diff(dayjs().startOf("day"), "day", true)
+    );
   };
 
   // const renewItemList = () => {
@@ -260,13 +265,26 @@ const SalesForm = () => {
             ],
           }}
         >
+          {params.id && (
+            <Row gutter={16}>
+              <Col span={24}>
+                <Form.Item<ISalesForm> label="No Invoice" name="invoice_number">
+                  <Input readOnly />
+                </Form.Item>
+              </Col>
+            </Row>
+          )}
+
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item<ISalesForm>
                 label="Tanggal"
                 name="invoice_date"
                 rules={[
-                  { required: true, message: "Silahkan masukan kode item!" },
+                  {
+                    required: true,
+                    message: "Silahkan pilih tanggal penjualan!",
+                  },
                 ]}
               >
                 <DatePicker style={{ width: "100%" }} format="DD-MM-YYYY" />
@@ -277,7 +295,9 @@ const SalesForm = () => {
               <Form.Item<ISalesForm>
                 label="No Purchase Order"
                 name="purchase_order_id"
-                rules={[{ required: true, message: "Silahkan masukan berat!" }]}
+                rules={[
+                  { required: true, message: "Silahkan pilih purchase order!" },
+                ]}
               >
                 <Select
                   placeholder="Pilih Purchase Order"
@@ -299,12 +319,6 @@ const SalesForm = () => {
                   <Form.Item<ISalesForm>
                     label="Nama Pelanggan"
                     name="customer_id"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Silahkan masukan kode item!",
-                      },
-                    ]}
                   >
                     <Select
                       disabled
@@ -327,7 +341,7 @@ const SalesForm = () => {
                         rules={[
                           {
                             required: true,
-                            message: "Silahkan masukan berat!",
+                            message: "Silahkan masukan tax!",
                           },
                         ]}
                       >
@@ -412,7 +426,7 @@ const SalesForm = () => {
                         rules={[
                           {
                             required: true,
-                            message: "Silahkan masukan berat!",
+                            message: "Silahkan pilih tanggal jatuh tempo!",
                           },
                         ]}
                       >
@@ -459,7 +473,7 @@ const SalesForm = () => {
                             rules={[
                               {
                                 required: true,
-                                message: "Silahkan masukan kode item!",
+                                message: "Silahkan pilih item!",
                               },
                             ]}
                           >
