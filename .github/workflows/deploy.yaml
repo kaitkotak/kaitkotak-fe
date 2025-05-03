@@ -21,6 +21,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Create .env file
+        run: |
+          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env
+
       - name: Build the React app
         run: npm run build
 
@@ -48,7 +52,12 @@ jobs:
           path: dist
 
       - name: Verify downloaded files
-        run: ls -R
+        run: ls -R dist
+
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to Server
         env:
@@ -63,15 +72,16 @@ jobs:
           # Set permissions on the private key
           chmod 600 private_key.pem
           
-          # Add private key to ssh-agent
+          # Start SSH agent and add key
           eval $(ssh-agent -s)
           ssh-add private_key.pem
-          
-          # List all files and directories in the current directory
-          ls -R
 
           # Use SCP to copy the build files to the server
-          scp -o StrictHostKeyChecking=no -i private_key.pem -r dist/* $SERVER_USER@$SERVER_HOST:$SERVER_PATH
-          
-          # Clean up the private key
+          scp -i private_key.pem -r dist/* $SERVER_USER@$SERVER_HOST:$SERVER_PATH
+
+          # Clean up
+          ssh-agent -k
           rm private_key.pem
+
+      - name: Clean up build files
+        run: rm -rf dist
