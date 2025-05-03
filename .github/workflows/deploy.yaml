@@ -19,16 +19,18 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
 
-      - name: Build React app
-        run: npm run build 
+      - name: Build the React app
+        run: |
+          npm run build
 
-      - name: Upload frontend build
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: react-build
-          path: dist/  
+          path: dist/
 
   deploy:
     runs-on: ubuntu-latest
@@ -38,12 +40,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download frontend build
+      - name: Download the build artifact
         uses: actions/download-artifact@v4
         with:
           name: react-build
 
-      - name: Deploy frontend to server
+      - name: Deploy to Server
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
@@ -52,10 +54,8 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
-          eval "$(ssh-agent -s)"
+          eval $(ssh-agent -s)
           ssh-add private_key.pem
-
-          ssh -o StrictHostKeyChecking=no -i private_key.pem $SERVER_USER@$SERVER_HOST "mkdir -p $SERVER_PATH"
-          scp -o StrictHostKeyChecking=no -i private_key.pem -r dist/* $SERVER_USER@$SERVER_HOST:$SERVER_PATH  # Corrected to dist/
-
+          ls -l react-build
+          scp -o StrictHostKeyChecking=no -i private_key.pem -r react-build/dist/* $SERVER_USER@$SERVER_HOST:$SERVER_PATH
           rm private_key.pem
