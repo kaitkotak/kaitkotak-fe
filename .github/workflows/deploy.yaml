@@ -44,6 +44,10 @@ jobs:
         with:
           name: react-build
 
+      - name: List files after download
+        run: |
+          ls -l
+
       - name: Extract the build artifact
         run: |
           unzip react-build.zip -d react-build
