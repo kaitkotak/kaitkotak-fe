@@ -22,13 +22,13 @@ jobs:
         run: npm install
 
       - name: Build React app
-        run: npm run build
+        run: npm run build 
 
       - name: Upload frontend build
         uses: actions/upload-artifact@v4
         with:
           name: react-build
-          path: build/
+          path: dist/  
 
   deploy:
     runs-on: ubuntu-latest
@@ -56,6 +56,6 @@ jobs:
           ssh-add private_key.pem
 
           ssh -o StrictHostKeyChecking=no -i private_key.pem $SERVER_USER@$SERVER_HOST "mkdir -p $SERVER_PATH"
-          scp -o StrictHostKeyChecking=no -i private_key.pem -r build/* $SERVER_USER@$SERVER_HOST:$SERVER_PATH
+          scp -o StrictHostKeyChecking=no -i private_key.pem -r dist/* $SERVER_USER@$SERVER_HOST:$SERVER_PATH  # Corrected to dist/
 
           rm private_key.pem
