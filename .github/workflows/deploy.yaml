@@ -19,22 +19,24 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: |
-          npm install
+        run: npm install
 
       - name: Build the React app
-        run: |
-          npm run build
+        run: npm run build
 
       - name: List files in the dist directory (to verify build)
+        run: ls -l ./dist
+
+      - name: Create a folder to hold the build
         run: |
-          ls -l ./dist
+          mkdir -p build-output
+          cp -r ./dist/* ./build-output
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: react-build
-          path: ./dist
+          path: ./build-output
 
   deploy:
     runs-on: ubuntu-latest
@@ -52,6 +54,7 @@ jobs:
       - name: Verify downloaded files
         run: |
           ls -l
+          ls -l react-build
 
       - name: Deploy to Server
         env:
