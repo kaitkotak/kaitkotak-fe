@@ -27,16 +27,11 @@ jobs:
       - name: List files in the dist directory (to verify build)
         run: ls -l ./dist
 
-      - name: Create a folder to hold the build
-        run: |
-          mkdir -p build-output
-          cp -r ./dist/* ./build-output
-
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: react-build
-          path: ./build-output
+          path: ./dist
 
   deploy:
     runs-on: ubuntu-latest
@@ -52,9 +47,7 @@ jobs:
           name: react-build
 
       - name: Verify downloaded files
-        run: |
-          ls -l
-          ls -l react-build
+        run: ls -lR
 
       - name: Deploy to Server
         env:
@@ -63,10 +56,21 @@ jobs:
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
           SERVER_PATH: "/srv/ecogreen/react/"
         run: |
+          # Save SSH private key to a file
           echo "$SSH_PRIVATE_KEY" > private_key.pem
+          
+          # Set permissions on the private key
           chmod 600 private_key.pem
+          
+          # Add private key to ssh-agent
           eval $(ssh-agent -s)
           ssh-add private_key.pem
-          ls -l react-build
+          
+          # List all files and directories in the current directory
+          ls -lR
+
+          # Use SCP to copy the build files to the server
           scp -o StrictHostKeyChecking=no -i private_key.pem -r react-build/* $SERVER_USER@$SERVER_HOST:$SERVER_PATH
+          
+          # Clean up the private key
           rm private_key.pem
