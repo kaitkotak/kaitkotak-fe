@@ -30,7 +30,7 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: react-build
+          name: reactbuild
           path: ./dist
 
   deploy:
@@ -44,10 +44,11 @@ jobs:
       - name: Download the build artifact
         uses: actions/download-artifact@v4
         with:
-          name: react-build
+          name: reactbuild
+          path: dist
 
       - name: Verify downloaded files
-        run: ls -lR
+        run: ls -R
 
       - name: Deploy to Server
         env:
@@ -67,10 +68,10 @@ jobs:
           ssh-add private_key.pem
           
           # List all files and directories in the current directory
-          ls -lR
+          ls -R
 
           # Use SCP to copy the build files to the server
-          scp -o StrictHostKeyChecking=no -i private_key.pem -r react-build/* $SERVER_USER@$SERVER_HOST:$SERVER_PATH
+          scp -o StrictHostKeyChecking=no -i private_key.pem -r dist/* $SERVER_USER@$SERVER_HOST:$SERVER_PATH
           
           # Clean up the private key
           rm private_key.pem
