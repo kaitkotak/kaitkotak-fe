@@ -56,6 +56,6 @@ jobs:
           chmod 600 private_key.pem
           eval $(ssh-agent -s)
           ssh-add private_key.pem
-          ls -l react-build
+          ls -l 
           scp -o StrictHostKeyChecking=no -i private_key.pem -r react-build/dist/* $SERVER_USER@$SERVER_HOST:$SERVER_PATH
           rm private_key.pem
