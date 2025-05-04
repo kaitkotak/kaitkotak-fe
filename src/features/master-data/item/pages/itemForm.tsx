@@ -29,6 +29,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import UseGetCustomers from "../../customer/hooks/useGetCustomers";
 import ImgCrop from "antd-img-crop";
 import TextArea from "antd/es/input/TextArea";
+import { checkPermission } from "../../../../libs/checkPermission";
 
 const ItemForm = () => {
   const {
@@ -527,11 +528,13 @@ const ItemForm = () => {
               </Button>
             </Form.Item>
 
-            <Form.Item label={null}>
-              <Button type="primary" htmlType="submit">
-                Simpan
-              </Button>
-            </Form.Item>
+            {checkPermission("master_item.update") && (
+              <Form.Item label={null}>
+                <Button type="primary" htmlType="submit">
+                  Simpan
+                </Button>
+              </Form.Item>
+            )}
           </Flex>
         </Form>
       </Content>

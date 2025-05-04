@@ -24,6 +24,7 @@ import { BreadcrumbContext } from "../../../../context/breadcrumb";
 import { PlusOutlined } from "@ant-design/icons";
 import useUpload from "../../../../hooks/useUpload";
 import { getBase64 } from "../../../../libs/getBase64";
+import { checkPermission } from "../../../../libs/checkPermission";
 
 const SalesPeopleForm = () => {
   const {
@@ -305,11 +306,13 @@ const SalesPeopleForm = () => {
               </Button>
             </Form.Item>
 
-            <Form.Item label={null}>
-              <Button type="primary" htmlType="submit">
-                Simpan
-              </Button>
-            </Form.Item>
+            {checkPermission("master_sales.update") && (
+              <Form.Item label={null}>
+                <Button type="primary" htmlType="submit">
+                  Simpan
+                </Button>
+              </Form.Item>
+            )}
           </Flex>
         </Form>
       </Content>

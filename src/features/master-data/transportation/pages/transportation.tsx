@@ -20,6 +20,7 @@ import UseGetTransportations from "../hooks/useGetTransportations";
 import { useNavigate } from "react-router-dom";
 import useDeleteTransportation from "../hooks/useDeleteTransportation";
 import { BreadcrumbContext } from "../../../../context/breadcrumb";
+import { checkPermission } from "../../../../libs/checkPermission";
 
 interface IData {
   id: string;
@@ -81,19 +82,23 @@ const Transportation = () => {
       dataIndex: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="Edit">
-            <EditOutlined
-              className="cursor-pointer"
-              onClick={() => goToForm("edit", record.id)}
-            />
-          </Tooltip>
+          {checkPermission("master_transportation.update") && (
+            <Tooltip title="Edit">
+              <EditOutlined
+                className="cursor-pointer"
+                onClick={() => goToForm("edit", record.id)}
+              />
+            </Tooltip>
+          )}
 
-          <Tooltip title="Hapus">
-            <DeleteOutlined
-              className="cursor-pointer"
-              onClick={() => openDeleteConfirmation(record.id)}
-            />
-          </Tooltip>
+          {checkPermission("master_transportation.delete") && (
+            <Tooltip title="Hapus">
+              <DeleteOutlined
+                className="cursor-pointer"
+                onClick={() => openDeleteConfirmation(record.id)}
+              />
+            </Tooltip>
+          )}
         </Space>
       ),
     },
@@ -165,14 +170,16 @@ const Transportation = () => {
             style={{ width: "100%", maxWidth: 150 }}
           />
 
-          <Button
-            color="primary"
-            variant="solid"
-            icon={<FileAddOutlined />}
-            onClick={() => goToForm("create")}
-          >
-            <span className="hidden md:inline">Tambah Transportasi</span>
-          </Button>
+          {checkPermission("master_transportation.create") && (
+            <Button
+              color="primary"
+              variant="solid"
+              icon={<FileAddOutlined />}
+              onClick={() => goToForm("create")}
+            >
+              <span className="hidden md:inline">Tambah Transportasi</span>
+            </Button>
+          )}
         </div>
         <Table
           className="mt-8"

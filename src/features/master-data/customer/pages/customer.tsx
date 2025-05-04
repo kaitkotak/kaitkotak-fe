@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import UseGetCustomers from "../hooks/useGetCustomers";
 import useDeleteCustomer from "../hooks/useDeleteCustomer";
 import { BreadcrumbContext } from "../../../../context/breadcrumb";
+import { checkPermission } from "../../../../libs/checkPermission";
 
 interface IData {
   id: string;
@@ -82,19 +83,23 @@ const Customer = () => {
       dataIndex: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="Edit">
-            <EditOutlined
-              className="cursor-pointer"
-              onClick={() => goToForm("edit", record.id)}
-            />
-          </Tooltip>
+          {checkPermission("master_customer.update") && (
+            <Tooltip title="Edit">
+              <EditOutlined
+                className="cursor-pointer"
+                onClick={() => goToForm("edit", record.id)}
+              />
+            </Tooltip>
+          )}
 
-          <Tooltip title="Hapus">
-            <DeleteOutlined
-              className="cursor-pointer"
-              onClick={() => openDeleteConfirmation(record.id)}
-            />
-          </Tooltip>
+          {checkPermission("master_customer.delete") && (
+            <Tooltip title="Hapus">
+              <DeleteOutlined
+                className="cursor-pointer"
+                onClick={() => openDeleteConfirmation(record.id)}
+              />
+            </Tooltip>
+          )}
         </Space>
       ),
     },
@@ -166,14 +171,16 @@ const Customer = () => {
             style={{ width: "100%", maxWidth: 150 }}
           />
 
-          <Button
-            color="primary"
-            variant="solid"
-            icon={<FileAddOutlined />}
-            onClick={() => goToForm("create")}
-          >
-            <span className="hidden md:inline">Tambah Pelanggan</span>
-          </Button>
+          {checkPermission("master_customer.create") && (
+            <Button
+              color="primary"
+              variant="solid"
+              icon={<FileAddOutlined />}
+              onClick={() => goToForm("create")}
+            >
+              <span className="hidden md:inline">Tambah Pelanggan</span>
+            </Button>
+          )}
         </div>
         <Table
           className="mt-8"

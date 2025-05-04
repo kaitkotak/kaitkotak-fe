@@ -1,11 +1,6 @@
-import {
-  FileAddOutlined,
-  EditOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { FileAddOutlined, EditOutlined } from "@ant-design/icons";
 import {
   Button,
-  Modal,
   Space,
   Table,
   TableColumnsType,
@@ -18,8 +13,8 @@ import { Content } from "antd/es/layout/layout";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UseGetItems from "../hooks/useGetItems";
-import useDeleteItem from "../hooks/useDeleteItem";
 import { BreadcrumbContext } from "../../../../context/breadcrumb";
+import { checkPermission } from "../../../../libs/checkPermission";
 
 const Item = () => {
   const {
@@ -38,11 +33,7 @@ const Item = () => {
       limit: tableParams.pagination.pageSize,
     });
   const { data, isLoading } = UseGetItems(paginationParams);
-  const { mutateAsync: deleteAction } = useDeleteItem();
   const navigate = useNavigate();
-  const [isOpenConfirmationModal, setIsOpenConfirmationModal] =
-    useState<boolean>(false);
-  const [selectedRowId, setSelectedRowId] = useState<number>(0);
   const { setBreadcrumb } = useContext(BreadcrumbContext);
 
   useEffect(() => {
@@ -78,28 +69,18 @@ const Item = () => {
       dataIndex: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="Edit">
-            <EditOutlined
-              className="cursor-pointer"
-              onClick={() => goToForm("edit", record.id)}
-            />
-          </Tooltip>
-
-          <Tooltip title="Hapus">
-            <DeleteOutlined
-              className="cursor-pointer"
-              onClick={() => openDeleteConfirmation(record.id)}
-            />
-          </Tooltip>
+          {checkPermission("master_item.update") && (
+            <Tooltip title="Edit">
+              <EditOutlined
+                className="cursor-pointer"
+                onClick={() => goToForm("edit", record.id)}
+              />
+            </Tooltip>
+          )}
         </Space>
       ),
     },
   ];
-
-  const openDeleteConfirmation = (id: number) => {
-    setIsOpenConfirmationModal(true);
-    setSelectedRowId(id);
-  };
 
   const handleTableChange: TableProps<IItem>["onChange"] = (pagination) => {
     setTableParams({
@@ -125,28 +106,8 @@ const Item = () => {
     navigate(path);
   };
 
-  const handleOk = () => {
-    deleteAction({ id: selectedRowId });
-    setIsOpenConfirmationModal(false);
-  };
-
-  const handleCancel = () => {
-    setIsOpenConfirmationModal(false);
-  };
-
   return (
     <>
-      <Modal
-        title="Hapus Data Item"
-        open={isOpenConfirmationModal}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText="Hapus"
-        cancelText="Batal"
-      >
-        <p>Anda yakin ingin menghapus data ini?</p>
-      </Modal>
-
       <Content
         style={{
           margin: "24px 16px",
@@ -162,14 +123,16 @@ const Item = () => {
             style={{ width: "100%", maxWidth: 150 }}
           />
 
-          <Button
-            color="primary"
-            variant="solid"
-            icon={<FileAddOutlined />}
-            onClick={() => goToForm("create")}
-          >
-            <span className="hidden md:inline">Tambah Item</span>
-          </Button>
+          {checkPermission("master_item.create") && (
+            <Button
+              color="primary"
+              variant="solid"
+              icon={<FileAddOutlined />}
+              onClick={() => goToForm("create")}
+            >
+              <span className="hidden md:inline">Tambah Item</span>
+            </Button>
+          )}
         </div>
         <Table
           className="mt-8"

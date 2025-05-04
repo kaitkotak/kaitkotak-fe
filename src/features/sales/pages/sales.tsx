@@ -29,6 +29,7 @@ import id from "antd/es/date-picker/locale/id_ID";
 import { parseDateDDMMYYYY } from "../../../libs/dateParser";
 import UseGetSales from "../hooks/useGetSales";
 import useDeleteSales from "../hooks/useDeleteSales";
+import { checkPermission } from "../../../libs/checkPermission";
 
 const Sales = () => {
   const {
@@ -104,19 +105,23 @@ const Sales = () => {
       dataIndex: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="Edit">
-            <EditOutlined
-              className="cursor-pointer"
-              onClick={() => goToForm("edit", record.id)}
-            />
-          </Tooltip>
+          {checkPermission("sales.update") && (
+            <Tooltip title="Edit">
+              <EditOutlined
+                className="cursor-pointer"
+                onClick={() => goToForm("edit", record.id)}
+              />
+            </Tooltip>
+          )}
 
-          <Tooltip title="Hapus">
-            <DeleteOutlined
-              className="cursor-pointer"
-              onClick={() => openDeleteConfirmation(record.id)}
-            />
-          </Tooltip>
+          {checkPermission("sales.delete") && (
+            <Tooltip title="Hapus">
+              <DeleteOutlined
+                className="cursor-pointer"
+                onClick={() => openDeleteConfirmation(record.id)}
+              />
+            </Tooltip>
+          )}
         </Space>
       ),
     },
@@ -228,18 +233,20 @@ const Sales = () => {
               </span>
             </Button>
 
-            <Button
-              color="primary"
-              variant="solid"
-              icon={<FileAddOutlined />}
-              onClick={() => {
-                goToForm("create");
-              }}
-            >
-              <span className="hidden sm:inline md:hidden lg:inline">
-                Tambah Penjualan
-              </span>
-            </Button>
+            {checkPermission("sales.create") && (
+              <Button
+                color="primary"
+                variant="solid"
+                icon={<FileAddOutlined />}
+                onClick={() => {
+                  goToForm("create");
+                }}
+              >
+                <span className="hidden sm:inline md:hidden lg:inline">
+                  Tambah Penjualan
+                </span>
+              </Button>
+            )}
           </div>
         </div>
         <Table

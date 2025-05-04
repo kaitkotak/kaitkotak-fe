@@ -17,6 +17,7 @@ import { BreadcrumbContext } from "../../../context/breadcrumb";
 import UseGetProduction from "../hooks/useGetProduction";
 import useUpdateProduction from "../hooks/useUpdateProduction";
 import dayjs, { Dayjs } from "dayjs";
+import { checkPermission } from "../../../libs/checkPermission";
 
 const ProductionForm = () => {
   const { data: itemResponse } = UseGetItems({
@@ -209,9 +210,11 @@ const ProductionForm = () => {
             Batal
           </Button>
 
-          <Button type="primary" onClick={submit}>
-            {submitButtonText}
-          </Button>
+          {checkPermission("production.update") && (
+            <Button type="primary" onClick={submit}>
+              {submitButtonText}
+            </Button>
+          )}
         </Flex>
       </Content>
     </Spin>

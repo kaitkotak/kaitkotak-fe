@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import Search from "antd/es/input/Search";
 import UseGetUsers from "../hooks/useGetUsers";
 import useDeleteUser from "../hooks/useDeleteUser";
+import { checkPermission } from "../../../libs/checkPermission";
 
 interface IData {
   id: number;
@@ -78,19 +79,23 @@ const User = () => {
       dataIndex: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="Edit">
-            <EditOutlined
-              className="cursor-pointer"
-              onClick={() => goToForm("edit", record.id)}
-            />
-          </Tooltip>
+          {checkPermission("user.update") && (
+            <Tooltip title="Edit">
+              <EditOutlined
+                className="cursor-pointer"
+                onClick={() => goToForm("edit", record.id)}
+              />
+            </Tooltip>
+          )}
 
-          <Tooltip title="Hapus">
-            <DeleteOutlined
-              className="cursor-pointer"
-              onClick={() => openDeleteConfirmation(record.id)}
-            />
-          </Tooltip>
+          {checkPermission("user.delete") && (
+            <Tooltip title="Hapus">
+              <DeleteOutlined
+                className="cursor-pointer"
+                onClick={() => openDeleteConfirmation(record.id)}
+              />
+            </Tooltip>
+          )}
         </Space>
       ),
     },
@@ -147,16 +152,18 @@ const User = () => {
             style={{ width: "100%", maxWidth: 150 }}
           />
 
-          <Button
-            color="primary"
-            variant="solid"
-            icon={<FileAddOutlined />}
-            onClick={() => {
-              goToForm("create");
-            }}
-          >
-            <span className="hidden md:inline">Tambah Pengguna</span>
-          </Button>
+          {checkPermission("user.create") && (
+            <Button
+              color="primary"
+              variant="solid"
+              icon={<FileAddOutlined />}
+              onClick={() => {
+                goToForm("create");
+              }}
+            >
+              <span className="hidden md:inline">Tambah Pengguna</span>
+            </Button>
+          )}
         </div>
         <Table
           className="mt-8"

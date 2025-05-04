@@ -23,6 +23,7 @@ import { MinusCircleOutlined } from "@ant-design/icons";
 import UseGetCustomerList from "../../master-data/customer/hooks/useGetCustomerList";
 import dayjs from "dayjs";
 import UseGetItemList from "../../master-data/item/hooks/useGetItemList";
+import { checkPermission } from "../../../libs/checkPermission";
 
 const PurchaseOrderForm = () => {
   const {
@@ -355,22 +356,26 @@ const PurchaseOrderForm = () => {
                     </Button>
                   </Form.Item>
 
-                  <Form.Item label={null}>
-                    <Button
-                      type="default"
-                      variant="outlined"
-                      htmlType="button"
-                      onClick={() => add()}
-                    >
-                      Tambah Item
-                    </Button>
-                  </Form.Item>
+                  {checkPermission("purchase_order.update") && (
+                    <Form.Item label={null}>
+                      <Button
+                        type="default"
+                        variant="outlined"
+                        htmlType="button"
+                        onClick={() => add()}
+                      >
+                        Tambah Item
+                      </Button>
+                    </Form.Item>
+                  )}
 
-                  <Form.Item label={null}>
-                    <Button type="primary" htmlType="submit">
-                      Simpan
-                    </Button>
-                  </Form.Item>
+                  {checkPermission("purchase_order.update") && (
+                    <Form.Item label={null}>
+                      <Button type="primary" htmlType="submit">
+                        Simpan
+                      </Button>
+                    </Form.Item>
+                  )}
                 </Flex>
               </>
             )}

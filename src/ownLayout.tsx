@@ -11,39 +11,47 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import Sider from "antd/es/layout/Sider";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Header } from "antd/es/layout/layout";
 import { ItemType, MenuItemType } from "antd/es/menu/interface";
 import { Outlet, useNavigate } from "react-router-dom";
 import { BreadcrumbContext } from "./context/breadcrumb";
 import useWindowDimensions from "./libs/useWindowDimensions";
+import { permission } from "process";
+import { useUser } from "./context/user";
 
 const OwnLayout = () => {
-  let menus: ItemType<MenuItemType>[] = [
+  const userInfo = useUser();
+  let menus: ItemType<any>[] = [
     {
       key: "/production",
       label: "Produksi",
       icon: <ProductOutlined />,
+      permission: "production.access",
     },
     {
       key: "/purchase-order",
       label: "Purchase Order",
       icon: <FileProtectOutlined />,
+      permission: "purchase_order.access",
     },
     {
       key: "/sales",
       label: "Penjualan",
       icon: <ShopOutlined />,
+      permission: "sales.access",
     },
     {
       key: "/raw-material",
       label: "Bahan Baku",
       icon: <SwitcherOutlined />,
+      permission: "raw_material.access",
     },
     {
       key: "/user",
       label: "Pengguna",
       icon: <TeamOutlined />,
+      permission: "user.access",
     },
     {
       key: "",
@@ -53,22 +61,27 @@ const OwnLayout = () => {
         {
           key: "/master/item",
           label: "Item",
+          permission: "master_item.access",
         },
         {
           key: "/master/customer",
           label: "Pelanggan",
+          permission: "master_customer.access",
         },
         {
           key: "/master/sales-people",
           label: "Sales",
+          permission: "master_sales.access",
         },
         {
           key: "/master/transportation",
           label: "Transportasi",
+          permission: "master_transportation.access",
         },
       ],
     },
   ];
+  // const [accesableMenus, setAccessableMenus] = useState<ItemType<any>>([]);
 
   const [collapsed, setCollapsed] = useState(false);
   const {
@@ -78,6 +91,31 @@ const OwnLayout = () => {
   // const [_, contextHolder] = message.useMessage();
   const { breadcrumb } = useContext(BreadcrumbContext);
   const { width } = useWindowDimensions();
+
+  const filterMenusByPermission = (
+    menus: ItemType<any>[],
+    permissions: string[]
+  ): ItemType<any>[] =>
+    menus
+      .map((menu) => {
+        if (menu.children) {
+          const filteredChildren = filterMenusByPermission(
+            menu.children,
+            permissions
+          );
+          if (filteredChildren.length > 0) {
+            return { ...menu, children: filteredChildren };
+          }
+          return null;
+        }
+        return permissions.includes(menu.permission!) ? menu : null;
+      })
+      .filter(Boolean) as ItemType<any>[];
+
+  const accesableMenus = useMemo(() => {
+    if (!userInfo?.userInfo?.permissions) return [];
+    return filterMenusByPermission(menus, userInfo.userInfo.permissions);
+  }, [userInfo]);
 
   const clickMenuHandler = (val: any) => {
     if (val.key) {
@@ -119,7 +157,7 @@ const OwnLayout = () => {
           theme="light"
           mode="inline"
           defaultSelectedKeys={["1"]}
-          items={menus}
+          items={accesableMenus}
           style={{ background: "#014F42", color: "#ffffff" }}
           onClick={clickMenuHandler}
         />

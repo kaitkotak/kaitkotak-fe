@@ -16,6 +16,7 @@ import UseGetUser from "../hooks/useGetUser";
 import useCreateUser from "../hooks/useCreateUser";
 import useUpdateUser from "../hooks/useUpdateUser";
 import UseGetPermissionList from "../hooks/useGetPermissionList";
+import { checkPermission } from "../../../libs/checkPermission";
 
 const UserForm = () => {
   const {
@@ -206,11 +207,13 @@ const UserForm = () => {
               </Button>
             </Form.Item>
 
-            <Form.Item label={null}>
-              <Button type="primary" htmlType="submit">
-                Simpan
-              </Button>
-            </Form.Item>
+            {checkPermission("user.update") && (
+              <Form.Item label={null}>
+                <Button type="primary" htmlType="submit">
+                  Simpan
+                </Button>
+              </Form.Item>
+            )}
           </Flex>
         </Form>
       </Content>

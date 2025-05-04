@@ -30,6 +30,7 @@ import dayjs from "dayjs";
 import useCreateSales from "../hooks/useCreateSales";
 import useUpdateSales from "../hooks/useUpdateSales";
 import UseGetPurchaseOrderList from "../../purchase-order/hooks/useGetPurchaseOrderList";
+import { checkPermission } from "../../../libs/checkPermission";
 
 const SalesForm = () => {
   const {
@@ -581,11 +582,13 @@ const SalesForm = () => {
                         </Button>
                       </Form.Item>
 
-                      <Form.Item label={null}>
-                        <Button type="primary" htmlType="submit">
-                          Simpan
-                        </Button>
-                      </Form.Item>
+                      {checkPermission("sales.update") && (
+                        <Form.Item label={null}>
+                          <Button type="primary" htmlType="submit">
+                            Simpan
+                          </Button>
+                        </Form.Item>
+                      )}
                     </Flex>
                   </>
                 )}

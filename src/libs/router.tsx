@@ -20,6 +20,8 @@ import UserForm from "../features/user/pages/userForm";
 import RawMaterial from "../features/raw-material/pages/rawMaterial";
 import Login from "../features/login/pages/login";
 import OwnLayout from "../ownLayout";
+import ProtectedRoute from "./protectedRoute";
+import AccessDeniedPage from "../features/error/pages/accessDenied";
 
 export const router = createBrowserRouter([
   {
@@ -43,19 +45,35 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Production />,
+                element: (
+                  <ProtectedRoute requiredPermission="production.access">
+                    <Production />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "plan",
-                element: <ProductionPlan />,
+                element: (
+                  <ProtectedRoute requiredPermission="production.access">
+                    <ProductionPlan />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "create",
-                element: <ProductionForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="production.create">
+                    <ProductionForm />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "edit/:id",
-                element: <ProductionForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="production.update">
+                    <ProductionForm />
+                  </ProtectedRoute>
+                ),
               },
             ],
           },
@@ -64,15 +82,27 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <PurchaseOrder />,
+                element: (
+                  <ProtectedRoute requiredPermission="purchase_order.access">
+                    <PurchaseOrder />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "create",
-                element: <PurchaseOrderForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="purchase_order.create">
+                    <PurchaseOrderForm />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "edit/:id",
-                element: <PurchaseOrderForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="purchase_order.update">
+                    <PurchaseOrderForm />
+                  </ProtectedRoute>
+                ),
               },
             ],
           },
@@ -81,36 +111,64 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Sales />,
+                element: (
+                  <ProtectedRoute requiredPermission="sales.access">
+                    <Sales />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "create",
-                element: <SalesForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="sales.create">
+                    <SalesForm />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "edit/:id",
-                element: <SalesForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="sales.update">
+                    <SalesForm />
+                  </ProtectedRoute>
+                ),
               },
             ],
           },
           {
             path: "raw-material",
-            element: <RawMaterial />,
+            element: (
+              <ProtectedRoute requiredPermission="raw_material.access">
+                <RawMaterial />
+              </ProtectedRoute>
+            ),
           },
           {
             path: "user",
             children: [
               {
                 path: "",
-                element: <User />,
+                element: (
+                  <ProtectedRoute requiredPermission="user.access">
+                    <User />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "create",
-                element: <UserForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="user.create">
+                    <UserForm />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "edit/:id",
-                element: <UserForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="user.update">
+                    <UserForm />
+                  </ProtectedRoute>
+                ),
               },
             ],
           },
@@ -122,15 +180,27 @@ export const router = createBrowserRouter([
                 children: [
                   {
                     path: "",
-                    element: <Transportation />,
+                    element: (
+                      <ProtectedRoute requiredPermission="master_transportation.access">
+                        <Transportation />
+                      </ProtectedRoute>
+                    ),
                   },
                   {
                     path: "create",
-                    element: <TransportationForm />,
+                    element: (
+                      <ProtectedRoute requiredPermission="master_transportation.create">
+                        <TransportationForm />
+                      </ProtectedRoute>
+                    ),
                   },
                   {
                     path: "edit/:id",
-                    element: <TransportationForm />,
+                    element: (
+                      <ProtectedRoute requiredPermission="master_transportation.update">
+                        <TransportationForm />
+                      </ProtectedRoute>
+                    ),
                   },
                 ],
               },
@@ -139,15 +209,27 @@ export const router = createBrowserRouter([
                 children: [
                   {
                     path: "",
-                    element: <SalesPeople />,
+                    element: (
+                      <ProtectedRoute requiredPermission="master_sales.access">
+                        <SalesPeople />
+                      </ProtectedRoute>
+                    ),
                   },
                   {
                     path: "create",
-                    element: <SalesPeopleForm />,
+                    element: (
+                      <ProtectedRoute requiredPermission="master_sales.create">
+                        <SalesPeopleForm />
+                      </ProtectedRoute>
+                    ),
                   },
                   {
                     path: "edit/:id",
-                    element: <SalesPeopleForm />,
+                    element: (
+                      <ProtectedRoute requiredPermission="master_sales.update">
+                        <SalesPeopleForm />
+                      </ProtectedRoute>
+                    ),
                   },
                 ],
               },
@@ -156,15 +238,27 @@ export const router = createBrowserRouter([
                 children: [
                   {
                     path: "",
-                    element: <Customer />,
+                    element: (
+                      <ProtectedRoute requiredPermission="master_customer.access">
+                        <Customer />
+                      </ProtectedRoute>
+                    ),
                   },
                   {
                     path: "create",
-                    element: <CustomerForm />,
+                    element: (
+                      <ProtectedRoute requiredPermission="master_customer.create">
+                        <CustomerForm />
+                      </ProtectedRoute>
+                    ),
                   },
                   {
                     path: "edit/:id",
-                    element: <CustomerForm />,
+                    element: (
+                      <ProtectedRoute requiredPermission="master_customer.update">
+                        <CustomerForm />
+                      </ProtectedRoute>
+                    ),
                   },
                 ],
               },
@@ -173,19 +267,35 @@ export const router = createBrowserRouter([
                 children: [
                   {
                     path: "",
-                    element: <Item />,
+                    element: (
+                      <ProtectedRoute requiredPermission="master_item.access">
+                        <Item />
+                      </ProtectedRoute>
+                    ),
                   },
                   {
                     path: "create",
-                    element: <ItemForm />,
+                    element: (
+                      <ProtectedRoute requiredPermission="master_item.create">
+                        <ItemForm />
+                      </ProtectedRoute>
+                    ),
                   },
                   {
                     path: "edit/:id",
-                    element: <ItemForm />,
+                    element: (
+                      <ProtectedRoute requiredPermission="master_item.update">
+                        <ItemForm />
+                      </ProtectedRoute>
+                    ),
                   },
                 ],
               },
             ],
+          },
+          {
+            path: "403",
+            element: <AccessDeniedPage />,
           },
         ],
       },

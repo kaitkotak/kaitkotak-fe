@@ -28,6 +28,7 @@ import UseGetProductions from "../hooks/useGetProductions";
 import { useNavigate } from "react-router-dom";
 import { parseDateDDMMYYYY } from "../../../libs/dateParser";
 import useDeleteProduction from "../hooks/useDeleteProduction";
+import { checkPermission } from "../../../libs/checkPermission";
 
 interface IData {
   id: number;
@@ -106,19 +107,23 @@ const Production = () => {
       dataIndex: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="Edit">
-            <EditOutlined
-              className="cursor-pointer"
-              onClick={() => goToForm(record.id)}
-            />
-          </Tooltip>
+          {checkPermission("production.update") && (
+            <Tooltip title="Edit">
+              <EditOutlined
+                className="cursor-pointer"
+                onClick={() => goToForm(record.id)}
+              />
+            </Tooltip>
+          )}
 
-          <Tooltip title="Hapus">
-            <DeleteOutlined
-              className="cursor-pointer"
-              onClick={() => openDeleteConfirmation(record.id)}
-            />
-          </Tooltip>
+          {checkPermission("production.delete") && (
+            <Tooltip title="Hapus">
+              <DeleteOutlined
+                className="cursor-pointer"
+                onClick={() => openDeleteConfirmation(record.id)}
+              />
+            </Tooltip>
+          )}
         </Space>
       ),
     },
@@ -212,16 +217,18 @@ const Production = () => {
               <span className="hidden md:inline">Rencana Produksi</span>
             </Button>
 
-            <Button
-              color="primary"
-              variant="solid"
-              icon={<FileAddOutlined />}
-              onClick={() => {
-                setIsOpenFormModal(true);
-              }}
-            >
-              <span className="hidden md:inline">Tambah Produksi</span>
-            </Button>
+            {checkPermission("production.create") && (
+              <Button
+                color="primary"
+                variant="solid"
+                icon={<FileAddOutlined />}
+                onClick={() => {
+                  setIsOpenFormModal(true);
+                }}
+              >
+                <span className="hidden md:inline">Tambah Produksi</span>
+              </Button>
+            )}
           </div>
         </div>
         <Table
