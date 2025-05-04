@@ -11,13 +11,12 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import Sider from "antd/es/layout/Sider";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { Header } from "antd/es/layout/layout";
-import { ItemType, MenuItemType } from "antd/es/menu/interface";
+import { ItemType } from "antd/es/menu/interface";
 import { Outlet, useNavigate } from "react-router-dom";
 import { BreadcrumbContext } from "./context/breadcrumb";
 import useWindowDimensions from "./libs/useWindowDimensions";
-import { permission } from "process";
 import { useUser } from "./context/user";
 
 const OwnLayout = () => {
