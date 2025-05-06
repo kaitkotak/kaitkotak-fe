@@ -8,7 +8,10 @@ import {
 
 type UserInfo = {
   permissions: string[];
-  // ...other user fields
+  id: number;
+  job_title: string;
+  name: string;
+  username: string;
 };
 
 type UserContextType = {

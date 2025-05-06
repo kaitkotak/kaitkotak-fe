@@ -1,5 +1,6 @@
 import { Button, Form, FormProps, Input } from "antd";
 import useLogin from "../hooks/useLogin";
+import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 
 const Login = () => {
   const [form] = Form.useForm();
@@ -11,7 +12,7 @@ const Login = () => {
 
   return (
     <div className="flex h-screen text-black">
-      <div className="w-1/3 flex">
+      <div className="w-full sm:w-1/3 flex">
         <div className="px-6 my-auto w-full">
           <div className="bg-amber-900 h-[181px] w-[181px] rounded mx-auto"></div>
 
@@ -40,7 +41,11 @@ const Login = () => {
                 { required: true, message: "Silahkan masukan password!" },
               ]}
             >
-              <Input />
+              <Input.Password
+                iconRender={(visible) =>
+                  visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                }
+              />
             </Form.Item>
 
             <Form.Item label={null}>
@@ -51,7 +56,7 @@ const Login = () => {
           </Form>
         </div>
       </div>
-      <div className="w-2/3  p-2">
+      <div className="w-2/3 p-2 hidden sm:block">
         <div className="bg-amber-900 h-full rounded"></div>
       </div>
     </div>

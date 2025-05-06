@@ -2,19 +2,20 @@ import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../../../libs/axios";
 import { useNavigate } from "react-router-dom";
 
-const useGetRefreshToken = () => {
-  const url: string = "/auth/refresh_token";
+const useLogout = () => {
+  const url: string = "/auth/logout";
   const navigate = useNavigate();
 
   return useMutation({
-    mutationKey: ["userRefreshToken"],
+    mutationKey: ["logout"],
     mutationFn: async () => {
       return await axiosInstance.get(url);
     },
-    onError: () => {
-      navigate("/login");
+    onSuccess: () => {
+      localStorage.removeItem("userInfo");
+      navigate("/");
     },
   });
 };
 
-export default useGetRefreshToken;
+export default useLogout;

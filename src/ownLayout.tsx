@@ -8,7 +8,6 @@ import {
   ShopOutlined,
   SwitcherOutlined,
   TeamOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 import Sider from "antd/es/layout/Sider";
 import { useContext, useMemo, useState } from "react";
@@ -18,6 +17,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { BreadcrumbContext } from "./context/breadcrumb";
 import useWindowDimensions from "./libs/useWindowDimensions";
 import { useUser } from "./context/user";
+import useLogout from "./features/login/hooks/useLogout";
 
 const OwnLayout = () => {
   const userInfo = useUser();
@@ -80,16 +80,15 @@ const OwnLayout = () => {
       ],
     },
   ];
-  // const [accesableMenus, setAccessableMenus] = useState<ItemType<any>>([]);
 
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
   const navigate = useNavigate();
-  // const [_, contextHolder] = message.useMessage();
   const { breadcrumb } = useContext(BreadcrumbContext);
   const { width } = useWindowDimensions();
+  const { mutateAsync: logout } = useLogout();
 
   const filterMenusByPermission = (
     menus: ItemType<any>[],
@@ -124,7 +123,6 @@ const OwnLayout = () => {
 
   return (
     <Layout className="h-screen">
-      {/* {contextHolder} */}
       <Sider
         trigger={null}
         collapsible
@@ -141,13 +139,17 @@ const OwnLayout = () => {
       >
         <div className="flex gap-2 mb-10 px-4">
           <div className="my-auto mx-0">
-            <Avatar size={40} icon={<UserOutlined />} />
+            <Avatar size={40}>
+              {Array.from(userInfo.userInfo?.name ?? "")[0].toUpperCase()}
+            </Avatar>
           </div>
 
           {!collapsed && (
             <div>
-              <p className="text-sm font-bold">User Name</p>
-              <p className="text-xs font-bold">Jabatan</p>
+              <p className="text-sm font-bold">{userInfo.userInfo?.name}</p>
+              <p className="text-xs font-bold">
+                {userInfo.userInfo?.job_title}
+              </p>
             </div>
           )}
         </div>
@@ -166,18 +168,29 @@ const OwnLayout = () => {
           style={{ padding: 0, background: colorBgContainer }}
           className="flex"
         >
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{
-              fontSize: "16px",
-              width: 64,
-              height: 64,
-            }}
-          />
+          <div className="flex justify-between w-full">
+            <div>
+              <Button
+                type="text"
+                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                onClick={() => setCollapsed(!collapsed)}
+                style={{
+                  fontSize: "16px",
+                  width: 64,
+                  height: 64,
+                }}
+              />
 
-          <Breadcrumb items={breadcrumb} style={{ margin: "auto 0" }} />
+              <Breadcrumb items={breadcrumb} style={{ margin: "auto 0" }} />
+            </div>
+
+            <p
+              className="mr-4 cursor-pointer text-[#570808] font-bold"
+              onClick={() => logout()}
+            >
+              Keluar
+            </p>
+          </div>
         </Header>
 
         <div

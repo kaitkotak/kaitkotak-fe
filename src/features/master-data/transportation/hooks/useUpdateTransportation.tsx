@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { axiosInstance } from "../../../../libs/axios";
 import { useMessageApi } from "../../../../context/message";
+import axiosInstance from "../../../../libs/axios";
 
 const useUpdateTransportation = () => {
   const url: string = "/master/transport_vehicle";

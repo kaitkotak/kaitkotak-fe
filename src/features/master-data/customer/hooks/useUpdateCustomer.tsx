@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { axiosInstance } from "../../../../libs/axios";
+import axiosInstance from "../../../../libs/axios";
 import { useMessageApi } from "../../../../context/message";
 
 const useUpdateCustomer = () => {

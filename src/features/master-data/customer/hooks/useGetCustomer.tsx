@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "../../../../libs/axios";
+import axiosInstance from "../../../../libs/axios";
 
 interface IProps {
   id: string;

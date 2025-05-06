@@ -22,6 +22,7 @@ import Login from "../features/login/pages/login";
 import OwnLayout from "../ownLayout";
 import ProtectedRoute from "./protectedRoute";
 import AccessDeniedPage from "../features/error/pages/accessDenied";
+import Home from "../features/home/pages/home";
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ export const router = createBrowserRouter([
         path: "/",
         element: <OwnLayout />,
         children: [
+          {
+            path: "home",
+            element: <Home />,
+          },
           {
             path: "production",
             children: [
