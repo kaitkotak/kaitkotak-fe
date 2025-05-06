@@ -169,7 +169,7 @@ const OwnLayout = () => {
           className="flex"
         >
           <div className="flex justify-between w-full">
-            <div>
+            <div className="flex">
               <Button
                 type="text"
                 icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
