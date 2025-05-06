@@ -1,6 +1,5 @@
 import axios from "axios";
-import { useMessageApi } from "../context/message";
-// import { useMessageApi } from "../context/message";
+import { getMessageApi } from "./messageHolder";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -69,10 +68,9 @@ axiosInstance.interceptors.response.use(
       }
     }
 
-    const message = useMessageApi();
-
-    message.success({
-      content: "err.response?.status",
+    const messageApi = getMessageApi();
+    messageApi?.error({
+      content: error.response.data.message,
       duration: 3,
     });
 
