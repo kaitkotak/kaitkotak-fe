@@ -127,7 +127,7 @@ const PurchaseOrderForm = () => {
       [`purchase_order_items`, idx, "price_per_unit"],
       Number(selectedItem.price_per_unit)
     );
-    form.setFieldValue([`invoice_items`, idx, "remaining_quantity"], 0);
+    form.setFieldValue([`purchase_order_items`, idx, "remaining_quantity"], 0);
 
     calculateSubstotal(idx);
   };
