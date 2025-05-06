@@ -29,7 +29,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import UseGetCustomers from "../../customer/hooks/useGetCustomers";
 import ImgCrop from "antd-img-crop";
 import TextArea from "antd/es/input/TextArea";
-import { checkPermission } from "../../../../libs/checkPermission";
+import { useCheckPermission } from "../../../../hooks/useCheckPermission";
 
 const ItemForm = () => {
   const {
@@ -68,6 +68,7 @@ const ItemForm = () => {
     limit: 100,
   });
   const [customerOption, setCustomerOption] = useState<ICustomer[]>([]);
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([

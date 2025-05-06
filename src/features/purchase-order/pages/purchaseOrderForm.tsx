@@ -23,7 +23,7 @@ import { MinusCircleOutlined } from "@ant-design/icons";
 import UseGetCustomerList from "../../master-data/customer/hooks/useGetCustomerList";
 import dayjs from "dayjs";
 import UseGetItemList from "../../master-data/item/hooks/useGetItemList";
-import { checkPermission } from "../../../libs/checkPermission";
+import { useCheckPermission } from "../../../hooks/useCheckPermission";
 
 const PurchaseOrderForm = () => {
   const {
@@ -44,6 +44,7 @@ const PurchaseOrderForm = () => {
   const [customerList, setCustomerList] = useState<ICustomerList[]>([]);
   const { data: itemListResponse } = UseGetItemList();
   const [itemList, setItemList] = useState<IItemList[]>([]);
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([

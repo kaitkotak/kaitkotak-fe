@@ -17,7 +17,7 @@ import { BreadcrumbContext } from "../../../context/breadcrumb";
 import UseGetProduction from "../hooks/useGetProduction";
 import useUpdateProduction from "../hooks/useUpdateProduction";
 import dayjs, { Dayjs } from "dayjs";
-import { checkPermission } from "../../../libs/checkPermission";
+import { useCheckPermission } from "../../../hooks/useCheckPermission";
 
 const ProductionForm = () => {
   const { data: itemResponse } = UseGetItems({
@@ -38,6 +38,7 @@ const ProductionForm = () => {
   const { mutateAsync: update } = useUpdateProduction();
   const submitButtonText: string = id ? "Simpan Perubahan" : "Proses Produksi";
   const [productionDate, setProductionDate] = useState<Dayjs | null>(null);
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     if (!localStorage.getItem("productionDate") && !id) {

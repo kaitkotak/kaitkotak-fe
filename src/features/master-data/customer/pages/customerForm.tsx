@@ -29,7 +29,7 @@ import { BreadcrumbContext } from "../../../../context/breadcrumb";
 import useUpload from "../../../../hooks/useUpload";
 import { getBase64 } from "../../../../libs/getBase64";
 import { PlusOutlined } from "@ant-design/icons";
-import { checkPermission } from "../../../../libs/checkPermission";
+import { useCheckPermission } from "../../../../hooks/useCheckPermission";
 
 const CustomerForm = () => {
   const {
@@ -65,6 +65,7 @@ const CustomerForm = () => {
   });
   const [salesOption, setSalesOption] = useState<ISalesPeople[]>([]);
   const { setBreadcrumb } = useContext(BreadcrumbContext);
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([

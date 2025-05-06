@@ -30,7 +30,7 @@ import dayjs from "dayjs";
 import useCreateSales from "../hooks/useCreateSales";
 import useUpdateSales from "../hooks/useUpdateSales";
 import UseGetPurchaseOrderList from "../../purchase-order/hooks/useGetPurchaseOrderList";
-import { checkPermission } from "../../../libs/checkPermission";
+import { useCheckPermission } from "../../../hooks/useCheckPermission";
 
 const SalesForm = () => {
   const {
@@ -60,6 +60,7 @@ const SalesForm = () => {
   const [purchaseOrders, setPurchaseOrders] = useState<IPurchaseOrderList[]>(
     []
   );
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([
@@ -303,6 +304,7 @@ const SalesForm = () => {
                 <Select
                   placeholder="Pilih Purchase Order"
                   optionFilterProp="label"
+                  disabled={params && params.id ? true : false}
                   options={purchaseOrders.map((s: IPurchaseOrderList) => ({
                     value: s.id,
                     label: s.order_number,

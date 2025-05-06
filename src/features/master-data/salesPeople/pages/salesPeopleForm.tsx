@@ -24,7 +24,7 @@ import { BreadcrumbContext } from "../../../../context/breadcrumb";
 import { PlusOutlined } from "@ant-design/icons";
 import useUpload from "../../../../hooks/useUpload";
 import { getBase64 } from "../../../../libs/getBase64";
-import { checkPermission } from "../../../../libs/checkPermission";
+import { useCheckPermission } from "../../../../hooks/useCheckPermission";
 
 const SalesPeopleForm = () => {
   const {
@@ -51,6 +51,7 @@ const SalesPeopleForm = () => {
   } = useUpload();
   const [fileChange, setFileChange] = useState<string>("");
   const { setBreadcrumb } = useContext(BreadcrumbContext);
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([

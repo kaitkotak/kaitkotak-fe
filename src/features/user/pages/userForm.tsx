@@ -16,7 +16,7 @@ import UseGetUser from "../hooks/useGetUser";
 import useCreateUser from "../hooks/useCreateUser";
 import useUpdateUser from "../hooks/useUpdateUser";
 import UseGetPermissionList from "../hooks/useGetPermissionList";
-import { checkPermission } from "../../../libs/checkPermission";
+import { useCheckPermission } from "../../../hooks/useCheckPermission";
 
 const UserForm = () => {
   const {
@@ -33,6 +33,7 @@ const UserForm = () => {
   const { setBreadcrumb } = useContext(BreadcrumbContext);
   const { data: permissionResponse } = UseGetPermissionList();
   const groups = Form.useWatch("permissions", form);
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([

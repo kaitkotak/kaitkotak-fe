@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 import UseGetPurchaseOrders from "../hooks/useGetPurchaseOrders";
 import useDeletePurchaseOrder from "../hooks/useDeletePurchaseOrder";
 import Search from "antd/es/input/Search";
-import { checkPermission } from "../../../libs/checkPermission";
+import { useCheckPermission } from "../../../hooks/useCheckPermission";
 
 interface IData {
   id: number;
@@ -55,6 +55,7 @@ const PurchaseOrder = () => {
     useState<boolean>(false);
   const [selectedRowId, setSelectedRowId] = useState<number>(0);
   const { mutateAsync: deleteAction } = useDeletePurchaseOrder();
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([

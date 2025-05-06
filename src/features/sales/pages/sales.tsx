@@ -7,6 +7,7 @@ import {
 import {
   Button,
   DatePicker,
+  DatePickerProps,
   Flex,
   Form,
   FormProps,
@@ -29,7 +30,8 @@ import id from "antd/es/date-picker/locale/id_ID";
 import { parseDateDDMMYYYY } from "../../../libs/dateParser";
 import UseGetSales from "../hooks/useGetSales";
 import useDeleteSales from "../hooks/useDeleteSales";
-import { checkPermission } from "../../../libs/checkPermission";
+import { useCheckPermission } from "../../../hooks/useCheckPermission";
+import { Dayjs } from "dayjs";
 
 const Sales = () => {
   const {
@@ -67,6 +69,7 @@ const Sales = () => {
   const { RangePicker } = DatePicker;
   const [isOpenFormModal, setIsOpenFormModal] = useState<boolean>(false);
   const [form] = Form.useForm();
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([
@@ -189,7 +192,45 @@ const Sales = () => {
   };
 
   const submit: FormProps<any>["onFinish"] = (values) => {
-    console.log(values);
+    window.open(
+      `${
+        import.meta.env.VITE_API_URL
+      }/invoice/download/rekap-penjualan?date_from=${values.sales_report_date[0].format(
+        "YYYY-MM-DD"
+      )}&date_to=${values.sales_report_date[1].format("YYYY-MM-DD")}`,
+      "_blank"
+    );
+    setIsOpenFormModal(false);
+  };
+
+  const getYearMonth = (date: Dayjs) => date.year() * 12 + date.month();
+
+  const disabled7DaysDate: DatePickerProps["disabledDate"] = (
+    current,
+    { from, type }
+  ) => {
+    if (from) {
+      const minDate = from.add(-6, "days");
+      const maxDate = from.add(6, "days");
+
+      switch (type) {
+        case "year":
+          return (
+            current.year() < minDate.year() || current.year() > maxDate.year()
+          );
+
+        case "month":
+          return (
+            getYearMonth(current) < getYearMonth(minDate) ||
+            getYearMonth(current) > getYearMonth(maxDate)
+          );
+
+        default:
+          return Math.abs(current.diff(from, "days")) >= 7;
+      }
+    }
+
+    return false;
   };
 
   return (
@@ -287,12 +328,16 @@ const Sales = () => {
           className="!mt-4"
         >
           <Form.Item<any>
-            name="production_date"
+            name="sales_report_date"
             rules={[
-              { required: true, message: "Silahkan masukan tanggal produksi" },
+              { required: true, message: "Silahkan masukan tanggal penjualan" },
             ]}
           >
-            <RangePicker style={{ width: "100%" }} format="DD-MM-YYYY" />
+            <RangePicker
+              style={{ width: "100%" }}
+              format="DD-MM-YYYY"
+              disabledDate={disabled7DaysDate}
+            />
           </Form.Item>
 
           <Flex gap="middle" justify="end">

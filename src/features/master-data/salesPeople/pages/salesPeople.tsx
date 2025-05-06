@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import UseGetSalesPeople from "../hooks/useGetSalesPeople";
 import useDeleteSalesPeople from "../hooks/useDeleteSalesPeople";
 import { BreadcrumbContext } from "../../../../context/breadcrumb";
-import { checkPermission } from "../../../../libs/checkPermission";
+import { useCheckPermission } from "../../../../hooks/useCheckPermission";
 
 interface IData {
   id: string;
@@ -52,6 +52,7 @@ const SalesPeople = () => {
     useState<boolean>(false);
   const [selectedRowId, setSelectedRowId] = useState<string>("");
   const { setBreadcrumb } = useContext(BreadcrumbContext);
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([

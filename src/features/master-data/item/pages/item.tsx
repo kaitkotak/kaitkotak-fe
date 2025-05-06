@@ -14,7 +14,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UseGetItems from "../hooks/useGetItems";
 import { BreadcrumbContext } from "../../../../context/breadcrumb";
-import { checkPermission } from "../../../../libs/checkPermission";
+import { useCheckPermission } from "../../../../hooks/useCheckPermission";
 
 const Item = () => {
   const {
@@ -35,6 +35,7 @@ const Item = () => {
   const { data, isLoading } = UseGetItems(paginationParams);
   const navigate = useNavigate();
   const { setBreadcrumb } = useContext(BreadcrumbContext);
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([

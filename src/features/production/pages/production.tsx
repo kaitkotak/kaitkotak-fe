@@ -28,7 +28,7 @@ import UseGetProductions from "../hooks/useGetProductions";
 import { useNavigate } from "react-router-dom";
 import { parseDateDDMMYYYY } from "../../../libs/dateParser";
 import useDeleteProduction from "../hooks/useDeleteProduction";
-import { checkPermission } from "../../../libs/checkPermission";
+import { useCheckPermission } from "../../../hooks/useCheckPermission";
 
 interface IData {
   id: number;
@@ -72,6 +72,7 @@ const Production = () => {
     useState<boolean>(false);
   const [selectedRowId, setSelectedRowId] = useState<number>(0);
   const { mutateAsync: deleteAction } = useDeleteProduction();
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([

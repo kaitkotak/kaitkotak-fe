@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import Search from "antd/es/input/Search";
 import UseGetUsers from "../hooks/useGetUsers";
 import useDeleteUser from "../hooks/useDeleteUser";
-import { checkPermission } from "../../../libs/checkPermission";
+import { useCheckPermission } from "../../../hooks/useCheckPermission";
 
 interface IData {
   id: number;
@@ -52,6 +52,7 @@ const User = () => {
     useState<boolean>(false);
   const [selectedRowId, setSelectedRowId] = useState<number>(0);
   const { mutateAsync: deleteAction } = useDeleteUser();
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([

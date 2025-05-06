@@ -6,6 +6,7 @@ import UseGetTransportation from "../hooks/useGetTransportation";
 import { useContext, useEffect } from "react";
 import useUpdateTransportation from "../hooks/useUpdateTransportation";
 import { BreadcrumbContext } from "../../../../context/breadcrumb";
+import { useCheckPermission } from "../../../../hooks/useCheckPermission";
 
 const TransportationForm = () => {
   const {
@@ -20,6 +21,7 @@ const TransportationForm = () => {
   });
   const [form] = Form.useForm();
   const { setBreadcrumb } = useContext(BreadcrumbContext);
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([
@@ -107,11 +109,13 @@ const TransportationForm = () => {
               </Button>
             </Form.Item>
 
-            <Form.Item label={null}>
-              <Button type="primary" htmlType="submit">
-                Simpan
-              </Button>
-            </Form.Item>
+            {checkPermission("master_transportation.update") && (
+              <Form.Item label={null}>
+                <Button type="primary" htmlType="submit">
+                  Simpan
+                </Button>
+              </Form.Item>
+            )}
           </Flex>
         </Form>
       </Content>
