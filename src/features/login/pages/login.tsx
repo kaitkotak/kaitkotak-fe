@@ -1,10 +1,11 @@
 import { Button, Form, FormProps, Input } from "antd";
 import useLogin from "../hooks/useLogin";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
+import logo from "../../../assets/logo3.png";
 
 const Login = () => {
   const [form] = Form.useForm();
-  const { mutateAsync: login } = useLogin();
+  const { mutateAsync: login, isPending } = useLogin();
 
   const submit: FormProps<ILoginPayload>["onFinish"] = (values) => {
     login(values);
@@ -14,9 +15,11 @@ const Login = () => {
     <div className="flex h-screen text-black">
       <div className="w-full sm:w-1/3 flex">
         <div className="px-6 my-auto w-full">
-          <div className="bg-amber-900 h-[181px] w-[181px] rounded mx-auto"></div>
+          {/* <div className="h-[181px] w-[181px] rounded mx-auto">
+          </div> */}
+          <img src={logo} alt="logo" className="mx-auto" width={"200px"} />
 
-          <h3 className="text-3xl font-bold mt-20 mb-9">Selamat Datang,</h3>
+          <h3 className="text-3xl font-bold mt-4 mb-9">Selamat Datang,</h3>
 
           <Form
             form={form}
@@ -49,8 +52,13 @@ const Login = () => {
             </Form.Item>
 
             <Form.Item label={null}>
-              <Button type="primary" htmlType="submit" className="w-full">
-                Masuk
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="w-full"
+                disabled={isPending}
+              >
+                {isPending ? "Masuk...." : "Masuk"}
               </Button>
             </Form.Item>
           </Form>

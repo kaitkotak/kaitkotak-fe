@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useMessageApi } from "../context/message";
 // import { useMessageApi } from "../context/message";
 
 const axiosInstance = axios.create({
@@ -56,13 +57,7 @@ axiosInstance.interceptors.response.use(
         processQueue(null, newAccessToken);
         return axiosInstance(originalRequest);
       } catch (err: any) {
-        // const message = useMessageApi();
-
         processQueue(err, null);
-        // message.success({
-        //   content: err.response?.status,
-        //   duration: 3,
-        // });
 
         if (err.response?.status === 400) {
           window.location.href = "/login";
@@ -73,6 +68,13 @@ axiosInstance.interceptors.response.use(
         isRefreshing = false;
       }
     }
+
+    const message = useMessageApi();
+
+    message.success({
+      content: "err.response?.status",
+      duration: 3,
+    });
 
     return Promise.reject(error);
   }

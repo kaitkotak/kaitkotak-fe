@@ -1,4 +1,4 @@
-import { Avatar, Breadcrumb, Button, Layout, Menu, theme } from "antd";
+import { Avatar, Breadcrumb, Button, Layout, Menu, Spin, theme } from "antd";
 import {
   DatabaseOutlined,
   FileProtectOutlined,
@@ -120,6 +120,14 @@ const OwnLayout = () => {
       navigate(val.key);
     }
   };
+
+  if (userInfo.loading) {
+    return (
+      <div style={{ textAlign: "center", marginTop: 50 }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <Layout className="h-screen">

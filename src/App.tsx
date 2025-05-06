@@ -1,6 +1,7 @@
 import "./App.css";
 import { ConfigProvider } from "antd";
 import {
+  MutationCache,
   QueryCache,
   QueryClient,
   QueryClientProvider,
@@ -29,24 +30,25 @@ const queryClient = new QueryClient({
       // });
     },
   }),
-  // mutationCache: new MutationCache({
-  //   onError: (error: Error) => {
-  //     if (error.response?.data.message) {
-  //       if (jwtTokenErrors.includes(error.response?.data.message)) {
-  //         window.location.replace("/");
-  //       }
-  //       toast({
-  //         description: error.response?.data.message,
-  //         variant: "destructive",
-  //       });
-  //     } else {4
-  //       toast({
-  //         description: error.response?.data.errors[0].msg,
-  //         variant: "destructive",
-  //       });
-  //     // }
-  //   },
-  // }),
+  mutationCache: new MutationCache({
+    onError: (error: Error) => {
+      console.log("error mutation", error);
+      // if (error.response?.data.message) {
+      //   if (jwtTokenErrors.includes(error.response?.data.message)) {
+      //     window.location.replace("/");
+      //   }
+      //   toast({
+      //     description: error.response?.data.message,
+      //     variant: "destructive",
+      //   });
+      // } else {4
+      //   toast({
+      //     description: error.response?.data.errors[0].msg,
+      //     variant: "destructive",
+      //   });
+      // // }
+    },
+  }),
   defaultOptions: {
     queries: {
       retry: false,
