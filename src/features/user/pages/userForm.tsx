@@ -77,12 +77,6 @@ const UserForm = () => {
     }
   }, [data, permissionResponse]);
 
-  // useEffect(() => {
-  //   if (permissionResponse) {
-  //     form.setFieldValue("permissions", permissionResponse.data.data);
-  //   }
-  // }, [permissionResponse]);
-
   const submit: FormProps<IUserResponse>["onFinish"] = (values) => {
     let permissions: number[] = [];
     values.permissions.forEach((permission: IPermissionList) => {
