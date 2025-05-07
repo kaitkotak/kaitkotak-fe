@@ -10,7 +10,7 @@ import {
   TeamOutlined,
 } from "@ant-design/icons";
 import Sider from "antd/es/layout/Sider";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Header } from "antd/es/layout/layout";
 import { ItemType } from "antd/es/menu/interface";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -18,6 +18,7 @@ import { BreadcrumbContext } from "./context/breadcrumb";
 import useWindowDimensions from "./libs/useWindowDimensions";
 import { useUser } from "./context/user";
 import useLogout from "./features/login/hooks/useLogout";
+import useGetUserInfo from "./features/login/hooks/useGetUserInfo";
 
 const OwnLayout = () => {
   const userInfo = useUser();
@@ -89,6 +90,11 @@ const OwnLayout = () => {
   const { breadcrumb } = useContext(BreadcrumbContext);
   const { width } = useWindowDimensions();
   const { mutateAsync: logout } = useLogout();
+  const { mutateAsync: getUserInfo } = useGetUserInfo();
+
+  useEffect(() => {
+    getUserInfo();
+  }, []);
 
   const filterMenusByPermission = (
     menus: ItemType<any>[],

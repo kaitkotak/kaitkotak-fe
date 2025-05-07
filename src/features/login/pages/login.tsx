@@ -2,10 +2,19 @@ import { Button, Form, FormProps, Input } from "antd";
 import useLogin from "../hooks/useLogin";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import logo from "../../../assets/logo3.png";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [form] = Form.useForm();
-  const { mutateAsync: login, isPending } = useLogin();
+  const { mutateAsync: login, isPending, isSuccess } = useLogin();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate("/home");
+    }
+  }, [isSuccess]);
 
   const submit: FormProps<ILoginPayload>["onFinish"] = (values) => {
     login(values);
