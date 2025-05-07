@@ -15,7 +15,7 @@ const ProtectedRoute = ({
 
   if (loading) {
     return (
-      <div style={{ textAlign: "center", marginTop: 50 }}>
+      <div style={{ textAlign: "center", marginTop: "100px" }}>
         <Spin size="large" />
       </div>
     );

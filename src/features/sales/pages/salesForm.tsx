@@ -49,6 +49,7 @@ const SalesForm = () => {
   const [customerList, setCustomerList] = useState<ICustomerList[]>([]);
   const { data: itemListResponse } = UseGetItemList();
   const [itemList, setItemList] = useState<IItemList[]>([]);
+  const [masterItemList, setMasterItemList] = useState<IItemList[]>([]);
   const [purchaseOrderNo, setPurchaseOrderNo] = useState<string | null>(null);
   const { data: salesPeopleListResponse } = UseGetSalesPeopleList();
   const [salesPeople, setSalesPeople] = useState<ISalesPeopleList[]>([]);
@@ -91,6 +92,7 @@ const SalesForm = () => {
   useEffect(() => {
     if (itemListResponse) {
       setItemList(itemListResponse.data.data);
+      setMasterItemList(itemListResponse.data.data);
     }
   }, [itemListResponse]);
 
@@ -151,7 +153,6 @@ const SalesForm = () => {
   const calculateTotalAmount = () => {
     let totalAmount: number = 0;
     form.getFieldValue("invoice_items").forEach((element: any) => {
-      // console.log(element.price_total);
       totalAmount += element.price_total;
     });
     form.setFieldValue("price_total", totalAmount);
@@ -169,7 +170,7 @@ const SalesForm = () => {
     form.setFieldValue([`invoice_items`, idx, "quantity"], 0);
 
     calculateSubstotal(idx);
-    // renewItemList();
+    renewItemList();
   };
 
   const handlePurchaseOrderChange = (val: string) => {
@@ -184,6 +185,15 @@ const SalesForm = () => {
       price_total: selectedPurchaseOrder.price_total,
       invoice_items: selectedPurchaseOrder.purchase_order_items,
     });
+
+    setItemList(() =>
+      masterItemList.filter((val: IItemList) => {
+        val.disabled = true;
+        return selectedPurchaseOrder.purchase_order_items.some(
+          (item: IPurchaseOrderItems) => item.item_id === val.id
+        );
+      })
+    );
   };
 
   const handleDueDateChange = (val: any) => {
@@ -193,19 +203,27 @@ const SalesForm = () => {
     );
   };
 
-  // const renewItemList = () => {
-  //   let newItemList: IItemList[] = itemList;
+  const renewItemList = () => {
+    let newItemList: IItemList[] = itemList;
 
-  //   form
-  //     .getFieldValue("invoice_items")
-  //     .forEach((invoiceItem: IPurchaseOrderItems) => {
-  //       newItemList = newItemList.filter(
-  //         (newItem: IItemList) => newItem.id !== invoiceItem.item_id
-  //       );
-  //     });
+    form
+      .getFieldValue("invoice_items")
+      .forEach((invoiceItem: IPurchaseOrderItems) => {
+        newItemList = newItemList.map((newItem: IItemList) => {
+          if (newItem.id === invoiceItem.item_id) {
+            newItem.disabled = true;
+          } else {
+            newItem.disabled = false;
+          }
 
-  //   setItemList(newItemList);
-  // };
+          return newItem;
+        });
+      });
+
+    console.log(newItemList);
+
+    setItemList(newItemList);
+  };
 
   return (
     <Spin spinning={isLoading || isPendingCreate || isPendingUpdate}>
@@ -487,6 +505,7 @@ const SalesForm = () => {
                               options={itemList.map((s: IItemList) => ({
                                 value: s.id,
                                 label: s.item_name,
+                                disabled: s.disabled,
                               }))}
                               onChange={(value: number) =>
                                 selectItem(index, value)
@@ -573,16 +592,22 @@ const SalesForm = () => {
                         </Button>
                       </Form.Item>
 
-                      <Form.Item label={null}>
-                        <Button
-                          type="default"
-                          variant="outlined"
-                          htmlType="button"
-                          onClick={() => add()}
-                        >
-                          Tambah Item
-                        </Button>
-                      </Form.Item>
+                      {form.getFieldValue("invoice_items").length <
+                        itemList.length && (
+                        <Form.Item label={null}>
+                          <Button
+                            type="default"
+                            variant="outlined"
+                            htmlType="button"
+                            onClick={() => {
+                              renewItemList();
+                              add();
+                            }}
+                          >
+                            Tambah Item
+                          </Button>
+                        </Form.Item>
+                      )}
 
                       {checkPermission("sales.update") && (
                         <Form.Item label={null}>

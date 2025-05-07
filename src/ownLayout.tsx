@@ -123,7 +123,7 @@ const OwnLayout = () => {
 
   if (userInfo.loading) {
     return (
-      <div style={{ textAlign: "center", marginTop: 50 }}>
+      <div style={{ textAlign: "center", marginTop: "35%" }}>
         <Spin size="large" />
       </div>
     );

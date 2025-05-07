@@ -47,4 +47,5 @@ interface IItemList {
   item_code: string;
   price_per_unit: string;
   image: string;
+  disabled?: boolean;
 }
