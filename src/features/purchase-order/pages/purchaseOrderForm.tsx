@@ -163,7 +163,7 @@ const PurchaseOrderForm = () => {
                 label="Tanggal"
                 name="order_date"
                 rules={[
-                  { required: true, message: "Silahkan masukan kode item!" },
+                  { required: true, message: "Silahkan masukan tanggal!" },
                 ]}
               >
                 <DatePicker style={{ width: "100%" }} format="DD-MM-YYYY" />
@@ -174,7 +174,12 @@ const PurchaseOrderForm = () => {
               <Form.Item<IPurchaseOrderForm>
                 label="No Purchase Order"
                 name="order_number"
-                rules={[{ required: true, message: "Silahkan masukan berat!" }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Silahkan masukan no purchase order!",
+                  },
+                ]}
               >
                 <Input style={{ width: "100%" }} />
               </Form.Item>
@@ -187,7 +192,7 @@ const PurchaseOrderForm = () => {
                 label="Nama Pelanggan"
                 name="customer_id"
                 rules={[
-                  { required: true, message: "Silahkan masukan kode item!" },
+                  { required: true, message: "Silahkan pilih pelanggan!" },
                 ]}
               >
                 <Select
@@ -209,7 +214,7 @@ const PurchaseOrderForm = () => {
                     label="Tax"
                     name="tax"
                     rules={[
-                      { required: true, message: "Silahkan masukan berat!" },
+                      { required: true, message: "Silahkan masukan tax!" },
                     ]}
                   >
                     <InputNumber
