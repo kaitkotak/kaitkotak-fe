@@ -220,8 +220,6 @@ const SalesForm = () => {
         });
       });
 
-    console.log(newItemList);
-
     setItemList(newItemList);
   };
 

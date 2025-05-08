@@ -4,8 +4,8 @@ interface ISalesPeople {
   phone_number: string;
   address: string;
   ktp: string;
-  ktp_photo: string;
-  profile_photo: string;
+  ktp_photo?: string;
+  profile_photo?: string;
 }
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];

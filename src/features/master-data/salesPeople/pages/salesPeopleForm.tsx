@@ -107,6 +107,14 @@ const SalesPeopleForm = () => {
   }, [uploadResponse]);
 
   const submit: FormProps<ISalesPeople>["onFinish"] = (values) => {
+    if (values.ktp_photo && !values.ktp_photo.includes("temp")) {
+      delete values.ktp_photo;
+    }
+
+    if (values.profile_photo && !values.profile_photo.includes("temp")) {
+      delete values.profile_photo;
+    }
+
     if (params.id) {
       update({
         ...values,
