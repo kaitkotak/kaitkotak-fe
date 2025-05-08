@@ -22,6 +22,7 @@ import TextArea from "antd/es/input/TextArea";
 import useCreateRawMaterial from "../hooks/useCreateRawMaterial";
 import id from "antd/es/date-picker/locale/id_ID";
 import { parseDateDDMMYYYY } from "../../../libs/dateParser";
+import { useCheckPermission } from "../../../hooks/useCheckPermission";
 
 interface IData {
   stock_date: string;
@@ -69,6 +70,7 @@ const RawMaterial = () => {
       cellYearFormat: "YYYY",
     },
   };
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([
@@ -230,29 +232,33 @@ const RawMaterial = () => {
             </div>
 
             <div className="flex gap-2">
-              <Button
-                color="primary"
-                variant="solid"
-                icon={<FileAddOutlined />}
-                onClick={() => {
-                  setFormTitle("Stok Masuk");
-                  setIsOpenFormModal(true);
-                }}
-              >
-                <span className="hidden md:inline">Tambah Stok</span>
-              </Button>
+              {checkPermission("raw_material.create") && (
+                <Button
+                  color="primary"
+                  variant="solid"
+                  icon={<FileAddOutlined />}
+                  onClick={() => {
+                    setFormTitle("Stok Masuk");
+                    setIsOpenFormModal(true);
+                  }}
+                >
+                  <span className="hidden md:inline">Tambah Stok</span>
+                </Button>
+              )}
 
-              <Button
-                color="primary"
-                variant="solid"
-                icon={<EditOutlined />}
-                onClick={() => {
-                  setFormTitle("Stok Opname");
-                  setIsOpenFormModal(true);
-                }}
-              >
-                <span className="hidden md:inline">Stok Opname</span>
-              </Button>
+              {checkPermission("raw_material.create_stock_opname") && (
+                <Button
+                  color="primary"
+                  variant="solid"
+                  icon={<EditOutlined />}
+                  onClick={() => {
+                    setFormTitle("Stok Opname");
+                    setIsOpenFormModal(true);
+                  }}
+                >
+                  <span className="hidden md:inline">Stok Opname</span>
+                </Button>
+              )}
             </div>
           </div>
         </div>
