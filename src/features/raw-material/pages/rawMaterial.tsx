@@ -28,6 +28,7 @@ interface IData {
   type: string;
   quantity: number;
   note: string;
+  is_opname: boolean;
 }
 
 const RawMaterial = () => {
@@ -84,6 +85,9 @@ const RawMaterial = () => {
         return {
           ...rawMaterial,
           stock_date: format(date, "dd/MM/yyyy"),
+          type: rawMaterial.is_opname
+            ? `${rawMaterial.type} (Opname)`
+            : rawMaterial.type,
         };
       });
     });
