@@ -216,7 +216,7 @@ const SalesPeopleForm = () => {
           <Form.Item<ISalesPeople>
             label="Alamat"
             name="address"
-            rules={[{ required: true, message: "Silahkan masukan no KTP!" }]}
+            rules={[{ required: true, message: "Silahkan masukan alamat!" }]}
           >
             <TextArea />
           </Form.Item>
