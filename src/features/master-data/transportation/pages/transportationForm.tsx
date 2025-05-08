@@ -97,7 +97,7 @@ const TransportationForm = () => {
             <Input />
           </Form.Item>
 
-          <Flex gap="middle" align="end">
+          <Flex gap="middle" justify="end">
             <Form.Item label={null}>
               <Button
                 type="default"
