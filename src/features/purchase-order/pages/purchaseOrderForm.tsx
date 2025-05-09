@@ -61,7 +61,10 @@ const PurchaseOrderForm = () => {
     if (params.id) {
       form.setFieldsValue(data?.data.data);
       form.setFieldValue("order_date", dayjs(data?.data.data.order_date));
-      // renewItemList();
+
+      setTimeout(() => {
+        renewItemList();
+      }, 1000);
     }
   }, [data]);
 
@@ -274,12 +277,19 @@ const PurchaseOrderForm = () => {
             {(fields, { add, remove }) => (
               <>
                 {fields.map(({ key, name, ...restField }, index) => (
-                  <Row gutter={16}>
+                  <Row
+                    gutter={16}
+                    className="border rounded p-2 mb-2 lg:border-0 lg:p-0 lg:mb-0"
+                    key={key}
+                  >
                     <Col xs={{ span: 24 }} lg={{ span: 10 }}>
                       <Form.Item
-                        label={index === 0 ? "Kode Item" : ""}
+                        label={"Kode Item"}
                         {...restField}
                         name={[name, "item_id"]}
+                        labelCol={{
+                          className: index === 0 ? "block" : "lg:hidden block",
+                        }}
                         rules={[
                           {
                             required: true,
@@ -303,8 +313,11 @@ const PurchaseOrderForm = () => {
 
                     <Col xs={{ span: 12 }} lg={{ span: 4 }}>
                       <Form.Item
-                        label={index === 0 ? "Jumlah Item" : ""}
+                        label={"Jumlah Item"}
                         name={[name, "remaining_quantity"]}
+                        labelCol={{
+                          className: index === 0 ? "block" : "lg:hidden block",
+                        }}
                         rules={[
                           {
                             required: true,
@@ -322,8 +335,11 @@ const PurchaseOrderForm = () => {
 
                     <Col xs={{ span: 12 }} lg={{ span: 4 }}>
                       <Form.Item
-                        label={index === 0 ? "Harga Satuan" : ""}
+                        label={"Harga Satuan"}
                         name={[name, "price_per_unit"]}
+                        labelCol={{
+                          className: index === 0 ? "block" : "lg:hidden block",
+                        }}
                         rules={[
                           {
                             required: true,
@@ -341,7 +357,10 @@ const PurchaseOrderForm = () => {
 
                     <Col xs={{ span: 23 }} lg={{ span: 5 }}>
                       <Form.Item
-                        label={index === 0 ? "Substotal" : ""}
+                        label={"Substotal"}
+                        labelCol={{
+                          className: index === 0 ? "block" : "lg:hidden block",
+                        }}
                         name={[name, "price_total"]}
                       >
                         <InputNumber
@@ -353,10 +372,8 @@ const PurchaseOrderForm = () => {
                     </Col>
 
                     {fields.length > 1 ? (
-                      <Col span={1}>
+                      <Col span={1} className="my-auto">
                         <MinusCircleOutlined
-                          className="dynamic-delete-button"
-                          style={index === 0 ? { marginTop: "35px" } : {}}
                           onClick={() => {
                             remove(index);
                             calculateTotalAmount();

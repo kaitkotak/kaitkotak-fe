@@ -80,6 +80,10 @@ const SalesForm = () => {
       form.setFieldValue("invoice_date", dayjs(data?.data.data.invoice_date));
       form.setFieldValue("due_date", dayjs(data?.data.data.due_date));
       setPurchaseOrderNo(data?.data.data.purchase_order_id);
+
+      setTimeout(() => {
+        setInintialItemList(data?.data.data.purchase_order_id);
+      }, 100);
     }
   }, [data]);
 
@@ -132,7 +136,7 @@ const SalesForm = () => {
   };
 
   const back = () => {
-    navigate("/purchase-order");
+    navigate("/sales");
   };
 
   const calculateSubstotal = (idx: number) => {
@@ -140,7 +144,6 @@ const SalesForm = () => {
       form.getFieldValue([`invoice_items`, idx, "quantity"]) ?? 0;
     const pricePerUnit: number =
       form.getFieldValue([`invoice_items`, idx, "price_per_unit"]) ?? 0;
-    console.log(qty, pricePerUnit);
 
     form.setFieldValue(
       [`invoice_items`, idx, "price_total"],
@@ -178,6 +181,8 @@ const SalesForm = () => {
       (purchaseOrder: IPurchaseOrderList) => purchaseOrder.id === Number(val)
     )[0];
 
+    setInintialItemList(val);
+
     setPurchaseOrderNo(val);
     form.setFieldsValue({
       customer_id: selectedPurchaseOrder.customer_id,
@@ -185,6 +190,19 @@ const SalesForm = () => {
       price_total: selectedPurchaseOrder.price_total,
       invoice_items: selectedPurchaseOrder.purchase_order_items,
     });
+  };
+
+  const handleDueDateChange = (val: any) => {
+    form.setFieldValue(
+      "due_days",
+      dayjs(val).startOf("day").diff(dayjs().startOf("day"), "day", true)
+    );
+  };
+
+  const setInintialItemList = (val: string) => {
+    const selectedPurchaseOrder: IPurchaseOrderList = purchaseOrders.filter(
+      (purchaseOrder: IPurchaseOrderList) => purchaseOrder.id === Number(val)
+    )[0];
 
     setItemList(() =>
       masterItemList.filter((val: IItemList) => {
@@ -193,13 +211,6 @@ const SalesForm = () => {
           (item: IPurchaseOrderItems) => item.item_id === val.id
         );
       })
-    );
-  };
-
-  const handleDueDateChange = (val: any) => {
-    form.setFieldValue(
-      "due_days",
-      dayjs(val).startOf("day").diff(dayjs().startOf("day"), "day", true)
     );
   };
 
@@ -477,12 +488,20 @@ const SalesForm = () => {
                 {(fields, { add, remove }) => (
                   <>
                     {fields.map(({ key, name, ...restField }, index) => (
-                      <Row gutter={16} key={index}>
+                      <Row
+                        gutter={16}
+                        key={key}
+                        className="border rounded p-2 mb-2 lg:border-0 lg:p-0 lg:mb-0"
+                      >
                         <Col xs={{ span: 24 }} lg={{ span: 10 }}>
                           <Form.Item
-                            label={index === 0 ? "Kode Item" : ""}
+                            label={"Kode Item"}
                             {...restField}
                             name={[name, "item_id"]}
+                            labelCol={{
+                              className:
+                                index === 0 ? "block" : "lg:hidden block",
+                            }}
                             rules={[
                               {
                                 required: true,
@@ -508,8 +527,12 @@ const SalesForm = () => {
 
                         <Col xs={{ span: 12 }} lg={{ span: 4 }}>
                           <Form.Item
-                            label={index === 0 ? "Jumlah Item" : ""}
+                            label={"Jumlah Item"}
                             name={[name, "quantity"]}
+                            labelCol={{
+                              className:
+                                index === 0 ? "block" : "lg:hidden block",
+                            }}
                             rules={[
                               {
                                 required: true,
@@ -527,8 +550,12 @@ const SalesForm = () => {
 
                         <Col xs={{ span: 12 }} lg={{ span: 4 }}>
                           <Form.Item
-                            label={index === 0 ? "Harga Satuan" : ""}
+                            label={"Harga Satuan"}
                             name={[name, "price_per_unit"]}
+                            labelCol={{
+                              className:
+                                index === 0 ? "block" : "lg:hidden block",
+                            }}
                             rules={[
                               {
                                 required: true,
@@ -546,8 +573,12 @@ const SalesForm = () => {
 
                         <Col xs={{ span: 23 }} lg={{ span: 5 }}>
                           <Form.Item
-                            label={index === 0 ? "Substotal" : ""}
+                            label={"Substotal"}
                             name={[name, "price_total"]}
+                            labelCol={{
+                              className:
+                                index === 0 ? "block" : "lg:hidden block",
+                            }}
                           >
                             <InputNumber
                               readOnly
@@ -558,10 +589,8 @@ const SalesForm = () => {
                         </Col>
 
                         {fields.length > 1 ? (
-                          <Col span={1}>
+                          <Col span={1} className="my-auto">
                             <MinusCircleOutlined
-                              className="dynamic-delete-button"
-                              style={index === 0 ? { marginTop: "35px" } : {}}
                               onClick={() => {
                                 remove(index);
                                 calculateTotalAmount();

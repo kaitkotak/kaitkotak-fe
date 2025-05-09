@@ -28,7 +28,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const stored = localStorage.getItem("userInfo");
-    console.log(stored);
     if (stored) setUserInfo(JSON.parse(stored));
     setLoading(false);
   }, []);
