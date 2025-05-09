@@ -18,6 +18,7 @@ import UseGetProduction from "../hooks/useGetProduction";
 import useUpdateProduction from "../hooks/useUpdateProduction";
 import dayjs, { Dayjs } from "dayjs";
 import { useCheckPermission } from "../../../hooks/useCheckPermission";
+import defaultItemImg from "../../../assets/default-item-image.png";
 
 const ProductionForm = () => {
   const { data: itemResponse } = UseGetItems({
@@ -163,13 +164,21 @@ const ProductionForm = () => {
               hoverable
               style={{ width: "200px" }}
               cover={
-                <img
-                  alt="item-image"
-                  src={`${import.meta.env.VITE_API_URL}/file/download/${
-                    item.image
-                  }`}
-                  style={{ width: "200px", height: "200px" }}
-                />
+                item.image ? (
+                  <img
+                    alt="item-image"
+                    src={`${import.meta.env.VITE_API_URL}/file/download/${
+                      item.image
+                    }`}
+                    style={{ width: "200px", height: "200px" }}
+                  />
+                ) : (
+                  <img
+                    alt="item-image"
+                    src={defaultItemImg}
+                    style={{ width: "200px", height: "200px", padding: "40px" }}
+                  />
+                )
               }
               key={item.id}
             >
