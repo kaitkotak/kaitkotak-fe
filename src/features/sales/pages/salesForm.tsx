@@ -594,7 +594,12 @@ const SalesForm = () => {
                             htmlType="button"
                             onClick={() => {
                               renewItemList();
-                              add();
+                              add({
+                                item_id: "",
+                                quantity: 0,
+                                price_per_unit: 0,
+                                price_total: 0,
+                              });
                             }}
                           >
                             Tambah Item

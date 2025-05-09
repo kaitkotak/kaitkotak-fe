@@ -113,9 +113,7 @@ const PurchaseOrderForm = () => {
 
   const calculateTotalAmount = () => {
     let totalAmount: number = 0;
-    console.log("test", form.getFieldValue("purchase_order_items"));
     form.getFieldValue("purchase_order_items").forEach((element: any) => {
-      console.log(element);
       totalAmount += element.price_total;
     });
     form.setFieldValue("price_total", totalAmount);
@@ -382,26 +380,28 @@ const PurchaseOrderForm = () => {
                     </Button>
                   </Form.Item>
 
-                  {checkPermission("purchase_order.update") && (
-                    <Form.Item label={null}>
-                      <Button
-                        type="default"
-                        variant="outlined"
-                        htmlType="button"
-                        onClick={() => {
-                          add({
-                            item_id: "",
-                            remaining_quantity: 0,
-                            price_per_unit: 0,
-                            price_total: 0,
-                          });
-                          renewItemList();
-                        }}
-                      >
-                        Tambah Item
-                      </Button>
-                    </Form.Item>
-                  )}
+                  {checkPermission("purchase_order.update") &&
+                    form.getFieldValue("purchase_order_items").length <
+                      itemList.length && (
+                      <Form.Item label={null}>
+                        <Button
+                          type="default"
+                          variant="outlined"
+                          htmlType="button"
+                          onClick={() => {
+                            add({
+                              item_id: "",
+                              remaining_quantity: 0,
+                              price_per_unit: 0,
+                              price_total: 0,
+                            });
+                            renewItemList();
+                          }}
+                        >
+                          Tambah Item
+                        </Button>
+                      </Form.Item>
+                    )}
 
                   {checkPermission("purchase_order.update") && (
                     <Form.Item label={null}>
