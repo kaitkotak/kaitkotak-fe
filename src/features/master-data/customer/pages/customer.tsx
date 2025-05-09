@@ -189,6 +189,7 @@ const Customer = () => {
           columns={columns}
           loading={isLoading}
           pagination={tableParams.pagination}
+          rowKey={"id"}
           scroll={{ x: "max-content" }}
           onChange={handleTableChange}
         />

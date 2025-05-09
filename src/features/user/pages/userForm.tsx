@@ -160,8 +160,8 @@ const UserForm = () => {
           <Form.List name="permissions">
             {(fields) => (
               <>
-                {fields.map(({ name }, index) => (
-                  <>
+                {fields.map(({ name, key }, index) => (
+                  <div key={key}>
                     <label className="text-lg font-bold mb-1">
                       {groups[index].name}
                     </label>
@@ -174,6 +174,7 @@ const UserForm = () => {
                                 name={[subField.name, "value"]}
                                 style={{ marginBottom: 0 }}
                                 valuePropName="checked"
+                                key={subField.key}
                               >
                                 <Checkbox>
                                   {groups[index].items[childIndex].name}
@@ -184,7 +185,7 @@ const UserForm = () => {
                         )}
                       </Form.List>
                     </div>
-                  </>
+                  </div>
                 ))}
               </>
             )}

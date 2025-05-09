@@ -25,6 +25,7 @@ import { parseDateDDMMYYYY } from "../../../libs/dateParser";
 import { useCheckPermission } from "../../../hooks/useCheckPermission";
 
 interface IData {
+  id: number;
   stock_date: string;
   type: string;
   quantity: number;
@@ -268,6 +269,7 @@ const RawMaterial = () => {
           columns={columns}
           loading={isLoading}
           pagination={tableParams.pagination}
+          rowKey={"id"}
           scroll={{ x: "max-content" }}
           onChange={handleTableChange}
         />
