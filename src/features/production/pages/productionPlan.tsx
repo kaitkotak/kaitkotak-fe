@@ -8,6 +8,7 @@ interface IData {
   id: number;
   production_date: string;
   total_quantity: number;
+  production_requirements: number;
 }
 
 const ProductionPlan = () => {
@@ -37,6 +38,7 @@ const ProductionPlan = () => {
     { title: "Nama", dataIndex: "item_name" },
     { title: "Kode", dataIndex: "item_code" },
     { title: "Stok", dataIndex: "stock" },
+    { title: "Kebutuhan", dataIndex: "production_requirements" },
     { title: "Rencana Produksi", dataIndex: "stock_deficit" },
   ];
 
@@ -55,7 +57,7 @@ const ProductionPlan = () => {
           dataSource={productionPlan}
           columns={columns}
           loading={isLoading}
-          rowKey={'id'}
+          rowKey={"id"}
           scroll={{ x: "max-content" }}
           pagination={false}
         />
