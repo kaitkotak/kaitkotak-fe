@@ -204,21 +204,15 @@ const SalesForm = () => {
   };
 
   const renewItemList = () => {
-    let newItemList: IItemList[] = itemList;
-
-    form
-      .getFieldValue("invoice_items")
-      .forEach((invoiceItem: IPurchaseOrderItems) => {
-        newItemList = newItemList.map((newItem: IItemList) => {
-          if (newItem.id === invoiceItem.item_id) {
-            newItem.disabled = true;
-          } else {
-            newItem.disabled = false;
-          }
-
-          return newItem;
-        });
-      });
+    let newItemList: IItemList[] = itemList.map((item: IItemList) => ({
+      ...item,
+      disabled: form
+        .getFieldValue("invoice_items")
+        .some(
+          (selectedItem: IPurchaseOrderItems) =>
+            selectedItem.item_id === item.id
+        ),
+    }));
 
     setItemList(newItemList);
   };
@@ -571,6 +565,7 @@ const SalesForm = () => {
                               onClick={() => {
                                 remove(index);
                                 calculateTotalAmount();
+                                renewItemList();
                               }}
                             />
                           </Col>

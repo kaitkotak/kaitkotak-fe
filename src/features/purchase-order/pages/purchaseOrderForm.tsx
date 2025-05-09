@@ -61,6 +61,7 @@ const PurchaseOrderForm = () => {
     if (params.id) {
       form.setFieldsValue(data?.data.data);
       form.setFieldValue("order_date", dayjs(data?.data.data.order_date));
+      // renewItemList();
     }
   }, [data]);
 
@@ -112,7 +113,9 @@ const PurchaseOrderForm = () => {
 
   const calculateTotalAmount = () => {
     let totalAmount: number = 0;
+    console.log("test", form.getFieldValue("purchase_order_items"));
     form.getFieldValue("purchase_order_items").forEach((element: any) => {
+      console.log(element);
       totalAmount += element.price_total;
     });
     form.setFieldValue("price_total", totalAmount);
@@ -130,6 +133,21 @@ const PurchaseOrderForm = () => {
     form.setFieldValue([`purchase_order_items`, idx, "remaining_quantity"], 0);
 
     calculateSubstotal(idx);
+    renewItemList();
+  };
+
+  const renewItemList = () => {
+    let newItemList: IItemList[] = itemList.map((item: IItemList) => ({
+      ...item,
+      disabled: form
+        .getFieldValue("purchase_order_items")
+        .some(
+          (selectedItem: IPurchaseOrderItems) =>
+            selectedItem.item_id === item.id
+        ),
+    }));
+
+    setItemList(newItemList);
   };
 
   return (
@@ -278,6 +296,7 @@ const PurchaseOrderForm = () => {
                           options={itemList.map((s: IItemList) => ({
                             value: s.id,
                             label: s.item_name,
+                            disabled: s.disabled,
                           }))}
                           onChange={(value: number) => selectItem(index, value)}
                         />
@@ -343,6 +362,7 @@ const PurchaseOrderForm = () => {
                           onClick={() => {
                             remove(index);
                             calculateTotalAmount();
+                            renewItemList();
                           }}
                         />
                       </Col>
@@ -368,7 +388,15 @@ const PurchaseOrderForm = () => {
                         type="default"
                         variant="outlined"
                         htmlType="button"
-                        onClick={() => add()}
+                        onClick={() => {
+                          add({
+                            item_id: "",
+                            remaining_quantity: 0,
+                            price_per_unit: 0,
+                            price_total: 0,
+                          });
+                          renewItemList();
+                        }}
                       >
                         Tambah Item
                       </Button>
