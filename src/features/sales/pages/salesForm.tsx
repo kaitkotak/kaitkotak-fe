@@ -589,7 +589,11 @@ const SalesForm = () => {
                         </Col>
 
                         {fields.length > 1 ? (
-                          <Col span={1} className="my-auto">
+                          <Col
+                            xs={{ span: 2 }}
+                            lg={{ span: 1 }}
+                            className={index === 0 ? "mt-9" : "mt-8 lg:mt-1"}
+                          >
                             <MinusCircleOutlined
                               onClick={() => {
                                 remove(index);

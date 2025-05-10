@@ -198,6 +198,7 @@ const ProductionForm = () => {
                   <InputNumber
                     value={item.quantity}
                     min={0}
+                    precision={0}
                     style={{ textAlign: "center" }}
                     onChange={(val) => manualInputQty(item.id, val)}
                   />

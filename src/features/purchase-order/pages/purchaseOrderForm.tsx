@@ -177,7 +177,7 @@ const PurchaseOrderForm = () => {
           onFinish={submit}
         >
           <Row gutter={16}>
-            <Col span={12}>
+            <Col xs={{ span: 24 }} lg={{ span: 12 }}>
               <Form.Item<IPurchaseOrderForm>
                 label="Tanggal"
                 name="order_date"
@@ -189,7 +189,7 @@ const PurchaseOrderForm = () => {
               </Form.Item>
             </Col>
 
-            <Col span={12}>
+            <Col xs={{ span: 24 }} lg={{ span: 12 }}>
               <Form.Item<IPurchaseOrderForm>
                 label="No Purchase Order"
                 name="order_number"
@@ -206,7 +206,7 @@ const PurchaseOrderForm = () => {
           </Row>
 
           <Row gutter={16}>
-            <Col span={12}>
+            <Col xs={{ span: 24 }} lg={{ span: 12 }}>
               <Form.Item<IPurchaseOrderForm>
                 label="Nama Pelanggan"
                 name="customer_id"
@@ -226,7 +226,7 @@ const PurchaseOrderForm = () => {
               </Form.Item>
             </Col>
 
-            <Col span={12}>
+            <Col xs={{ span: 24 }} lg={{ span: 12 }}>
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item<IPurchaseOrderForm>
@@ -355,7 +355,7 @@ const PurchaseOrderForm = () => {
                       </Form.Item>
                     </Col>
 
-                    <Col xs={{ span: 23 }} lg={{ span: 5 }}>
+                    <Col xs={{ span: 22 }} lg={{ span: 5 }}>
                       <Form.Item
                         label={"Substotal"}
                         labelCol={{
@@ -372,7 +372,11 @@ const PurchaseOrderForm = () => {
                     </Col>
 
                     {fields.length > 1 ? (
-                      <Col span={1} className="my-auto">
+                      <Col
+                        xs={{ span: 2 }}
+                        lg={{ span: 1 }}
+                        className={index === 0 ? "mt-9" : "mt-8 lg:mt-1"}
+                      >
                         <MinusCircleOutlined
                           onClick={() => {
                             remove(index);
