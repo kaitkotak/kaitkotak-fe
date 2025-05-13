@@ -4,6 +4,7 @@ import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import logo from "../../../assets/logo3.png";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import companyImg from "../../../assets/login.jpeg";
 
 const Login = () => {
   const [form] = Form.useForm();
@@ -74,7 +75,7 @@ const Login = () => {
         </div>
       </div>
       <div className="w-2/3 p-2 hidden sm:block">
-        <div className="bg-amber-900 h-full rounded"></div>
+        <img src={companyImg} className="bg-amber-900 h-full rounded" />
       </div>
     </div>
   );
