@@ -155,7 +155,7 @@ const OwnLayout = () => {
           <div className="my-auto mx-0">
             {userInfo ? (
               <Avatar size={40}>
-                {Array.from(userInfo.userInfo?.name ?? "")[0].toUpperCase()}
+                {Array.from(userInfo.userInfo?.name ?? "")[0]?.toUpperCase()}
               </Avatar>
             ) : (
               <Avatar size={40}>?</Avatar>
