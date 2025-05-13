@@ -153,9 +153,13 @@ const OwnLayout = () => {
       >
         <div className="flex gap-2 mb-10 px-4">
           <div className="my-auto mx-0">
-            <Avatar size={40}>
-              {Array.from(userInfo.userInfo?.name ?? "")[0].toUpperCase()}
-            </Avatar>
+            {userInfo ? (
+              <Avatar size={40}>
+                {Array.from(userInfo.userInfo?.name ?? "")[0].toUpperCase()}
+              </Avatar>
+            ) : (
+              <Avatar size={40}>?</Avatar>
+            )}
           </div>
 
           {!collapsed && (
