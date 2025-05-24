@@ -9,6 +9,7 @@ import {
   InputNumber,
   Row,
   Select,
+  Space,
   Spin,
   theme,
 } from "antd";
@@ -176,19 +177,29 @@ const SalesForm = () => {
     renewItemList();
   };
 
-  const handlePurchaseOrderChange = (val: string) => {
-    const selectedPurchaseOrder: IPurchaseOrderList = purchaseOrders.filter(
-      (purchaseOrder: IPurchaseOrderList) => purchaseOrder.id === Number(val)
-    )[0];
+  const handleCustomerChange = (val: string) => {
+    console.log(val);
+    const selectedPurchaseOrder: IPurchaseOrderList[] = purchaseOrders.filter(
+      (purchaseOrder: IPurchaseOrderList) =>
+        purchaseOrder.customer_id === Number(val)
+    );
 
+    console.log(
+      "purchaseOrder",
+      selectedPurchaseOrder.flatMap((selected: IPurchaseOrderList) => [
+        ...selected.purchase_order_items,
+      ])
+    );
     setInintialItemList(val);
 
     setPurchaseOrderNo(val);
     form.setFieldsValue({
-      customer_id: selectedPurchaseOrder.customer_id,
-      tax: selectedPurchaseOrder.tax,
-      price_total: selectedPurchaseOrder.price_total,
-      invoice_items: selectedPurchaseOrder.purchase_order_items,
+      // customer_id: selectedPurchaseOrder.customer_id,
+      // tax: selectedPurchaseOrder.tax,
+      // price_total: selectedPurchaseOrder.price_total,
+      invoice_items: selectedPurchaseOrder.flatMap(
+        (selected: IPurchaseOrderList) => [...selected.purchase_order_items]
+      ),
     });
   };
 
@@ -200,16 +211,30 @@ const SalesForm = () => {
   };
 
   const setInintialItemList = (val: string) => {
-    const selectedPurchaseOrder: IPurchaseOrderList = purchaseOrders.filter(
-      (purchaseOrder: IPurchaseOrderList) => purchaseOrder.id === Number(val)
-    )[0];
+    const selectedPurchaseOrder: IPurchaseOrderList[] = purchaseOrders.filter(
+      (purchaseOrder: IPurchaseOrderList) =>
+        purchaseOrder.customer_id === Number(val)
+    );
+
+    const itemFromCustomer = selectedPurchaseOrder.flatMap(
+      (selected: IPurchaseOrderList) => [...selected.purchase_order_items]
+    );
+
+    const itemFromCustomerIds = itemFromCustomer.map(
+      (val: IPurchaseOrderItems) => val.item_id
+    );
 
     setItemList(() =>
       masterItemList.filter((val: IItemList) => {
         val.disabled = true;
-        return selectedPurchaseOrder.purchase_order_items.some(
-          (item: IPurchaseOrderItems) => item.item_id === val.id
-        );
+        // if (itemFromCustomerIds.includes(val.id)) {
+        //   val.purchase_number = itemFromCustomer.filter(
+        //     (item) =>
+        //       item.item_id === val.id
+        //   )[0].order_number;
+        // }
+
+        return itemFromCustomerIds.includes(val.id);
       })
     );
   };
@@ -315,7 +340,7 @@ const SalesForm = () => {
             </Col>
 
             <Col span={12}>
-              <Form.Item<ISalesForm>
+              {/* <Form.Item<ISalesForm>
                 label="No Purchase Order"
                 name="purchase_order_id"
                 rules={[
@@ -330,7 +355,18 @@ const SalesForm = () => {
                     value: s.id,
                     label: s.order_number,
                   }))}
-                  onChange={handlePurchaseOrderChange}
+                  onChange={handleCustomerChange}
+                />
+              </Form.Item> */}
+              <Form.Item<ISalesForm> label="Nama Pelanggan" name="customer_id">
+                <Select
+                  placeholder="Pilih Pelanggan"
+                  optionFilterProp="label"
+                  options={customerList.map((s: ICustomerList) => ({
+                    value: s.id,
+                    label: s.full_name,
+                  }))}
+                  onChange={handleCustomerChange}
                 />
               </Form.Item>
             </Col>
@@ -517,7 +553,19 @@ const SalesForm = () => {
                                 value: s.id,
                                 label: s.item_name,
                                 disabled: s.disabled,
+                                // purchaseNumber: s.purchaseNumber,
                               }))}
+                              optionRender={(option) => (
+                                <Space>
+                                  <span
+                                    role="img"
+                                    aria-label={option.data.label}
+                                  >
+                                    {option.data.label}
+                                  </span>
+                                  ({option.data.value})
+                                </Space>
+                              )}
                               onChange={(value: number) =>
                                 selectItem(index, value)
                               }
