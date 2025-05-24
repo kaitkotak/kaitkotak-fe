@@ -433,13 +433,7 @@ const SalesForm = () => {
                 <Col xs={{ span: 24 }} lg={{ span: 12 }}>
                   <Row gutter={16}>
                     <Col span={12}>
-                      <Form.Item<ISalesForm>
-                        label="Sales"
-                        name="sales_rep_id"
-                        rules={[
-                          { required: true, message: "Silahkan pilih sales!" },
-                        ]}
-                      >
+                      <Form.Item<ISalesForm> label="Sales" name="sales_rep_id">
                         <Select
                           placeholder="Pilih Sales"
                           optionFilterProp="label"
@@ -455,12 +449,6 @@ const SalesForm = () => {
                       <Form.Item<ISalesForm>
                         label="Transportasi"
                         name="transport_vehicle_id"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Silahkan pilih transportasi!",
-                          },
-                        ]}
                       >
                         <Select
                           placeholder="Pilih Transportasi"
