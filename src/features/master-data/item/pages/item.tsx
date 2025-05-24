@@ -1,4 +1,8 @@
-import { FileAddOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  FileAddOutlined,
+  EditOutlined,
+  FileExcelOutlined,
+} from "@ant-design/icons";
 import {
   Button,
   Space,
@@ -62,6 +66,7 @@ const Item = () => {
     { title: "Nama", dataIndex: "item_name" },
     { title: "Kode", dataIndex: "item_code" },
     { title: "Berat (gr)", dataIndex: "weight_g" },
+    { title: "Stok", dataIndex: "stock" },
     { title: "Harga Jual", dataIndex: "price_per_unit" },
     { title: "Harga Produksi", dataIndex: "cost_per_unit" },
     { title: "Tipe", dataIndex: "type" },
@@ -107,6 +112,13 @@ const Item = () => {
     navigate(path);
   };
 
+  const downloadReport = () => {
+    window.open(
+      `${import.meta.env.VITE_API_URL}/master/items/download/report`,
+      "_blank"
+    );
+  };
+
   return (
     <>
       <Content
@@ -124,16 +136,27 @@ const Item = () => {
             style={{ width: "100%", maxWidth: 150 }}
           />
 
-          {checkPermission("master_item.create") && (
+          <div className="flex gap-2">
             <Button
               color="primary"
               variant="solid"
-              icon={<FileAddOutlined />}
-              onClick={() => goToForm("create")}
+              icon={<FileExcelOutlined />}
+              onClick={() => downloadReport()}
             >
-              <span className="hidden md:inline">Tambah Item</span>
+              <span className="hidden md:inline">Download Laporan</span>
             </Button>
-          )}
+
+            {checkPermission("master_item.create") && (
+              <Button
+                color="primary"
+                variant="solid"
+                icon={<FileAddOutlined />}
+                onClick={() => goToForm("create")}
+              >
+                <span className="hidden md:inline">Tambah Item</span>
+              </Button>
+            )}
+          </div>
         </div>
         <Table
           className="mt-8"
