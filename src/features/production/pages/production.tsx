@@ -3,10 +3,12 @@ import {
   EditOutlined,
   DeleteOutlined,
   BookOutlined,
+  FileExcelOutlined,
 } from "@ant-design/icons";
 import {
   Button,
   DatePicker,
+  DatePickerProps,
   Flex,
   Form,
   FormProps,
@@ -29,6 +31,7 @@ import { useNavigate } from "react-router-dom";
 import { parseDateDDMMYYYY } from "../../../libs/dateParser";
 import useDeleteProduction from "../hooks/useDeleteProduction";
 import { useCheckPermission } from "../../../hooks/useCheckPermission";
+import { Dayjs } from "dayjs";
 
 interface IData {
   id: number;
@@ -54,6 +57,8 @@ const Production = () => {
     });
   const { data, isLoading } = UseGetProductions(paginationParams);
   const [isOpenFormModal, setIsOpenFormModal] = useState<boolean>(false);
+  const [isOpenDownloadFormModal, setIsOpenDownloadFormModal] =
+    useState<boolean>(false);
   const { setBreadcrumb } = useContext(BreadcrumbContext);
   const [form] = Form.useForm();
   const { RangePicker } = DatePicker;
@@ -188,6 +193,48 @@ const Production = () => {
     setIsOpenConfirmationModal(false);
   };
 
+  const downloadReport: FormProps<any>["onFinish"] = (values) => {
+    window.open(
+      `${
+        import.meta.env.VITE_API_URL
+      }/production/download/report?date_from=${values.production_report_date[0].format(
+        "YYYY-MM-DD"
+      )}&date_to=${values.production_report_date[1].format("YYYY-MM-DD")}`,
+      "_blank"
+    );
+    setIsOpenDownloadFormModal(false);
+  };
+
+  const getYearMonth = (date: Dayjs) => date.year() * 12 + date.month();
+
+  const disabled31DaysDate: DatePickerProps["disabledDate"] = (
+    current,
+    { from, type }
+  ) => {
+    if (from) {
+      const minDate = from.add(-30, "days");
+      const maxDate = from.add(30, "days");
+
+      switch (type) {
+        case "year":
+          return (
+            current.year() < minDate.year() || current.year() > maxDate.year()
+          );
+
+        case "month":
+          return (
+            getYearMonth(current) < getYearMonth(minDate) ||
+            getYearMonth(current) > getYearMonth(maxDate)
+          );
+
+        default:
+          return Math.abs(current.diff(from, "days")) >= 31;
+      }
+    }
+
+    return false;
+  };
+
   return (
     <Spin spinning={false}>
       <Content
@@ -207,6 +254,17 @@ const Production = () => {
           />
 
           <div className="flex gap-2">
+            <Button
+              color="primary"
+              variant="solid"
+              icon={<FileExcelOutlined />}
+              onClick={() => {
+                setIsOpenDownloadFormModal(true);
+              }}
+            >
+              <span className="hidden md:inline">Download Laporan</span>
+            </Button>
+
             <Button
               color="primary"
               variant="solid"
@@ -288,6 +346,44 @@ const Production = () => {
         cancelText="Batal"
       >
         <p>Anda yakin ingin menghapus data ini?</p>
+      </Modal>
+
+      <Modal
+        title="Pilih Tanggal Laporan"
+        open={isOpenDownloadFormModal}
+        onCancel={handleCancel}
+        okText="Simpan"
+        cancelText="Batal"
+        footer={null}
+      >
+        <Form
+          form={form}
+          autoComplete="off"
+          layout="vertical"
+          onFinish={downloadReport}
+          className="!mt-4"
+        >
+          <Form.Item<any>
+            name="production_report_date"
+            rules={[
+              { required: true, message: "Silahkan masukan tanggal penjualan" },
+            ]}
+          >
+            <RangePicker
+              style={{ width: "100%" }}
+              format="DD-MM-YYYY"
+              disabledDate={disabled31DaysDate}
+            />
+          </Form.Item>
+
+          <Flex gap="middle" justify="end">
+            <Form.Item label={null}>
+              <Button type="primary" htmlType="submit">
+                Download
+              </Button>
+            </Form.Item>
+          </Flex>
+        </Form>
       </Modal>
     </Spin>
   );

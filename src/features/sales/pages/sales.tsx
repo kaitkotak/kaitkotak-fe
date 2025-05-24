@@ -205,13 +205,13 @@ const Sales = () => {
 
   const getYearMonth = (date: Dayjs) => date.year() * 12 + date.month();
 
-  const disabled7DaysDate: DatePickerProps["disabledDate"] = (
+  const disabled31DaysDate: DatePickerProps["disabledDate"] = (
     current,
     { from, type }
   ) => {
     if (from) {
-      const minDate = from.add(-6, "days");
-      const maxDate = from.add(6, "days");
+      const minDate = from.add(-30, "days");
+      const maxDate = from.add(30, "days");
 
       switch (type) {
         case "year":
@@ -337,7 +337,7 @@ const Sales = () => {
             <RangePicker
               style={{ width: "100%" }}
               format="DD-MM-YYYY"
-              disabledDate={disabled7DaysDate}
+              disabledDate={disabled31DaysDate}
             />
           </Form.Item>
 
