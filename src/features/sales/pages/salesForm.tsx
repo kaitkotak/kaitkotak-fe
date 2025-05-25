@@ -51,7 +51,7 @@ const SalesForm = () => {
   const { data: itemListResponse } = UseGetItemList();
   const [itemList, setItemList] = useState<IItemList[]>([]);
   const [masterItemList, setMasterItemList] = useState<IItemList[]>([]);
-  const [purchaseOrderNo, setPurchaseOrderNo] = useState<string | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
   const { data: salesPeopleListResponse } = UseGetSalesPeopleList();
   const [salesPeople, setSalesPeople] = useState<ISalesPeopleList[]>([]);
   const { data: transportationListResponse } = UseGetTransportatonList();
@@ -80,7 +80,7 @@ const SalesForm = () => {
       form.setFieldsValue(data?.data.data);
       form.setFieldValue("invoice_date", dayjs(data?.data.data.invoice_date));
       form.setFieldValue("due_date", dayjs(data?.data.data.due_date));
-      setPurchaseOrderNo(data?.data.data.purchase_order_id);
+      setSelectedCustomer(data?.data.data.purchase_order_id);
 
       setTimeout(() => {
         setInintialItemList(data?.data.data.purchase_order_id);
@@ -178,29 +178,21 @@ const SalesForm = () => {
   };
 
   const handleCustomerChange = (val: string) => {
-    console.log(val);
     const selectedPurchaseOrder: IPurchaseOrderList[] = purchaseOrders.filter(
       (purchaseOrder: IPurchaseOrderList) =>
         purchaseOrder.customer_id === Number(val)
     );
 
-    console.log(
-      "purchaseOrder",
-      selectedPurchaseOrder.flatMap((selected: IPurchaseOrderList) => [
-        ...selected.purchase_order_items,
-      ])
-    );
     setInintialItemList(val);
+    setSelectedCustomer(val);
 
-    setPurchaseOrderNo(val);
     form.setFieldsValue({
-      // customer_id: selectedPurchaseOrder.customer_id,
-      // tax: selectedPurchaseOrder.tax,
-      // price_total: selectedPurchaseOrder.price_total,
       invoice_items: selectedPurchaseOrder.flatMap(
         (selected: IPurchaseOrderList) => [...selected.purchase_order_items]
       ),
     });
+
+    calculateTotalAmount();
   };
 
   const handleDueDateChange = (val: any) => {
@@ -217,7 +209,12 @@ const SalesForm = () => {
     );
 
     const itemFromCustomer = selectedPurchaseOrder.flatMap(
-      (selected: IPurchaseOrderList) => [...selected.purchase_order_items]
+      (selected: IPurchaseOrderList, index: number) =>
+        selected.purchase_order_items.map((item) => ({
+          ...item,
+          purchase_number: selected.order_number,
+          id: index,
+        }))
     );
 
     const itemFromCustomerIds = itemFromCustomer.map(
@@ -227,13 +224,12 @@ const SalesForm = () => {
     setItemList(() =>
       masterItemList.filter((val: IItemList) => {
         val.disabled = true;
-        // if (itemFromCustomerIds.includes(val.id)) {
-        //   val.purchase_number = itemFromCustomer.filter(
-        //     (item) =>
-        //       item.item_id === val.id
-        //   )[0].order_number;
-        // }
 
+        if (itemFromCustomerIds.includes(val.id)) {
+          val.purchase_number = itemFromCustomer.filter(
+            (item) => item.item_id === val.id
+          )[0].purchase_number;
+        }
         return itemFromCustomerIds.includes(val.id);
       })
     );
@@ -340,24 +336,6 @@ const SalesForm = () => {
             </Col>
 
             <Col span={12}>
-              {/* <Form.Item<ISalesForm>
-                label="No Purchase Order"
-                name="purchase_order_id"
-                rules={[
-                  { required: true, message: "Silahkan pilih purchase order!" },
-                ]}
-              >
-                <Select
-                  placeholder="Pilih Purchase Order"
-                  optionFilterProp="label"
-                  disabled={params && params.id ? true : false}
-                  options={purchaseOrders.map((s: IPurchaseOrderList) => ({
-                    value: s.id,
-                    label: s.order_number,
-                  }))}
-                  onChange={handleCustomerChange}
-                />
-              </Form.Item> */}
               <Form.Item<ISalesForm> label="Nama Pelanggan" name="customer_id">
                 <Select
                   placeholder="Pilih Pelanggan"
@@ -372,27 +350,10 @@ const SalesForm = () => {
             </Col>
           </Row>
 
-          {purchaseOrderNo && (
+          {selectedCustomer && (
             <>
               <Row gutter={16}>
-                <Col xs={{ span: 24 }} lg={{ span: 12 }}>
-                  <Form.Item<ISalesForm>
-                    label="Nama Pelanggan"
-                    name="customer_id"
-                  >
-                    <Select
-                      disabled
-                      placeholder="Pilih Pelanggan"
-                      optionFilterProp="label"
-                      options={customerList.map((s: ICustomerList) => ({
-                        value: s.id,
-                        label: s.full_name,
-                      }))}
-                    />
-                  </Form.Item>
-                </Col>
-
-                <Col xs={{ span: 24 }} lg={{ span: 12 }}>
+                <Col xs={{ span: 24 }} lg={{ span: 24 }}>
                   <Row gutter={16}>
                     <Col span={12}>
                       <Form.Item<ISalesForm>
@@ -539,21 +500,9 @@ const SalesForm = () => {
                               optionFilterProp="label"
                               options={itemList.map((s: IItemList) => ({
                                 value: s.id,
-                                label: s.item_name,
+                                label: `${s.item_name} (${s.purchase_number})`,
                                 disabled: s.disabled,
-                                // purchaseNumber: s.purchaseNumber,
                               }))}
-                              optionRender={(option) => (
-                                <Space>
-                                  <span
-                                    role="img"
-                                    aria-label={option.data.label}
-                                  >
-                                    {option.data.label}
-                                  </span>
-                                  ({option.data.value})
-                                </Space>
-                              )}
                               onChange={(value: number) =>
                                 selectItem(index, value)
                               }

@@ -48,5 +48,5 @@ interface IItemList {
   price_per_unit: string;
   image: string;
   disabled?: boolean;
-  purchase_number: number;
+  purchase_number: string;
 }
