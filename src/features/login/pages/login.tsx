@@ -12,6 +12,12 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (localStorage.getItem("userInfo")) {
+      navigate("/home");
+    }
+  }, []);
+
+  useEffect(() => {
     if (isSuccess) {
       navigate("/home");
     }
