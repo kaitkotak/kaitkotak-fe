@@ -2,9 +2,14 @@ import {
   FileAddOutlined,
   EditOutlined,
   FileExcelOutlined,
+  HddOutlined,
 } from "@ant-design/icons";
 import {
   Button,
+  Flex,
+  Form,
+  InputNumber,
+  Modal,
   Space,
   Table,
   TableColumnsType,
@@ -19,6 +24,7 @@ import { useNavigate } from "react-router-dom";
 import UseGetItems from "../hooks/useGetItems";
 import { BreadcrumbContext } from "../../../../context/breadcrumb";
 import { useCheckPermission } from "../../../../hooks/useCheckPermission";
+import UseGetItemList from "../hooks/useGetItemList";
 
 const Item = () => {
   const {
@@ -40,6 +46,9 @@ const Item = () => {
   const navigate = useNavigate();
   const { setBreadcrumb } = useContext(BreadcrumbContext);
   const checkPermission = useCheckPermission();
+  const [isOpenOpnameModal, setIsOpenOpnameModal] = useState<boolean>(false);
+  const [form] = Form.useForm();
+  const { data: itemListResponse } = UseGetItemList();
 
   useEffect(() => {
     setBreadcrumb([
@@ -61,6 +70,13 @@ const Item = () => {
       },
     });
   }, [data]);
+
+  useEffect(() => {
+    if (itemListResponse) {
+      console.log(itemListResponse);
+      form.setFieldValue("items", itemListResponse.data.data);
+    }
+  }, [itemListResponse]);
 
   const columns: TableColumnsType<IItem> = [
     { title: "Nama", dataIndex: "item_name" },
@@ -119,6 +135,11 @@ const Item = () => {
     );
   };
 
+  const handleCancel = () => {
+    form.resetFields();
+    setIsOpenOpnameModal(false);
+  };
+
   return (
     <>
       <Content
@@ -146,6 +167,15 @@ const Item = () => {
               <span className="hidden md:inline">Download Laporan</span>
             </Button>
 
+            <Button
+              color="primary"
+              variant="solid"
+              icon={<HddOutlined />}
+              onClick={() => setIsOpenOpnameModal(true)}
+            >
+              <span className="hidden md:inline">Stok Opname</span>
+            </Button>
+
             {checkPermission("master_item.create") && (
               <Button
                 color="primary"
@@ -168,6 +198,52 @@ const Item = () => {
           scroll={{ x: "max-content" }}
           onChange={handleTableChange}
         />
+
+        <Modal
+          title="Opname Item Stok"
+          open={isOpenOpnameModal}
+          onCancel={handleCancel}
+          okText="Simpan"
+          cancelText="Batal"
+          footer={null}
+        >
+          <Form
+            form={form}
+            autoComplete="off"
+            // onFinish={downloadReport}
+            className="!mt-4"
+          >
+            <Form.List name="items">
+              {(fields) => (
+                <>
+                  {fields.map(({ key, name }) => (
+                    <Form.Item<any>
+                      name={[name, "stock"]}
+                      label={form.getFieldValue(["items", name, "item_name"])}
+                      key={key}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Silahkan masukan stok",
+                        },
+                      ]}
+                    >
+                      <InputNumber className="w-full" />
+                    </Form.Item>
+                  ))}
+                </>
+              )}
+            </Form.List>
+
+            <Flex gap="middle" justify="end">
+              <Form.Item label={null}>
+                <Button type="primary" htmlType="submit">
+                  Simpan
+                </Button>
+              </Form.Item>
+            </Flex>
+          </Form>
+        </Modal>
       </Content>
     </>
   );
