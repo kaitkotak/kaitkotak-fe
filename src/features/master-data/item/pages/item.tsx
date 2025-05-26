@@ -8,9 +8,11 @@ import {
   Button,
   Flex,
   Form,
+  FormProps,
   InputNumber,
   Modal,
   Space,
+  Spin,
   Table,
   TableColumnsType,
   TableProps,
@@ -25,6 +27,7 @@ import UseGetItems from "../hooks/useGetItems";
 import { BreadcrumbContext } from "../../../../context/breadcrumb";
 import { useCheckPermission } from "../../../../hooks/useCheckPermission";
 import UseGetItemList from "../hooks/useGetItemList";
+import useOpnameItem from "../hooks/useOpnameItem";
 
 const Item = () => {
   const {
@@ -49,6 +52,11 @@ const Item = () => {
   const [isOpenOpnameModal, setIsOpenOpnameModal] = useState<boolean>(false);
   const [form] = Form.useForm();
   const { data: itemListResponse } = UseGetItemList();
+  const {
+    mutateAsync: opnameItem,
+    isSuccess: isOpnameItemSuccess,
+    isPending: isOpnameItemPending,
+  } = useOpnameItem();
 
   useEffect(() => {
     setBreadcrumb([
@@ -73,10 +81,15 @@ const Item = () => {
 
   useEffect(() => {
     if (itemListResponse) {
-      console.log(itemListResponse);
       form.setFieldValue("items", itemListResponse.data.data);
     }
   }, [itemListResponse]);
+
+  useEffect(() => {
+    if (isOpnameItemSuccess) {
+      setIsOpenOpnameModal(false);
+    }
+  }, [isOpnameItemSuccess]);
 
   const columns: TableColumnsType<IItem> = [
     { title: "Nama", dataIndex: "item_name" },
@@ -140,111 +153,128 @@ const Item = () => {
     setIsOpenOpnameModal(false);
   };
 
+  const opnameStock: FormProps<IItemOpnameForm>["onFinish"] = (values) => {
+    const payload: IItemOpnamePayload[] = values.items.map(
+      (value: IItemList) => ({
+        item_id: value.id,
+        stock: value.stock,
+      })
+    );
+
+    opnameItem(payload);
+  };
+
   return (
     <>
-      <Content
-        style={{
-          margin: "24px 16px",
-          padding: 24,
-          background: colorBgContainer,
-          borderRadius: borderRadiusLG,
-        }}
-      >
-        <div className="flex justify-between">
-          <Search
-            placeholder="Pencarian..."
-            onSearch={handleSearch}
-            style={{ width: "100%", maxWidth: 150 }}
-          />
+      <Spin spinning={isOpnameItemPending}>
+        <Content
+          style={{
+            margin: "24px 16px",
+            padding: 24,
+            background: colorBgContainer,
+            borderRadius: borderRadiusLG,
+          }}
+        >
+          <div className="flex justify-between">
+            <Search
+              placeholder="Pencarian..."
+              onSearch={handleSearch}
+              style={{ width: "100%", maxWidth: 150 }}
+            />
 
-          <div className="flex gap-2">
-            <Button
-              color="primary"
-              variant="solid"
-              icon={<FileExcelOutlined />}
-              onClick={() => downloadReport()}
-            >
-              <span className="hidden md:inline">Download Laporan</span>
-            </Button>
-
-            <Button
-              color="primary"
-              variant="solid"
-              icon={<HddOutlined />}
-              onClick={() => setIsOpenOpnameModal(true)}
-            >
-              <span className="hidden md:inline">Stok Opname</span>
-            </Button>
-
-            {checkPermission("master_item.create") && (
+            <div className="flex gap-2">
               <Button
                 color="primary"
                 variant="solid"
-                icon={<FileAddOutlined />}
-                onClick={() => goToForm("create")}
+                icon={<FileExcelOutlined />}
+                onClick={() => downloadReport()}
               >
-                <span className="hidden md:inline">Tambah Item</span>
+                <span className="hidden md:inline">Download Laporan</span>
               </Button>
-            )}
-          </div>
-        </div>
-        <Table
-          className="mt-8"
-          dataSource={items}
-          columns={columns}
-          loading={isLoading}
-          pagination={tableParams.pagination}
-          rowKey={"id"}
-          scroll={{ x: "max-content" }}
-          onChange={handleTableChange}
-        />
 
-        <Modal
-          title="Opname Item Stok"
-          open={isOpenOpnameModal}
-          onCancel={handleCancel}
-          okText="Simpan"
-          cancelText="Batal"
-          footer={null}
-        >
-          <Form
-            form={form}
-            autoComplete="off"
-            // onFinish={downloadReport}
-            className="!mt-4"
-          >
-            <Form.List name="items">
-              {(fields) => (
-                <>
-                  {fields.map(({ key, name }) => (
-                    <Form.Item<any>
-                      name={[name, "stock"]}
-                      label={form.getFieldValue(["items", name, "item_name"])}
-                      key={key}
-                      rules={[
-                        {
-                          required: true,
-                          message: "Silahkan masukan stok",
-                        },
-                      ]}
-                    >
-                      <InputNumber className="w-full" />
-                    </Form.Item>
-                  ))}
-                </>
-              )}
-            </Form.List>
+              <Button
+                color="primary"
+                variant="solid"
+                icon={<HddOutlined />}
+                onClick={() => setIsOpenOpnameModal(true)}
+              >
+                <span className="hidden md:inline">Stok Opname</span>
+              </Button>
 
-            <Flex gap="middle" justify="end">
-              <Form.Item label={null}>
-                <Button type="primary" htmlType="submit">
-                  Simpan
+              {checkPermission("master_item.create") && (
+                <Button
+                  color="primary"
+                  variant="solid"
+                  icon={<FileAddOutlined />}
+                  onClick={() => goToForm("create")}
+                >
+                  <span className="hidden md:inline">Tambah Item</span>
                 </Button>
-              </Form.Item>
-            </Flex>
-          </Form>
-        </Modal>
-      </Content>
+              )}
+            </div>
+          </div>
+          <Table
+            className="mt-8"
+            dataSource={items}
+            columns={columns}
+            loading={isLoading}
+            pagination={tableParams.pagination}
+            rowKey={"id"}
+            scroll={{ x: "max-content" }}
+            onChange={handleTableChange}
+          />
+
+          <Modal
+            title="Opname Item Stok"
+            open={isOpenOpnameModal}
+            onCancel={handleCancel}
+            okText="Simpan"
+            cancelText="Batal"
+            footer={null}
+          >
+            <Form
+              form={form}
+              autoComplete="off"
+              onFinish={opnameStock}
+              className="!mt-4"
+            >
+              <Form.List name="items">
+                {(fields) => (
+                  <>
+                    {fields.map(({ key, name }) => (
+                      <Form.Item<any>
+                        name={[name, "stock"]}
+                        label={form.getFieldValue(["items", name, "item_name"])}
+                        key={key}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Silahkan masukan stok",
+                          },
+                        ]}
+                      >
+                        <InputNumber className="w-full" />
+                      </Form.Item>
+                    ))}
+                  </>
+                )}
+              </Form.List>
+
+              <Flex gap="middle" justify="end">
+                <Form.Item label={null}>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    disabled={isOpnameItemPending}
+                  >
+                    Simpan
+                  </Button>
+                </Form.Item>
+              </Flex>
+            </Form>
+          </Modal>
+        </Content>
+      </Spin>
     </>
   );
 };

@@ -11,7 +11,7 @@ const useCreateSales = () => {
 
   return useMutation({
     mutationKey: ["createSales"],
-    mutationFn: async (paylod: ISalesForm) => {
+    mutationFn: async (paylod: ISalesFormPayload) => {
       return await axiosInstance.post(url, paylod);
     },
     onSuccess: (data) => {

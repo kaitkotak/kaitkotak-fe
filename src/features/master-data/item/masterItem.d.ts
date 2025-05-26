@@ -49,4 +49,14 @@ interface IItemList {
   image: string;
   disabled?: boolean;
   purchase_number: string;
+  stock: number;
+}
+
+interface IItemOpnamePayload {
+  item_id: number;
+  stock: number;
+}
+
+interface IItemOpnameForm {
+  items: IItemList[];
 }

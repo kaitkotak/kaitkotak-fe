@@ -144,7 +144,7 @@ const PurchaseOrderForm = () => {
         .getFieldValue("purchase_order_items")
         .some(
           (selectedItem: IPurchaseOrderItems) =>
-            selectedItem.item_id === item.id
+            selectedItem.item_id === item.id.toString()
         ),
     }));
 

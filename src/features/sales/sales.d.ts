@@ -37,9 +37,9 @@ interface ISalesForm {
   due_days: number;
   price_total: number;
   price_after_tax: number;
-  invoice_items: ISalesItem[];
+  invoice_items: ISalesItemList[];
   po_id: number;
-  invoice_number;
+  invoice_number: string;
 }
 
 interface ISalesItem {
@@ -52,4 +52,46 @@ interface ISalesItem {
   price_total: number;
   price_per_unit: number;
   po_item_id: number;
+}
+
+interface ISalesItemList {
+  id: string;
+  item_id: number;
+  item_name: string;
+  po_id: number;
+  po_number: string;
+  price_per_unit: number;
+  price_total: number;
+  quantity: number;
+  remaining_quantity: number;
+  disabled: boolean;
+}
+
+interface ISalesPurchaseOrderList {
+  id: string;
+  item_id: number;
+  item_name: string;
+  price_per_unit: number;
+  price_total: number;
+  quantity: number;
+  remaining_quantity: number;
+}
+
+interface ISalesFormPayload {
+  customer_id: number;
+  invoice_date: string;
+  due_date: string;
+  due_days: number;
+  tax: number;
+  sales_rep_id: number;
+  transport_vehicle_id: number;
+  invoice_items: ISalesFormPayloadItem[];
+}
+
+interface ISalesFormPayloadItem {
+  po_id: number;
+  item_id: number;
+  quantity: number;
+  price_per_unit: number;
+  price_total: number;
 }

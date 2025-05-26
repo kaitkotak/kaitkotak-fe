@@ -100,7 +100,6 @@ const Sales = () => {
 
   const columns: TableColumnsType<ISales> = [
     { title: "No Invoice", dataIndex: "invoice_number" },
-    { title: "No PO", dataIndex: "purchase_order_no" },
     { title: "Tanggal", dataIndex: "invoice_date" },
     { title: "Pelanggan", dataIndex: "customer_name" },
     { title: "Sales", dataIndex: "sales_rep_name" },

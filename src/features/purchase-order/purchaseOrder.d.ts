@@ -9,7 +9,7 @@ interface IPurchaseOrderForm {
 }
 
 interface IPurchaseOrderItems {
-  item_id: number;
+  item_id: string;
   quantity: number;
   price_per_unit: number;
   price_total: number;

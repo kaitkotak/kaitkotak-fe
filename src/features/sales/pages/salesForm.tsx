@@ -22,7 +22,6 @@ import {
   ProfileOutlined,
 } from "@ant-design/icons";
 import UseGetCustomerList from "../../master-data/customer/hooks/useGetCustomerList";
-import UseGetItemList from "../../master-data/item/hooks/useGetItemList";
 import UseGetSalesPeopleList from "../../master-data/salesPeople/hooks/useGetSalesPeopleList";
 import UseGetTransportatonList from "../../master-data/transportation/hooks/useGetTransportationList";
 import useGetSalesDetail from "../hooks/useGetSalesDetail";
@@ -31,6 +30,7 @@ import useCreateSales from "../hooks/useCreateSales";
 import useUpdateSales from "../hooks/useUpdateSales";
 import UseGetPurchaseOrderList from "../../purchase-order/hooks/useGetPurchaseOrderList";
 import { useCheckPermission } from "../../../hooks/useCheckPermission";
+import UseGetPurchaseOrderItems from "../hooks/useGetPurchaseOrderItems";
 
 const SalesForm = () => {
   const {
@@ -47,9 +47,7 @@ const SalesForm = () => {
   const { setBreadcrumb } = useContext(BreadcrumbContext);
   const { data: customerListResponse } = UseGetCustomerList();
   const [customerList, setCustomerList] = useState<ICustomerList[]>([]);
-  const { data: itemListResponse } = UseGetItemList();
-  const [itemList, setItemList] = useState<IItemList[]>([]);
-  const [masterItemList, setMasterItemList] = useState<IItemList[]>([]);
+  const [itemList, setItemList] = useState<ISalesItemList[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
   const { data: salesPeopleListResponse } = UseGetSalesPeopleList();
   const [salesPeople, setSalesPeople] = useState<ISalesPeopleList[]>([]);
@@ -62,6 +60,12 @@ const SalesForm = () => {
     []
   );
   const checkPermission = useCheckPermission();
+  const {
+    mutateAsync: getPurchaseOrderItems,
+    isPending: isGetPurchaseOrderItemsPending,
+    isSuccess: isGetPurchaseOrderItemsSuccess,
+    data: purchaseOrderItemsResponse,
+  } = UseGetPurchaseOrderItems();
 
   useEffect(() => {
     setBreadcrumb([
@@ -75,15 +79,20 @@ const SalesForm = () => {
   }, []);
 
   useEffect(() => {
-    if (params.id) {
-      form.setFieldsValue(data?.data.data);
-      form.setFieldValue("invoice_date", dayjs(data?.data.data.invoice_date));
-      form.setFieldValue("due_date", dayjs(data?.data.data.due_date));
-      setSelectedCustomer(data?.data.data.purchase_order_id);
+    if (params.id && data) {
+      getPurchaseOrderItems(data?.data.data.customer_id);
+      form.setFieldsValue({
+        ...data?.data.data,
+        invoice_date: dayjs(data?.data.data.invoice_date),
+        due_date: dayjs(data?.data.data.due_date),
+        invoice_items: data?.data.data.invoice_items.map((item: any) => ({
+          ...item,
+          id: `${item.purchase_order_id}-${item.item_id}`,
+          po_id: item.purchase_order_id,
+        })),
+      });
 
-      setTimeout(() => {
-        setInintialItemList(data?.data.data.purchase_order_id);
-      }, 100);
+      setSelectedCustomer(data?.data.data.customer_id);
     }
   }, [data]);
 
@@ -92,13 +101,6 @@ const SalesForm = () => {
       setCustomerList(customerListResponse.data.data);
     }
   }, [customerListResponse]);
-
-  useEffect(() => {
-    if (itemListResponse) {
-      setItemList(itemListResponse.data.data);
-      setMasterItemList(itemListResponse.data.data);
-    }
-  }, [itemListResponse]);
 
   useEffect(() => {
     if (salesPeopleListResponse) {
@@ -118,20 +120,43 @@ const SalesForm = () => {
     }
   }, [purchaseOrderResponse]);
 
+  useEffect(() => {
+    if (isGetPurchaseOrderItemsSuccess && purchaseOrderItemsResponse) {
+      setItemList(
+        purchaseOrderItemsResponse.data.data.map(
+          (response: ISalesItemList) => ({
+            ...response,
+            disabled: true,
+          })
+        )
+      );
+    }
+  }, [isGetPurchaseOrderItemsSuccess]);
+
   const submit: FormProps<ISalesForm>["onFinish"] = (values) => {
-    values.invoice_date = dayjs(values.invoice_date).format("YYYY-MM-DD");
-    values.due_date = dayjs(values.due_date).format("YYYY-MM-DD");
-    values.invoice_items = values.invoice_items.map((item: ISalesItem) => {
-      item.po_item_id = item.id;
-      return item;
-    });
-    values.po_id = values.purchase_order_id;
-    delete values.invoice_number;
+    const payload: ISalesFormPayload = {
+      customer_id: values.customer_id,
+      invoice_date: dayjs(values.invoice_date).format("YYYY-MM-DD"),
+      due_date: dayjs(values.due_date).format("YYYY-MM-DD"),
+      due_days: values.due_days,
+      tax: values.tax,
+      sales_rep_id: values.sales_rep_id,
+      transport_vehicle_id: values.transport_vehicle_id,
+      invoice_items: values.invoice_items.map(
+        (item: ISalesFormPayloadItem) => ({
+          po_id: item.po_id,
+          item_id: item.item_id,
+          quantity: item.quantity,
+          price_per_unit: item.price_per_unit,
+          price_total: item.price_total,
+        })
+      ),
+    };
 
     if (params.id) {
-      update({ ...values, id: params.id });
+      update({ payload, id: params.id });
     } else {
-      create(values);
+      create(payload);
     }
   };
 
@@ -161,9 +186,9 @@ const SalesForm = () => {
     form.setFieldValue("price_total", totalAmount);
   };
 
-  const selectItem = (idx: number, value: number) => {
-    const selectedItem: IItemList = itemList.filter(
-      (item: IItemList) => item.id === value
+  const selectItem = (idx: number, value: string) => {
+    const selectedItem: ISalesItemList = itemList.filter(
+      (item: ISalesItemList) => item.id === value
     )[0];
 
     form.setFieldValue(
@@ -177,17 +202,22 @@ const SalesForm = () => {
   };
 
   const handleCustomerChange = (val: string) => {
+    getPurchaseOrderItems(val);
     const selectedPurchaseOrder: IPurchaseOrderList[] = purchaseOrders.filter(
       (purchaseOrder: IPurchaseOrderList) =>
         purchaseOrder.customer_id === Number(val)
     );
 
-    setInintialItemList(val);
     setSelectedCustomer(val);
 
     form.setFieldsValue({
       invoice_items: selectedPurchaseOrder.flatMap(
-        (selected: IPurchaseOrderList) => [...selected.purchase_order_items]
+        (selected: IPurchaseOrderList) =>
+          selected.purchase_order_items.map((item) => ({
+            ...item,
+            id: `${selected.id}-${item.item_id}`,
+            po_id: selected.id,
+          }))
       ),
     });
 
@@ -201,55 +231,30 @@ const SalesForm = () => {
     );
   };
 
-  const setInintialItemList = (val: string) => {
-    const selectedPurchaseOrder: IPurchaseOrderList[] = purchaseOrders.filter(
-      (purchaseOrder: IPurchaseOrderList) =>
-        purchaseOrder.customer_id === Number(val)
-    );
-
-    const itemFromCustomer = selectedPurchaseOrder.flatMap(
-      (selected: IPurchaseOrderList, index: number) =>
-        selected.purchase_order_items.map((item) => ({
-          ...item,
-          purchase_number: selected.order_number,
-          id: index,
-        }))
-    );
-
-    const itemFromCustomerIds = itemFromCustomer.map(
-      (val: IPurchaseOrderItems) => val.item_id
-    );
-
-    setItemList(() =>
-      masterItemList.filter((val: IItemList) => {
-        val.disabled = true;
-
-        if (itemFromCustomerIds.includes(val.id)) {
-          val.purchase_number = itemFromCustomer.filter(
-            (item) => item.item_id === val.id
-          )[0].purchase_number;
-        }
-        return itemFromCustomerIds.includes(val.id);
+  const renewItemList = () => {
+    let newItemList: ISalesItemList[] = itemList.map(
+      (item: ISalesItemList) => ({
+        ...item,
+        disabled: form
+          .getFieldValue("invoice_items")
+          .some(
+            (selectedItem: ISalesPurchaseOrderList) =>
+              selectedItem.id === item.id
+          ),
       })
     );
-  };
-
-  const renewItemList = () => {
-    let newItemList: IItemList[] = itemList.map((item: IItemList) => ({
-      ...item,
-      disabled: form
-        .getFieldValue("invoice_items")
-        .some(
-          (selectedItem: IPurchaseOrderItems) =>
-            selectedItem.item_id === item.id
-        ),
-    }));
-
     setItemList(newItemList);
   };
 
   return (
-    <Spin spinning={isLoading || isPendingCreate || isPendingUpdate}>
+    <Spin
+      spinning={
+        isLoading ||
+        isPendingCreate ||
+        isPendingUpdate ||
+        isGetPurchaseOrderItemsPending
+      }
+    >
       <Content
         style={{
           margin: "24px 16px",
@@ -349,7 +354,7 @@ const SalesForm = () => {
             </Col>
           </Row>
 
-          {selectedCustomer && (
+          {selectedCustomer && !isGetPurchaseOrderItemsPending && (
             <>
               <Row gutter={16}>
                 <Col xs={{ span: 24 }} lg={{ span: 24 }}>
@@ -481,7 +486,7 @@ const SalesForm = () => {
                           <Form.Item
                             label={"Kode Item"}
                             {...restField}
-                            name={[name, "item_id"]}
+                            name={[name, "id"]}
                             labelCol={{
                               className:
                                 index === 0 ? "block" : "lg:hidden block",
@@ -497,12 +502,12 @@ const SalesForm = () => {
                               showSearch
                               placeholder="Pilih Item"
                               optionFilterProp="label"
-                              options={itemList.map((s: IItemList) => ({
+                              options={itemList.map((s: ISalesItemList) => ({
                                 value: s.id,
-                                label: `${s.item_name} (${s.purchase_number})`,
+                                label: `${s.item_name} (${s.po_number})`,
                                 disabled: s.disabled,
                               }))}
-                              onChange={(value: number) =>
+                              onChange={(value: string) =>
                                 selectItem(index, value)
                               }
                             />
