@@ -149,7 +149,6 @@ const Item = () => {
   };
 
   const handleCancel = () => {
-    form.resetFields();
     setIsOpenOpnameModal(false);
   };
 
