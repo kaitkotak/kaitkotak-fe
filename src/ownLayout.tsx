@@ -42,6 +42,12 @@ const OwnLayout = () => {
       permission: "sales.access",
     },
     {
+      key: "/payment",
+      label: "Pembayaran",
+      icon: <ShopOutlined />,
+      permission: "payment.access",
+    },
+    {
       key: "/raw-material",
       label: "Bahan Baku",
       icon: <SwitcherOutlined />,

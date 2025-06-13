@@ -60,6 +60,7 @@ axiosInstance.interceptors.response.use(
 
         if (err.response?.status === 400) {
           window.location.href = "/login";
+          localStorage.removeItem("userInfo");
         }
 
         return Promise.reject(err);

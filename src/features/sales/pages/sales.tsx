@@ -3,6 +3,7 @@ import {
   EditOutlined,
   DeleteOutlined,
   FileExcelOutlined,
+  BookOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -103,10 +104,20 @@ const Sales = () => {
     { title: "Tanggal", dataIndex: "invoice_date" },
     { title: "Pelanggan", dataIndex: "customer_name" },
     { title: "Sales", dataIndex: "sales_rep_name" },
+    { title: "Status Pembayaran", dataIndex: "payment_status" },
     {
       dataIndex: "action",
       render: (_, record) => (
         <Space size="middle">
+          {record.payment_status !== "Belum Dibayar" && (
+            <Tooltip title="Riwayat Pembayaran">
+              <BookOutlined
+                className="cursor-pointer"
+                onClick={() => navigate(`payment-history/${record.id}`)}
+              />
+            </Tooltip>
+          )}
+
           {checkPermission("sales.update") && (
             <Tooltip title="Edit">
               <EditOutlined

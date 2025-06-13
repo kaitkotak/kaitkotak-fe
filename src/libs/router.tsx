@@ -23,6 +23,9 @@ import OwnLayout from "../ownLayout";
 import ProtectedRoute from "./protectedRoute";
 import AccessDeniedPage from "../features/error/pages/accessDenied";
 import Home from "../features/home/pages/home";
+import PaymentHistories from "../features/payment/pages/paymentHistories";
+import PaymentForm from "../features/payment/pages/paymentForm";
+import PaymentHistory from "../features/sales/pages/paymentHistory";
 
 export const router = createBrowserRouter([
   {
@@ -135,6 +138,43 @@ export const router = createBrowserRouter([
                 element: (
                   <ProtectedRoute requiredPermission="sales.update">
                     <SalesForm />
+                  </ProtectedRoute>
+                ),
+              },
+              {
+                path: "payment-history/:id",
+                element: (
+                  <ProtectedRoute requiredPermission="sales.access">
+                    <PaymentHistory />
+                  </ProtectedRoute>
+                ),
+              },
+            ],
+          },
+          {
+            path: "payment",
+            children: [
+              {
+                path: "",
+                element: (
+                  <ProtectedRoute requiredPermission="payment.access">
+                    <PaymentHistories />
+                  </ProtectedRoute>
+                ),
+              },
+              {
+                path: "create",
+                element: (
+                  <ProtectedRoute requiredPermission="payment.create">
+                    <PaymentForm />
+                  </ProtectedRoute>
+                ),
+              },
+              {
+                path: "edit/:id",
+                element: (
+                  <ProtectedRoute requiredPermission="payment.update">
+                    <PaymentForm />
                   </ProtectedRoute>
                 ),
               },

@@ -15,7 +15,10 @@ interface ISales {
   due_days: number;
   price_total: number;
   price_after_tax: number;
+  payment_status: PaymentStatus;
 }
+
+type PaymentStatus = "Belum Dibayar" | "Belum Lunas" | "Lunas";
 
 interface ISalesForm {
   id: string;
