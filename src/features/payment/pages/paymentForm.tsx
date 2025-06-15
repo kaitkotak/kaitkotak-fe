@@ -401,7 +401,7 @@ const PaymentForm = () => {
                         </Form.Item>
                       )}
 
-                      {checkPermission("sales.update") && (
+                      {checkPermission("payment.update") && (
                         <Form.Item label={null}>
                           <Button type="primary" htmlType="submit">
                             Simpan
