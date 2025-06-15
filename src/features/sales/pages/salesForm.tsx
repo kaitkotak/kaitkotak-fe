@@ -246,6 +246,13 @@ const SalesForm = () => {
     setItemList(newItemList);
   };
 
+  const updateDueDate = () => {
+    const date = dayjs(form.getFieldValue("due_date"));
+    const dueDays = form.getFieldValue("due_days");
+
+    form.setFieldValue("due_date", date.add(dueDays, "day"));
+  };
+
   return (
     <Spin
       spinning={
@@ -453,7 +460,10 @@ const SalesForm = () => {
 
                     <Col span={6}>
                       <Form.Item<ISalesForm> label="Hari" name="due_days">
-                        <InputNumber style={{ width: "100%" }} />
+                        <InputNumber
+                          style={{ width: "100%" }}
+                          onChange={updateDueDate}
+                        />
                       </Form.Item>
                     </Col>
                   </Row>
