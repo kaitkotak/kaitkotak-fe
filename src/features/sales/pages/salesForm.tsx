@@ -140,8 +140,8 @@ const SalesForm = () => {
       due_date: dayjs(values.due_date).format("YYYY-MM-DD"),
       due_days: values.due_days,
       tax: values.tax,
-      sales_rep_id: values.sales_rep_id,
-      transport_vehicle_id: values.transport_vehicle_id,
+      sales_rep_id: values.sales_rep_id ?? 0,
+      transport_vehicle_id: values.transport_vehicle_id ?? 0,
       invoice_items: values.invoice_items.map(
         (item: ISalesFormPayloadItem) => ({
           po_id: item.po_id,
@@ -413,6 +413,7 @@ const SalesForm = () => {
                             value: s.id,
                             label: s.full_name,
                           }))}
+                          allowClear={true}
                         />
                       </Form.Item>
                     </Col>
@@ -431,6 +432,7 @@ const SalesForm = () => {
                               label: s.driver_name,
                             })
                           )}
+                          allowClear={true}
                         />
                       </Form.Item>
                     </Col>
