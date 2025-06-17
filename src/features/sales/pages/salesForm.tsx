@@ -140,8 +140,8 @@ const SalesForm = () => {
       due_date: dayjs(values.due_date).format("YYYY-MM-DD"),
       due_days: values.due_days,
       tax: values.tax,
-      sales_rep_id: values.sales_rep_id ?? 0,
-      transport_vehicle_id: values.transport_vehicle_id ?? 0,
+      sales_rep_id: values.sales_rep_id ?? "",
+      transport_vehicle_id: values.transport_vehicle_id ?? "",
       invoice_items: values.invoice_items.map(
         (item: ISalesFormPayloadItem) => ({
           po_id: item.po_id,
