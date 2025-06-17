@@ -23,6 +23,7 @@ import useCreatePayment from "../hooks/useCreatePayment";
 import useUpdatePayment from "../hooks/useUpdatePayment";
 import UseGetPayment from "../hooks/useGetPayment";
 import UseGetPaymentInvoices from "../hooks/useGetPaymentInvoices";
+import UseGetAllPaymentInvoices from "../hooks/useGetAllPaymentInvoices";
 
 const PaymentForm = () => {
   const {
@@ -48,6 +49,12 @@ const PaymentForm = () => {
     isSuccess: isGetPaymentInvoicesSuccess,
     data: paymentInvoicesResponse,
   } = UseGetPaymentInvoices();
+  const {
+    mutateAsync: getAllPaymentInvoices,
+    isPending: isAllGetPaymentInvoicesPending,
+    isSuccess: isAllGetPaymentInvoicesSuccess,
+    data: allPaymentInvoicesResponse,
+  } = UseGetAllPaymentInvoices();
 
   useEffect(() => {
     setBreadcrumb([
@@ -61,15 +68,18 @@ const PaymentForm = () => {
   }, []);
 
   useEffect(() => {
-    if (params.id && data) {
-      getPaymentInvoices(data?.data.data.customer_id);
-      form.setFieldsValue({
-        ...data?.data.data,
-        created_at: dayjs(data?.data.data.created_at),
-        payment_items: data?.data.data.invoice_items,
-      });
+    if (data) {
+      if (params.id) {
+        getAllPaymentInvoices(data?.data.data.customer_id);
+        getPaymentInvoices(data?.data.data.customer_id);
+        form.setFieldsValue({
+          ...data?.data.data,
+          created_at: dayjs(data?.data.data.created_at),
+          payment_items: data?.data.data.invoice_items,
+        });
 
-      setSelectedCustomer(data?.data.data.customer_id);
+        setSelectedCustomer(data?.data.data.customer_id);
+      }
     }
   }, [data]);
 
@@ -80,9 +90,22 @@ const PaymentForm = () => {
   }, [customerListResponse]);
 
   useEffect(() => {
-    if (isGetPaymentInvoicesSuccess && paymentInvoicesResponse) {
+    if (!params.id && isGetPaymentInvoicesSuccess) {
+      form.setFieldsValue({
+        payment_items: paymentInvoicesResponse.data.data.map(
+          (selected: IPaymentInvoiceList) => ({
+            ...selected,
+            invoice_id: selected.id,
+          })
+        ),
+      });
+    }
+  }, [isGetPaymentInvoicesSuccess]);
+
+  useEffect(() => {
+    if (isAllGetPaymentInvoicesSuccess && allPaymentInvoicesResponse) {
       setInvoiceList(
-        paymentInvoicesResponse.data.data.map(
+        allPaymentInvoicesResponse.data.data.map(
           (response: IPaymentInvoiceList) => ({
             ...response,
             invoice_id: response.id,
@@ -97,19 +120,8 @@ const PaymentForm = () => {
           })
         )
       );
-
-      if (!params.id) {
-        form.setFieldsValue({
-          payment_items: paymentInvoicesResponse.data.data.map(
-            (selected: IPaymentInvoiceList) => ({
-              ...selected,
-              invoice_id: selected.id,
-            })
-          ),
-        });
-      }
     }
-  }, [isGetPaymentInvoicesSuccess]);
+  }, [isAllGetPaymentInvoicesSuccess]);
 
   const submit: FormProps<IPaymentForm>["onFinish"] = (values) => {
     const payload: IPaymentFormPayload = {
@@ -153,6 +165,7 @@ const PaymentForm = () => {
 
   const handleCustomerChange = (val: string) => {
     getPaymentInvoices(val);
+    getAllPaymentInvoices(val);
     setSelectedCustomer(val);
     calculateTotalAmount();
   };
@@ -178,7 +191,8 @@ const PaymentForm = () => {
         isLoading ||
         isPendingCreate ||
         isPendingUpdate ||
-        isGetPaymentInvoicesPending
+        isGetPaymentInvoicesPending ||
+        isAllGetPaymentInvoicesPending
       }
     >
       <Content
@@ -210,6 +224,7 @@ const PaymentForm = () => {
                     value: s.id,
                     label: s.full_name,
                   }))}
+                  disabled={params.id ? true : false}
                   onChange={handleCustomerChange}
                 />
               </Form.Item>
