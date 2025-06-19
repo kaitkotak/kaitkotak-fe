@@ -220,8 +220,8 @@ const Sales = () => {
     { from, type }
   ) => {
     if (from) {
-      const minDate = from.add(-30, "days");
-      const maxDate = from.add(30, "days");
+      const minDate = from.add(-31, "days");
+      const maxDate = from.add(31, "days");
 
       switch (type) {
         case "year":
@@ -236,7 +236,7 @@ const Sales = () => {
           );
 
         default:
-          return Math.abs(current.diff(from, "days")) >= 7;
+          return Math.abs(current.diff(from, "days")) >= 31;
       }
     }
 

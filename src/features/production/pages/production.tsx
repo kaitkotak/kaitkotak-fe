@@ -179,6 +179,11 @@ const Production = () => {
     setIsOpenFormModal(false);
   };
 
+  const handleCancelDownloadReport = () => {
+    form.resetFields();
+    setIsOpenDownloadFormModal(false);
+  };
+
   const goToForm = (id?: number) => {
     navigate(`edit/${id}`);
   };
@@ -212,8 +217,8 @@ const Production = () => {
     { from, type }
   ) => {
     if (from) {
-      const minDate = from.add(-30, "days");
-      const maxDate = from.add(30, "days");
+      const minDate = from.add(-31, "days");
+      const maxDate = from.add(31, "days");
 
       switch (type) {
         case "year":
@@ -351,7 +356,7 @@ const Production = () => {
       <Modal
         title="Pilih Tanggal Laporan"
         open={isOpenDownloadFormModal}
-        onCancel={handleCancel}
+        onCancel={handleCancelDownloadReport}
         okText="Simpan"
         cancelText="Batal"
         footer={null}
@@ -366,7 +371,7 @@ const Production = () => {
           <Form.Item<any>
             name="production_report_date"
             rules={[
-              { required: true, message: "Silahkan masukan tanggal penjualan" },
+              { required: true, message: "Silahkan masukan tanggal produksi" },
             ]}
           >
             <RangePicker

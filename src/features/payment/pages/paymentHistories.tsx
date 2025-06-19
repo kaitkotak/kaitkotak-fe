@@ -2,6 +2,7 @@ import {
   FileAddOutlined,
   EditOutlined,
   FileExcelOutlined,
+  FileTextOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -138,6 +139,15 @@ const PaymentHistories = () => {
 
   const downloadDebt = () => {
     window.open(
+      `${
+        import.meta.env.VITE_API_URL
+      }/payment/download/accounts-receivable?overdue=true`,
+      "_blank"
+    );
+  };
+
+  const downloadReport = () => {
+    window.open(
       `${import.meta.env.VITE_API_URL}/payment/download/accounts-receivable`,
       "_blank"
     );
@@ -179,6 +189,15 @@ const PaymentHistories = () => {
               onClick={downloadDebt}
             >
               <span className="hidden md:inline">Download Penagihan</span>
+            </Button>
+
+            <Button
+              color="primary"
+              variant="solid"
+              icon={<FileTextOutlined />}
+              onClick={downloadReport}
+            >
+              <span className="hidden md:inline">Download Laporan</span>
             </Button>
 
             {checkPermission("payment.create") && (
