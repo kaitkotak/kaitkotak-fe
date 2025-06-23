@@ -126,7 +126,10 @@ const PaymentForm = () => {
   const submit: FormProps<IPaymentForm>["onFinish"] = (values) => {
     const payload: IPaymentFormPayload = {
       customer_id: values.customer_id,
-      payment_items: values.payment_items,
+      payment_items: values.payment_items.map((paymentitem: any) => ({
+        invoice_id: paymentitem.invoice_id,
+        amount: paymentitem.amount,
+      })),
     };
 
     if (params.id) {
