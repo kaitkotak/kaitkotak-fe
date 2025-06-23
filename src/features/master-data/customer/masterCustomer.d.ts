@@ -16,3 +16,7 @@ interface ICustomerList {
   customer_code: string;
   full_name: string;
 }
+
+interface ICustomerListParams {
+  payment: boolean
+}

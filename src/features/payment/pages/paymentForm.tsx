@@ -38,7 +38,7 @@ const PaymentForm = () => {
   const { data, isLoading } = UseGetPayment(params.id ?? "");
   const [form] = Form.useForm();
   const { setBreadcrumb } = useContext(BreadcrumbContext);
-  const { data: customerListResponse } = UseGetCustomerList();
+  const { data: customerListResponse } = UseGetCustomerList({payment: true});
   const [customerList, setCustomerList] = useState<ICustomerList[]>([]);
   const [invoicesList, setInvoiceList] = useState<IPaymentInvoiceList[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
