@@ -3,8 +3,7 @@ import axiosInstance from "../../../../libs/axios";
 import {generateUrlWithParams} from "../../../../libs/generateUrlWithParams.ts";
 
 const UseGetCustomerList = (props?: ICustomerListParams) => {
-  // const url: string = `/master/customers/all`;
-  const url: string = generateUrlWithParams(`/master/customers?`, props);
+  const url: string = generateUrlWithParams(`/master/customers/all?`, props);
   return useQuery({
     queryKey: ["masterCustomersList"],
     queryFn: async () => axiosInstance.get(url),
