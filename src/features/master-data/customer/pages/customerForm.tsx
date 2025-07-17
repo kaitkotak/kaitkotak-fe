@@ -28,7 +28,7 @@ import UseGetSalesPeople from "../../salesPeople/hooks/useGetSalesPeople";
 import { BreadcrumbContext } from "../../../../context/breadcrumb";
 import useUpload from "../../../../hooks/useUpload";
 import { getBase64 } from "../../../../libs/getBase64";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, ReloadOutlined } from "@ant-design/icons";
 import { useCheckPermission } from "../../../../hooks/useCheckPermission";
 
 const CustomerForm = () => {
@@ -59,7 +59,7 @@ const CustomerForm = () => {
       pageSize: 100,
     },
   });
-  const { data: salesResponse } = UseGetSalesPeople({
+  const { data: salesResponse, refetch: refetchSales, isLoading: isSalesLoading, isRefetching: isSalesRefecthing } = UseGetSalesPeople({
     page: SalesParams.pagination.current,
     limit: SalesParams.pagination.pageSize,
   });
@@ -155,7 +155,7 @@ const CustomerForm = () => {
   return (
     <Spin
       spinning={
-        isLoading || isPendingCreate || isPendingUpdate || isPendingUpload
+        isLoading || isPendingCreate || isPendingUpdate || isPendingUpload || isSalesLoading || isSalesRefecthing
       }
     >
       <Content
@@ -166,6 +166,13 @@ const CustomerForm = () => {
           borderRadius: borderRadiusLG,
         }}
       >
+        <div className="flex justify-end">
+          <Button onClick={() => refetchSales()} icon={<ReloadOutlined />} className={'mb-4'} color="primary"
+                  variant="solid">
+            <span className="hidden md:inline">Refresh Data Master</span>
+          </Button>
+        </div>
+
         <Form
           form={form}
           autoComplete="off"
