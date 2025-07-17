@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import UseGetSalesPeople from "../hooks/useGetSalesPeople";
 import useDeleteSalesPeople from "../hooks/useDeleteSalesPeople";
 import { BreadcrumbContext } from "../../../../context/breadcrumb";
+import { useCheckPermission } from "../../../../hooks/useCheckPermission";
 
 interface IData {
   id: string;
@@ -51,6 +52,7 @@ const SalesPeople = () => {
     useState<boolean>(false);
   const [selectedRowId, setSelectedRowId] = useState<string>("");
   const { setBreadcrumb } = useContext(BreadcrumbContext);
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([
@@ -81,19 +83,23 @@ const SalesPeople = () => {
       dataIndex: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="Edit">
-            <EditOutlined
-              className="cursor-pointer"
-              onClick={() => goToForm("edit", record.id)}
-            />
-          </Tooltip>
+          {checkPermission("master_sales.update") && (
+            <Tooltip title="Edit">
+              <EditOutlined
+                className="cursor-pointer"
+                onClick={() => goToForm("edit", record.id)}
+              />
+            </Tooltip>
+          )}
 
-          <Tooltip title="Hapus">
-            <DeleteOutlined
-              className="cursor-pointer"
-              onClick={() => openDeleteConfirmation(record.id)}
-            />
-          </Tooltip>
+          {checkPermission("master_sales.delete") && (
+            <Tooltip title="Hapus">
+              <DeleteOutlined
+                className="cursor-pointer"
+                onClick={() => openDeleteConfirmation(record.id)}
+              />
+            </Tooltip>
+          )}
         </Space>
       ),
     },
@@ -165,14 +171,16 @@ const SalesPeople = () => {
             style={{ width: "100%", maxWidth: 150 }}
           />
 
-          <Button
-            color="primary"
-            variant="solid"
-            icon={<FileAddOutlined />}
-            onClick={() => goToForm("create")}
-          >
-            <span className="hidden md:inline">Tambah Sales</span>
-          </Button>
+          {checkPermission("master_sales.create") && (
+            <Button
+              color="primary"
+              variant="solid"
+              icon={<FileAddOutlined />}
+              onClick={() => goToForm("create")}
+            >
+              <span className="hidden md:inline">Tambah Sales</span>
+            </Button>
+          )}
         </div>
         <Table
           className="mt-8"
@@ -180,6 +188,7 @@ const SalesPeople = () => {
           columns={columns}
           loading={isLoading}
           pagination={tableParams.pagination}
+          rowKey={"id"}
           scroll={{ x: "max-content" }}
           onChange={handleTableChange}
         />

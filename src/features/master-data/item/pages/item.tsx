@@ -1,12 +1,18 @@
 import {
   FileAddOutlined,
   EditOutlined,
-  DeleteOutlined,
+  FileExcelOutlined,
+  HddOutlined,
 } from "@ant-design/icons";
 import {
   Button,
+  Flex,
+  Form,
+  FormProps,
+  InputNumber,
   Modal,
   Space,
+  Spin,
   Table,
   TableColumnsType,
   TableProps,
@@ -18,8 +24,10 @@ import { Content } from "antd/es/layout/layout";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UseGetItems from "../hooks/useGetItems";
-import useDeleteItem from "../hooks/useDeleteItem";
 import { BreadcrumbContext } from "../../../../context/breadcrumb";
+import { useCheckPermission } from "../../../../hooks/useCheckPermission";
+import UseGetItemList from "../hooks/useGetItemList";
+import useOpnameItem from "../hooks/useOpnameItem";
 
 const Item = () => {
   const {
@@ -38,12 +46,17 @@ const Item = () => {
       limit: tableParams.pagination.pageSize,
     });
   const { data, isLoading } = UseGetItems(paginationParams);
-  const { mutateAsync: deleteAction } = useDeleteItem();
   const navigate = useNavigate();
-  const [isOpenConfirmationModal, setIsOpenConfirmationModal] =
-    useState<boolean>(false);
-  const [selectedRowId, setSelectedRowId] = useState<number>(0);
   const { setBreadcrumb } = useContext(BreadcrumbContext);
+  const checkPermission = useCheckPermission();
+  const [isOpenOpnameModal, setIsOpenOpnameModal] = useState<boolean>(false);
+  const [form] = Form.useForm();
+  const { data: itemListResponse } = UseGetItemList();
+  const {
+    mutateAsync: opnameItem,
+    isSuccess: isOpnameItemSuccess,
+    isPending: isOpnameItemPending,
+  } = useOpnameItem();
 
   useEffect(() => {
     setBreadcrumb([
@@ -66,10 +79,23 @@ const Item = () => {
     });
   }, [data]);
 
+  useEffect(() => {
+    if (itemListResponse) {
+      form.setFieldValue("items", itemListResponse.data.data);
+    }
+  }, [itemListResponse]);
+
+  useEffect(() => {
+    if (isOpnameItemSuccess) {
+      setIsOpenOpnameModal(false);
+    }
+  }, [isOpnameItemSuccess]);
+
   const columns: TableColumnsType<IItem> = [
     { title: "Nama", dataIndex: "item_name" },
     { title: "Kode", dataIndex: "item_code" },
     { title: "Berat (gr)", dataIndex: "weight_g" },
+    { title: "Stok", dataIndex: "stock" },
     { title: "Harga Jual", dataIndex: "price_per_unit" },
     { title: "Harga Produksi", dataIndex: "cost_per_unit" },
     { title: "Tipe", dataIndex: "type" },
@@ -78,28 +104,18 @@ const Item = () => {
       dataIndex: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="Edit">
-            <EditOutlined
-              className="cursor-pointer"
-              onClick={() => goToForm("edit", record.id)}
-            />
-          </Tooltip>
-
-          <Tooltip title="Hapus">
-            <DeleteOutlined
-              className="cursor-pointer"
-              onClick={() => openDeleteConfirmation(record.id)}
-            />
-          </Tooltip>
+          {checkPermission("master_item.update") && (
+            <Tooltip title="Edit">
+              <EditOutlined
+                className="cursor-pointer"
+                onClick={() => goToForm("edit", record.id)}
+              />
+            </Tooltip>
+          )}
         </Space>
       ),
     },
   ];
-
-  const openDeleteConfirmation = (id: number) => {
-    setIsOpenConfirmationModal(true);
-    setSelectedRowId(id);
-  };
 
   const handleTableChange: TableProps<IItem>["onChange"] = (pagination) => {
     setTableParams({
@@ -125,62 +141,139 @@ const Item = () => {
     navigate(path);
   };
 
-  const handleOk = () => {
-    deleteAction({ id: selectedRowId });
-    setIsOpenConfirmationModal(false);
+  const downloadReport = () => {
+    window.open(
+      `${import.meta.env.VITE_API_URL}/master/items/download/report`,
+      "_blank"
+    );
   };
 
   const handleCancel = () => {
-    setIsOpenConfirmationModal(false);
+    setIsOpenOpnameModal(false);
+  };
+
+  const opnameStock: FormProps<IItemOpnameForm>["onFinish"] = (values) => {
+    const payload: IItemOpnamePayload[] = values.items.map(
+      (value: IItemList) => ({
+        item_id: value.id,
+        stock: value.stock,
+      })
+    );
+
+    opnameItem(payload);
   };
 
   return (
     <>
-      <Modal
-        title="Hapus Data Item"
-        open={isOpenConfirmationModal}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText="Hapus"
-        cancelText="Batal"
-      >
-        <p>Anda yakin ingin menghapus data ini?</p>
-      </Modal>
+      <Spin spinning={isOpnameItemPending}>
+        <Content
+          style={{
+            margin: "24px 16px",
+            padding: 24,
+            background: colorBgContainer,
+            borderRadius: borderRadiusLG,
+          }}
+        >
+          <div className="flex justify-between">
+            <Search
+              placeholder="Pencarian..."
+              onSearch={handleSearch}
+              style={{ width: "100%", maxWidth: 150 }}
+            />
 
-      <Content
-        style={{
-          margin: "24px 16px",
-          padding: 24,
-          background: colorBgContainer,
-          borderRadius: borderRadiusLG,
-        }}
-      >
-        <div className="flex justify-between">
-          <Search
-            placeholder="Pencarian..."
-            onSearch={handleSearch}
-            style={{ width: "100%", maxWidth: 150 }}
+            <div className="flex gap-2">
+              <Button
+                color="primary"
+                variant="solid"
+                icon={<FileExcelOutlined />}
+                onClick={() => downloadReport()}
+              >
+                <span className="hidden md:inline">Download Laporan</span>
+              </Button>
+
+              <Button
+                color="primary"
+                variant="solid"
+                icon={<HddOutlined />}
+                onClick={() => setIsOpenOpnameModal(true)}
+              >
+                <span className="hidden md:inline">Stok Opname</span>
+              </Button>
+
+              {checkPermission("master_item.create") && (
+                <Button
+                  color="primary"
+                  variant="solid"
+                  icon={<FileAddOutlined />}
+                  onClick={() => goToForm("create")}
+                >
+                  <span className="hidden md:inline">Tambah Item</span>
+                </Button>
+              )}
+            </div>
+          </div>
+          <Table
+            className="mt-8"
+            dataSource={items}
+            columns={columns}
+            loading={isLoading}
+            pagination={tableParams.pagination}
+            rowKey={"id"}
+            scroll={{ x: "max-content" }}
+            onChange={handleTableChange}
           />
 
-          <Button
-            color="primary"
-            variant="solid"
-            icon={<FileAddOutlined />}
-            onClick={() => goToForm("create")}
+          <Modal
+            title="Opname Item Stok"
+            open={isOpenOpnameModal}
+            onCancel={handleCancel}
+            okText="Simpan"
+            cancelText="Batal"
+            footer={null}
           >
-            <span className="hidden md:inline">Tambah Item</span>
-          </Button>
-        </div>
-        <Table
-          className="mt-8"
-          dataSource={items}
-          columns={columns}
-          loading={isLoading}
-          pagination={tableParams.pagination}
-          scroll={{ x: "max-content" }}
-          onChange={handleTableChange}
-        />
-      </Content>
+            <Form
+              form={form}
+              autoComplete="off"
+              onFinish={opnameStock}
+              className="!mt-4"
+            >
+              <Form.List name="items">
+                {(fields) => (
+                  <>
+                    {fields.map(({ key, name }) => (
+                      <Form.Item<any>
+                        name={[name, "stock"]}
+                        label={form.getFieldValue(["items", name, "item_name"])}
+                        key={key}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Silahkan masukan stok",
+                          },
+                        ]}
+                      >
+                        <InputNumber className="w-full" />
+                      </Form.Item>
+                    ))}
+                  </>
+                )}
+              </Form.List>
+
+              <Flex gap="middle" justify="end">
+                <Form.Item label={null}>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    disabled={isOpnameItemPending}
+                  >
+                    Simpan
+                  </Button>
+                </Form.Item>
+              </Flex>
+            </Form>
+          </Modal>
+        </Content>
+      </Spin>
     </>
   );
 };

@@ -24,6 +24,7 @@ import { BreadcrumbContext } from "../../../../context/breadcrumb";
 import { PlusOutlined } from "@ant-design/icons";
 import useUpload from "../../../../hooks/useUpload";
 import { getBase64 } from "../../../../libs/getBase64";
+import { useCheckPermission } from "../../../../hooks/useCheckPermission";
 
 const SalesPeopleForm = () => {
   const {
@@ -50,6 +51,7 @@ const SalesPeopleForm = () => {
   } = useUpload();
   const [fileChange, setFileChange] = useState<string>("");
   const { setBreadcrumb } = useContext(BreadcrumbContext);
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([
@@ -105,6 +107,14 @@ const SalesPeopleForm = () => {
   }, [uploadResponse]);
 
   const submit: FormProps<ISalesPeople>["onFinish"] = (values) => {
+    if (values.ktp_photo && !values.ktp_photo.includes("temp")) {
+      delete values.ktp_photo;
+    }
+
+    if (values.profile_photo && !values.profile_photo.includes("temp")) {
+      delete values.profile_photo;
+    }
+
     if (params.id) {
       update({
         ...values,
@@ -214,7 +224,7 @@ const SalesPeopleForm = () => {
           <Form.Item<ISalesPeople>
             label="Alamat"
             name="address"
-            rules={[{ required: true, message: "Silahkan masukan no KTP!" }]}
+            rules={[{ required: true, message: "Silahkan masukan alamat!" }]}
           >
             <TextArea />
           </Form.Item>
@@ -305,11 +315,13 @@ const SalesPeopleForm = () => {
               </Button>
             </Form.Item>
 
-            <Form.Item label={null}>
-              <Button type="primary" htmlType="submit">
-                Simpan
-              </Button>
-            </Form.Item>
+            {checkPermission("master_sales.update") && (
+              <Form.Item label={null}>
+                <Button type="primary" htmlType="submit">
+                  Simpan
+                </Button>
+              </Form.Item>
+            )}
           </Flex>
         </Form>
       </Content>

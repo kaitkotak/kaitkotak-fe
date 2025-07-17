@@ -1,47 +1,64 @@
-import { Avatar, Breadcrumb, Button, Layout, Menu, theme } from "antd";
+import { Avatar, Breadcrumb, Button, Layout, Menu, Spin, theme } from "antd";
 import {
   DatabaseOutlined,
+  FileProtectOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   ProductOutlined,
+  ShopOutlined,
   SwitcherOutlined,
-  UserOutlined,
+  TeamOutlined,
 } from "@ant-design/icons";
 import Sider from "antd/es/layout/Sider";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Header } from "antd/es/layout/layout";
-import { ItemType, MenuItemType } from "antd/es/menu/interface";
+import { ItemType } from "antd/es/menu/interface";
 import { Outlet, useNavigate } from "react-router-dom";
 import { BreadcrumbContext } from "./context/breadcrumb";
 import useWindowDimensions from "./libs/useWindowDimensions";
+import { useUser } from "./context/user";
+import useLogout from "./features/login/hooks/useLogout";
+import useGetUserInfo from "./features/login/hooks/useGetUserInfo";
 
 const OwnLayout = () => {
-  let menus: ItemType<MenuItemType>[] = [
+  const userInfo = useUser();
+  let menus: ItemType<any>[] = [
     {
       key: "/production",
       label: "Produksi",
       icon: <ProductOutlined />,
+      permission: "production.access",
     },
-    // {
-    //   key: "2",
-    //   label: "Purchase Order",
-    //   icon: <FileProtectOutlined />,
-    // },
-    // {
-    //   key: "3",
-    //   label: "Penjualan",
-    //   icon: <ShopOutlined />,
-    // },
+    {
+      key: "/purchase-order",
+      label: "Purchase Order",
+      icon: <FileProtectOutlined />,
+      permission: "purchase_order.access",
+    },
+    {
+      key: "/sales",
+      label: "Penjualan",
+      icon: <ShopOutlined />,
+      permission: "sales.access",
+    },
+    {
+      key: "/payment",
+      label: "Pembayaran",
+      icon: <ShopOutlined />,
+      permission: "payment.access",
+    },
     {
       key: "/raw-material",
       label: "Bahan Baku",
       icon: <SwitcherOutlined />,
+      permission: "raw_material.access",
     },
-    // {
-    //   key: "5",
-    //   label: "Pengguna",
-    //   icon: <TeamOutlined />,
-    // },
+    {
+      key: "/user",
+      label: "Pengguna",
+      icon: <TeamOutlined />,
+      permission: "user.access",
+    },
     {
       key: "",
       label: "Data Master",
@@ -50,18 +67,22 @@ const OwnLayout = () => {
         {
           key: "/master/item",
           label: "Item",
+          permission: "master_item.access",
         },
         {
           key: "/master/customer",
           label: "Pelanggan",
+          permission: "master_customer.access",
         },
         {
           key: "/master/sales-people",
           label: "Sales",
+          permission: "master_sales.access",
         },
         {
           key: "/master/transportation",
           label: "Transportasi",
+          permission: "master_transportation.access",
         },
       ],
     },
@@ -72,9 +93,39 @@ const OwnLayout = () => {
     token: { colorBgContainer },
   } = theme.useToken();
   const navigate = useNavigate();
-  // const [_, contextHolder] = message.useMessage();
   const { breadcrumb } = useContext(BreadcrumbContext);
   const { width } = useWindowDimensions();
+  const { mutateAsync: logout } = useLogout();
+  const { mutateAsync: getUserInfo } = useGetUserInfo();
+
+  useEffect(() => {
+    getUserInfo();
+  }, []);
+
+  const filterMenusByPermission = (
+    menus: ItemType<any>[],
+    permissions: string[]
+  ): ItemType<any>[] =>
+    menus
+      .map((menu) => {
+        if (menu.children) {
+          const filteredChildren = filterMenusByPermission(
+            menu.children,
+            permissions
+          );
+          if (filteredChildren.length > 0) {
+            return { ...menu, children: filteredChildren };
+          }
+          return null;
+        }
+        return permissions.includes(menu.permission!) ? menu : null;
+      })
+      .filter(Boolean) as ItemType<any>[];
+
+  const accesableMenus = useMemo(() => {
+    if (!userInfo?.userInfo?.permissions) return [];
+    return filterMenusByPermission(menus, userInfo.userInfo.permissions);
+  }, [userInfo]);
 
   const clickMenuHandler = (val: any) => {
     if (val.key) {
@@ -82,9 +133,16 @@ const OwnLayout = () => {
     }
   };
 
+  if (userInfo.loading) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "35%" }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <Layout className="h-screen">
-      {/* {contextHolder} */}
       <Sider
         trigger={null}
         collapsible
@@ -101,13 +159,21 @@ const OwnLayout = () => {
       >
         <div className="flex gap-2 mb-10 px-4">
           <div className="my-auto mx-0">
-            <Avatar size={40} icon={<UserOutlined />} />
+            {userInfo ? (
+              <Avatar size={40}>
+                {Array.from(userInfo.userInfo?.name ?? "")[0]?.toUpperCase()}
+              </Avatar>
+            ) : (
+              <Avatar size={40}>?</Avatar>
+            )}
           </div>
 
           {!collapsed && (
             <div>
-              <p className="text-sm font-bold">User Name</p>
-              <p className="text-xs font-bold">Jabatan</p>
+              <p className="text-sm font-bold">{userInfo.userInfo?.name}</p>
+              <p className="text-xs font-bold">
+                {userInfo.userInfo?.job_title}
+              </p>
             </div>
           )}
         </div>
@@ -116,7 +182,7 @@ const OwnLayout = () => {
           theme="light"
           mode="inline"
           defaultSelectedKeys={["1"]}
-          items={menus}
+          items={accesableMenus}
           style={{ background: "#014F42", color: "#ffffff" }}
           onClick={clickMenuHandler}
         />
@@ -126,18 +192,29 @@ const OwnLayout = () => {
           style={{ padding: 0, background: colorBgContainer }}
           className="flex"
         >
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{
-              fontSize: "16px",
-              width: 64,
-              height: 64,
-            }}
-          />
+          <div className="flex justify-between w-full">
+            <div className="flex">
+              <Button
+                type="text"
+                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                onClick={() => setCollapsed(!collapsed)}
+                style={{
+                  fontSize: "16px",
+                  width: 64,
+                  height: 64,
+                }}
+              />
 
-          <Breadcrumb items={breadcrumb} style={{ margin: "auto 0" }} />
+              <Breadcrumb items={breadcrumb} style={{ margin: "auto 0" }} />
+            </div>
+
+            <p
+              className="mr-4 cursor-pointer text-[#570808] font-bold"
+              onClick={() => logout()}
+            >
+              Keluar
+            </p>
+          </div>
         </Header>
 
         <div

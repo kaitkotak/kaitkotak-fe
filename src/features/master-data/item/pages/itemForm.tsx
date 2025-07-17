@@ -28,6 +28,8 @@ import useUpload from "../../../../hooks/useUpload";
 import { PlusOutlined } from "@ant-design/icons";
 import UseGetCustomers from "../../customer/hooks/useGetCustomers";
 import ImgCrop from "antd-img-crop";
+import TextArea from "antd/es/input/TextArea";
+import { useCheckPermission } from "../../../../hooks/useCheckPermission";
 
 const ItemForm = () => {
   const {
@@ -66,6 +68,7 @@ const ItemForm = () => {
     limit: 100,
   });
   const [customerOption, setCustomerOption] = useState<ICustomer[]>([]);
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([
@@ -312,6 +315,10 @@ const ItemForm = () => {
             </Col>
           </Row>
 
+          <Form.Item<IItemnForm> label="Deskripsi" name="description">
+            <TextArea />
+          </Form.Item>
+
           <Form.Item<IItemnForm>
             label="Harga Jual (unit)"
             name="price_per_unit"
@@ -432,6 +439,16 @@ const ItemForm = () => {
             />
           </Form.Item>
 
+          <Form.Item<IItemnForm>
+            label="Berat Bahan Baku"
+            name="raw_material_quantity"
+            rules={[
+              { required: true, message: "Silahkan masukan berat bahan baku!" },
+            ]}
+          >
+            <InputNumber style={{ width: "100%" }} addonAfter="gr" />
+          </Form.Item>
+
           <Row gutter={16}>
             <Col span={selectedType !== "custom" ? 24 : 12}>
               <Form.Item<IItemnForm>
@@ -467,7 +484,7 @@ const ItemForm = () => {
           </Row>
 
           <FormItem<IItemnForm> label="Foto Item" name="image" rules={[]}>
-            <ImgCrop rotationSlider>
+            <ImgCrop rotationSlider aspect={1 / 1}>
               <Upload
                 action=""
                 listType="picture-card"
@@ -512,11 +529,13 @@ const ItemForm = () => {
               </Button>
             </Form.Item>
 
-            <Form.Item label={null}>
-              <Button type="primary" htmlType="submit">
-                Simpan
-              </Button>
-            </Form.Item>
+            {checkPermission("master_item.update") && (
+              <Form.Item label={null}>
+                <Button type="primary" htmlType="submit">
+                  Simpan
+                </Button>
+              </Form.Item>
+            )}
           </Flex>
         </Form>
       </Content>

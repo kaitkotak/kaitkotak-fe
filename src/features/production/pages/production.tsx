@@ -2,10 +2,13 @@ import {
   FileAddOutlined,
   EditOutlined,
   DeleteOutlined,
+  BookOutlined,
+  FileExcelOutlined,
 } from "@ant-design/icons";
 import {
   Button,
   DatePicker,
+  DatePickerProps,
   Flex,
   Form,
   FormProps,
@@ -27,6 +30,8 @@ import UseGetProductions from "../hooks/useGetProductions";
 import { useNavigate } from "react-router-dom";
 import { parseDateDDMMYYYY } from "../../../libs/dateParser";
 import useDeleteProduction from "../hooks/useDeleteProduction";
+import { useCheckPermission } from "../../../hooks/useCheckPermission";
+import { Dayjs } from "dayjs";
 
 interface IData {
   id: number;
@@ -52,6 +57,8 @@ const Production = () => {
     });
   const { data, isLoading } = UseGetProductions(paginationParams);
   const [isOpenFormModal, setIsOpenFormModal] = useState<boolean>(false);
+  const [isOpenDownloadFormModal, setIsOpenDownloadFormModal] =
+    useState<boolean>(false);
   const { setBreadcrumb } = useContext(BreadcrumbContext);
   const [form] = Form.useForm();
   const { RangePicker } = DatePicker;
@@ -70,6 +77,7 @@ const Production = () => {
     useState<boolean>(false);
   const [selectedRowId, setSelectedRowId] = useState<number>(0);
   const { mutateAsync: deleteAction } = useDeleteProduction();
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([
@@ -105,19 +113,23 @@ const Production = () => {
       dataIndex: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="Edit">
-            <EditOutlined
-              className="cursor-pointer"
-              onClick={() => goToForm(record.id)}
-            />
-          </Tooltip>
+          {checkPermission("production.update") && (
+            <Tooltip title="Edit">
+              <EditOutlined
+                className="cursor-pointer"
+                onClick={() => goToForm(record.id)}
+              />
+            </Tooltip>
+          )}
 
-          <Tooltip title="Hapus">
-            <DeleteOutlined
-              className="cursor-pointer"
-              onClick={() => openDeleteConfirmation(record.id)}
-            />
-          </Tooltip>
+          {checkPermission("production.delete") && (
+            <Tooltip title="Hapus">
+              <DeleteOutlined
+                className="cursor-pointer"
+                onClick={() => openDeleteConfirmation(record.id)}
+              />
+            </Tooltip>
+          )}
         </Space>
       ),
     },
@@ -167,6 +179,11 @@ const Production = () => {
     setIsOpenFormModal(false);
   };
 
+  const handleCancelDownloadReport = () => {
+    form.resetFields();
+    setIsOpenDownloadFormModal(false);
+  };
+
   const goToForm = (id?: number) => {
     navigate(`edit/${id}`);
   };
@@ -179,6 +196,48 @@ const Production = () => {
   const handleOk = () => {
     deleteAction({ id: selectedRowId });
     setIsOpenConfirmationModal(false);
+  };
+
+  const downloadReport: FormProps<any>["onFinish"] = (values) => {
+    window.open(
+      `${
+        import.meta.env.VITE_API_URL
+      }/production/download/report?date_from=${values.production_report_date[0].format(
+        "YYYY-MM-DD"
+      )}&date_to=${values.production_report_date[1].format("YYYY-MM-DD")}`,
+      "_blank"
+    );
+    setIsOpenDownloadFormModal(false);
+  };
+
+  const getYearMonth = (date: Dayjs) => date.year() * 12 + date.month();
+
+  const disabled31DaysDate: DatePickerProps["disabledDate"] = (
+    current,
+    { from, type }
+  ) => {
+    if (from) {
+      const minDate = from.add(-31, "days");
+      const maxDate = from.add(31, "days");
+
+      switch (type) {
+        case "year":
+          return (
+            current.year() < minDate.year() || current.year() > maxDate.year()
+          );
+
+        case "month":
+          return (
+            getYearMonth(current) < getYearMonth(minDate) ||
+            getYearMonth(current) > getYearMonth(maxDate)
+          );
+
+        default:
+          return Math.abs(current.diff(from, "days")) >= 31;
+      }
+    }
+
+    return false;
   };
 
   return (
@@ -199,16 +258,42 @@ const Production = () => {
             onChange={handleDateFilter}
           />
 
-          <Button
-            color="primary"
-            variant="solid"
-            icon={<FileAddOutlined />}
-            onClick={() => {
-              setIsOpenFormModal(true);
-            }}
-          >
-            <span className="hidden md:inline">Tambah Produksi</span>
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              color="primary"
+              variant="solid"
+              icon={<FileExcelOutlined />}
+              onClick={() => {
+                setIsOpenDownloadFormModal(true);
+              }}
+            >
+              <span className="hidden md:inline">Download Laporan</span>
+            </Button>
+
+            <Button
+              color="primary"
+              variant="solid"
+              icon={<BookOutlined />}
+              onClick={() => {
+                navigate("plan");
+              }}
+            >
+              <span className="hidden md:inline">Rencana Produksi</span>
+            </Button>
+
+            {checkPermission("production.create") && (
+              <Button
+                color="primary"
+                variant="solid"
+                icon={<FileAddOutlined />}
+                onClick={() => {
+                  setIsOpenFormModal(true);
+                }}
+              >
+                <span className="hidden md:inline">Tambah Produksi</span>
+              </Button>
+            )}
+          </div>
         </div>
         <Table
           className="mt-8"
@@ -216,6 +301,7 @@ const Production = () => {
           columns={columns}
           loading={isLoading}
           pagination={tableParams.pagination}
+          rowKey="id"
           scroll={{ x: "max-content" }}
           onChange={handleTableChange}
         />
@@ -265,6 +351,44 @@ const Production = () => {
         cancelText="Batal"
       >
         <p>Anda yakin ingin menghapus data ini?</p>
+      </Modal>
+
+      <Modal
+        title="Pilih Tanggal Laporan"
+        open={isOpenDownloadFormModal}
+        onCancel={handleCancelDownloadReport}
+        okText="Simpan"
+        cancelText="Batal"
+        footer={null}
+      >
+        <Form
+          form={form}
+          autoComplete="off"
+          layout="vertical"
+          onFinish={downloadReport}
+          className="!mt-4"
+        >
+          <Form.Item<any>
+            name="production_report_date"
+            rules={[
+              { required: true, message: "Silahkan masukan tanggal produksi" },
+            ]}
+          >
+            <RangePicker
+              style={{ width: "100%" }}
+              format="DD-MM-YYYY"
+              disabledDate={disabled31DaysDate}
+            />
+          </Form.Item>
+
+          <Flex gap="middle" justify="end">
+            <Form.Item label={null}>
+              <Button type="primary" htmlType="submit">
+                Download
+              </Button>
+            </Form.Item>
+          </Flex>
+        </Form>
       </Modal>
     </Spin>
   );

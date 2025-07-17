@@ -10,3 +10,13 @@ interface ICustomer {
   npwp_number: string;
   npwp_photo?: string;
 }
+
+interface ICustomerList {
+  id: number;
+  customer_code: string;
+  full_name: string;
+}
+
+interface ICustomerListParams {
+  payment: boolean
+}

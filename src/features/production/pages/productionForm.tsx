@@ -13,12 +13,12 @@ import {
 import { Content } from "antd/es/layout/layout";
 import { useNavigate, useParams } from "react-router-dom";
 import useCreateProduction from "../hooks/useCreateProduction";
-import { format } from "date-fns";
 import { BreadcrumbContext } from "../../../context/breadcrumb";
 import UseGetProduction from "../hooks/useGetProduction";
 import useUpdateProduction from "../hooks/useUpdateProduction";
-import { parseDateDDMMYYYY } from "../../../libs/dateParser";
 import dayjs, { Dayjs } from "dayjs";
+import { useCheckPermission } from "../../../hooks/useCheckPermission";
+import defaultItemImg from "../../../assets/default-item-image.png";
 
 const ProductionForm = () => {
   const { data: itemResponse } = UseGetItems({
@@ -39,6 +39,7 @@ const ProductionForm = () => {
   const { mutateAsync: update } = useUpdateProduction();
   const submitButtonText: string = id ? "Simpan Perubahan" : "Proses Produksi";
   const [productionDate, setProductionDate] = useState<Dayjs | null>(null);
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     if (!localStorage.getItem("productionDate") && !id) {
@@ -143,25 +144,41 @@ const ProductionForm = () => {
           borderRadius: borderRadiusLG,
         }}
       >
-        <DatePicker
-          style={{ width: "30%", marginBottom: "16px" }}
-          format="DD-MM-YYYY"
-          value={productionDate}
-          onChange={setProductionDate}
-        />
+        {id && (
+          <div className="flex flex-col gap-1">
+            <label>Date</label>
+            <DatePicker
+              style={{ width: "30%", marginBottom: "16px" }}
+              format="DD-MM-YYYY"
+              value={productionDate}
+              onChange={setProductionDate}
+            />
+          </div>
+        )}
+
+        {id && <p className="text-lg font-bold mb-3">Item</p>}
 
         <div className="flex gap-3 mb-6 flex-wrap">
           {productionItems.map((item: IProductionItem) => (
             <Card
               hoverable
+              style={{ width: "200px" }}
               cover={
-                <img
-                  alt="item-image"
-                  src={`${import.meta.env.VITE_API_URL}/file/download/${
-                    item.image
-                  }`}
-                  style={{ height: "9.375rem" }}
-                />
+                item.image ? (
+                  <img
+                    alt="item-image"
+                    src={`${import.meta.env.VITE_API_URL}/file/download/${
+                      item.image
+                    }`}
+                    style={{ width: "200px", height: "200px" }}
+                  />
+                ) : (
+                  <img
+                    alt="item-image"
+                    src={defaultItemImg}
+                    style={{ width: "200px", height: "200px", padding: "40px" }}
+                  />
+                )
               }
               key={item.id}
             >
@@ -181,6 +198,7 @@ const ProductionForm = () => {
                   <InputNumber
                     value={item.quantity}
                     min={0}
+                    precision={0}
                     style={{ textAlign: "center" }}
                     onChange={(val) => manualInputQty(item.id, val)}
                   />
@@ -203,9 +221,11 @@ const ProductionForm = () => {
             Batal
           </Button>
 
-          <Button type="primary" onClick={submit}>
-            {submitButtonText}
-          </Button>
+          {checkPermission("production.update") && (
+            <Button type="primary" onClick={submit}>
+              {submitButtonText}
+            </Button>
+          )}
         </Flex>
       </Content>
     </Spin>

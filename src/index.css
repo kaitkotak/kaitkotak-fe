@@ -14,3 +14,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+@media (max-width: 480px) {
+  .ant-picker-panels { 
+    flex-direction: column;
+  } 
+}

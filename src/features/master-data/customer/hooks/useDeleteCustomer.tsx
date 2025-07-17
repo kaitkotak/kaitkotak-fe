@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { axiosInstance } from "../../../../libs/axios";
-import { message } from "antd";
+import axiosInstance from "../../../../libs/axios";
+import { useMessageApi } from "../../../../context/message";
 
 interface IProps {
   id: string;
@@ -8,7 +8,7 @@ interface IProps {
 
 const useDeleteCustomer = () => {
   const queryClient = useQueryClient();
-  const [messageApi, _] = message.useMessage();
+  const message = useMessageApi();
 
   return useMutation({
     mutationKey: ["deleteCustomer"],
@@ -16,13 +16,13 @@ const useDeleteCustomer = () => {
       const url: string = `/master/customers/${params.id}`;
       return await axiosInstance.delete(url);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["masterCustomers"],
       });
-      messageApi.open({
-        type: "success",
-        content: "test",
+      message.success({
+        content: data.data.message,
+        duration: 3,
       });
     },
   });

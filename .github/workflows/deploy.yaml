@@ -1,0 +1,87 @@
+name: Build and Deploy React Frontend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create .env file
+        run: |
+          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env
+
+      - name: Build the React app
+        run: npm run build
+
+      - name: List files in the dist directory (to verify build)
+        run: ls -l ./dist
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: reactbuild
+          path: ./dist
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download the build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: reactbuild
+          path: dist
+
+      - name: Verify downloaded files
+        run: ls -R dist
+
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to Server
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_PATH: "/srv/ecogreen/react/"
+        run: |
+          # Save SSH private key to a file
+          echo "$SSH_PRIVATE_KEY" > private_key.pem
+          
+          # Set permissions on the private key
+          chmod 600 private_key.pem
+          
+          # Start SSH agent and add key
+          eval $(ssh-agent -s)
+          ssh-add private_key.pem
+
+          # Use SCP to copy the build files to the server
+          scp -i private_key.pem -r dist/* $SERVER_USER@$SERVER_HOST:$SERVER_PATH
+
+          # Clean up
+          ssh-agent -k
+          rm private_key.pem
+
+      - name: Clean up build files
+        run: rm -rf dist

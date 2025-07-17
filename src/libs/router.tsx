@@ -8,9 +8,24 @@ import Customer from "../features/master-data/customer/pages/customer";
 import CustomerForm from "../features/master-data/customer/pages/customerForm";
 import Item from "../features/master-data/item/pages/item";
 import ItemForm from "../features/master-data/item/pages/itemForm";
-import RawMaterial from "../features/raw-material/pages/rawMaterial";
 import Production from "../features/production/pages/production";
 import ProductionForm from "../features/production/pages/productionForm";
+import PurchaseOrder from "../features/purchase-order/pages/purchaseOrder";
+import PurchaseOrderForm from "../features/purchase-order/pages/purchaseOrderForm";
+import ProductionPlan from "../features/production/pages/productionPlan";
+import Sales from "../features/sales/pages/sales";
+import SalesForm from "../features/sales/pages/salesForm";
+import User from "../features/user/pages/user";
+import UserForm from "../features/user/pages/userForm";
+import RawMaterial from "../features/raw-material/pages/rawMaterial";
+import Login from "../features/login/pages/login";
+import OwnLayout from "../ownLayout";
+import ProtectedRoute from "./protectedRoute";
+import AccessDeniedPage from "../features/error/pages/accessDenied";
+import Home from "../features/home/pages/home";
+import PaymentHistories from "../features/payment/pages/paymentHistories";
+import PaymentForm from "../features/payment/pages/paymentForm";
+import PaymentHistory from "../features/sales/pages/paymentHistory";
 
 export const router = createBrowserRouter([
   {
@@ -19,99 +34,313 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <Navigate to="/master/item" />,
+        element: <Navigate to="login" />,
       },
       {
-        path: "production",
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "/",
+        element: <OwnLayout />,
         children: [
           {
-            path: "",
-            element: <Production />,
+            path: "home",
+            element: <Home />,
           },
           {
-            path: "create",
-            element: <ProductionForm />,
-          },
-          {
-            path: "edit/:id",
-            element: <ProductionForm />,
-          },
-        ],
-      },
-      {
-        path: "raw-material",
-        element: <RawMaterial />,
-      },
-      {
-        path: "master",
-        children: [
-          {
-            path: "transportation",
+            path: "production",
             children: [
               {
                 path: "",
-                element: <Transportation />,
+                element: (
+                  <ProtectedRoute requiredPermission="production.access">
+                    <Production />
+                  </ProtectedRoute>
+                ),
+              },
+              {
+                path: "plan",
+                element: (
+                  <ProtectedRoute requiredPermission="production.access">
+                    <ProductionPlan />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "create",
-                element: <TransportationForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="production.create">
+                    <ProductionForm />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "edit/:id",
-                element: <TransportationForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="production.update">
+                    <ProductionForm />
+                  </ProtectedRoute>
+                ),
               },
             ],
           },
           {
-            path: "sales-people",
+            path: "purchase-order",
             children: [
               {
                 path: "",
-                element: <SalesPeople />,
+                element: (
+                  <ProtectedRoute requiredPermission="purchase_order.access">
+                    <PurchaseOrder />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "create",
-                element: <SalesPeopleForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="purchase_order.create">
+                    <PurchaseOrderForm />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "edit/:id",
-                element: <SalesPeopleForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="purchase_order.update">
+                    <PurchaseOrderForm />
+                  </ProtectedRoute>
+                ),
               },
             ],
           },
           {
-            path: "customer",
+            path: "sales",
             children: [
               {
                 path: "",
-                element: <Customer />,
+                element: (
+                  <ProtectedRoute requiredPermission="sales.access">
+                    <Sales />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "create",
-                element: <CustomerForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="sales.create">
+                    <SalesForm />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "edit/:id",
-                element: <CustomerForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="sales.update">
+                    <SalesForm />
+                  </ProtectedRoute>
+                ),
+              },
+              {
+                path: "payment-history/:id",
+                element: (
+                  <ProtectedRoute requiredPermission="sales.access">
+                    <PaymentHistory />
+                  </ProtectedRoute>
+                ),
               },
             ],
           },
           {
-            path: "item",
+            path: "payment",
             children: [
               {
                 path: "",
-                element: <Item />,
+                element: (
+                  <ProtectedRoute requiredPermission="payment.access">
+                    <PaymentHistories />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "create",
-                element: <ItemForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="payment.create">
+                    <PaymentForm />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: "edit/:id",
-                element: <ItemForm />,
+                element: (
+                  <ProtectedRoute requiredPermission="payment.update">
+                    <PaymentForm />
+                  </ProtectedRoute>
+                ),
               },
             ],
+          },
+          {
+            path: "raw-material",
+            element: (
+              <ProtectedRoute requiredPermission="raw_material.access">
+                <RawMaterial />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "user",
+            children: [
+              {
+                path: "",
+                element: (
+                  <ProtectedRoute requiredPermission="user.access">
+                    <User />
+                  </ProtectedRoute>
+                ),
+              },
+              {
+                path: "create",
+                element: (
+                  <ProtectedRoute requiredPermission="user.create">
+                    <UserForm />
+                  </ProtectedRoute>
+                ),
+              },
+              {
+                path: "edit/:id",
+                element: (
+                  <ProtectedRoute requiredPermission="user.update">
+                    <UserForm />
+                  </ProtectedRoute>
+                ),
+              },
+            ],
+          },
+          {
+            path: "master",
+            children: [
+              {
+                path: "transportation",
+                children: [
+                  {
+                    path: "",
+                    element: (
+                      <ProtectedRoute requiredPermission="master_transportation.access">
+                        <Transportation />
+                      </ProtectedRoute>
+                    ),
+                  },
+                  {
+                    path: "create",
+                    element: (
+                      <ProtectedRoute requiredPermission="master_transportation.create">
+                        <TransportationForm />
+                      </ProtectedRoute>
+                    ),
+                  },
+                  {
+                    path: "edit/:id",
+                    element: (
+                      <ProtectedRoute requiredPermission="master_transportation.update">
+                        <TransportationForm />
+                      </ProtectedRoute>
+                    ),
+                  },
+                ],
+              },
+              {
+                path: "sales-people",
+                children: [
+                  {
+                    path: "",
+                    element: (
+                      <ProtectedRoute requiredPermission="master_sales.access">
+                        <SalesPeople />
+                      </ProtectedRoute>
+                    ),
+                  },
+                  {
+                    path: "create",
+                    element: (
+                      <ProtectedRoute requiredPermission="master_sales.create">
+                        <SalesPeopleForm />
+                      </ProtectedRoute>
+                    ),
+                  },
+                  {
+                    path: "edit/:id",
+                    element: (
+                      <ProtectedRoute requiredPermission="master_sales.update">
+                        <SalesPeopleForm />
+                      </ProtectedRoute>
+                    ),
+                  },
+                ],
+              },
+              {
+                path: "customer",
+                children: [
+                  {
+                    path: "",
+                    element: (
+                      <ProtectedRoute requiredPermission="master_customer.access">
+                        <Customer />
+                      </ProtectedRoute>
+                    ),
+                  },
+                  {
+                    path: "create",
+                    element: (
+                      <ProtectedRoute requiredPermission="master_customer.create">
+                        <CustomerForm />
+                      </ProtectedRoute>
+                    ),
+                  },
+                  {
+                    path: "edit/:id",
+                    element: (
+                      <ProtectedRoute requiredPermission="master_customer.update">
+                        <CustomerForm />
+                      </ProtectedRoute>
+                    ),
+                  },
+                ],
+              },
+              {
+                path: "item",
+                children: [
+                  {
+                    path: "",
+                    element: (
+                      <ProtectedRoute requiredPermission="master_item.access">
+                        <Item />
+                      </ProtectedRoute>
+                    ),
+                  },
+                  {
+                    path: "create",
+                    element: (
+                      <ProtectedRoute requiredPermission="master_item.create">
+                        <ItemForm />
+                      </ProtectedRoute>
+                    ),
+                  },
+                  {
+                    path: "edit/:id",
+                    element: (
+                      <ProtectedRoute requiredPermission="master_item.update">
+                        <ItemForm />
+                      </ProtectedRoute>
+                    ),
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            path: "403",
+            element: <AccessDeniedPage />,
           },
         ],
       },

@@ -21,6 +21,7 @@ interface IItemnForm {
   description: string;
   image?: string;
   customer: number;
+  raw_material_quantity: number;
 }
 
 interface IItem {
@@ -38,4 +39,24 @@ interface IItem {
   price_per_unit: number;
   type: string;
   weight_g: number;
+}
+
+interface IItemList {
+  id: number;
+  item_name: string;
+  item_code: string;
+  price_per_unit: string;
+  image: string;
+  disabled?: boolean;
+  purchase_number: string;
+  stock: number;
+}
+
+interface IItemOpnamePayload {
+  item_id: number;
+  stock: number;
+}
+
+interface IItemOpnameForm {
+  items: IItemList[];
 }

@@ -22,12 +22,15 @@ import TextArea from "antd/es/input/TextArea";
 import useCreateRawMaterial from "../hooks/useCreateRawMaterial";
 import id from "antd/es/date-picker/locale/id_ID";
 import { parseDateDDMMYYYY } from "../../../libs/dateParser";
+import { useCheckPermission } from "../../../hooks/useCheckPermission";
 
 interface IData {
+  id: number;
   stock_date: string;
   type: string;
   quantity: number;
   note: string;
+  is_opname: boolean;
 }
 
 const RawMaterial = () => {
@@ -68,6 +71,7 @@ const RawMaterial = () => {
       cellYearFormat: "YYYY",
     },
   };
+  const checkPermission = useCheckPermission();
 
   useEffect(() => {
     setBreadcrumb([
@@ -84,6 +88,9 @@ const RawMaterial = () => {
         return {
           ...rawMaterial,
           stock_date: format(date, "dd/MM/yyyy"),
+          type: rawMaterial.is_opname
+            ? `${rawMaterial.type} (Opname)`
+            : rawMaterial.type,
         };
       });
     });
@@ -226,29 +233,33 @@ const RawMaterial = () => {
             </div>
 
             <div className="flex gap-2">
-              <Button
-                color="primary"
-                variant="solid"
-                icon={<FileAddOutlined />}
-                onClick={() => {
-                  setFormTitle("Stok Masuk");
-                  setIsOpenFormModal(true);
-                }}
-              >
-                <span className="hidden md:inline">Tambah Stok</span>
-              </Button>
+              {checkPermission("raw_material.create") && (
+                <Button
+                  color="primary"
+                  variant="solid"
+                  icon={<FileAddOutlined />}
+                  onClick={() => {
+                    setFormTitle("Stok Masuk");
+                    setIsOpenFormModal(true);
+                  }}
+                >
+                  <span className="hidden md:inline">Tambah Stok</span>
+                </Button>
+              )}
 
-              <Button
-                color="primary"
-                variant="solid"
-                icon={<EditOutlined />}
-                onClick={() => {
-                  setFormTitle("Stok Opname");
-                  setIsOpenFormModal(true);
-                }}
-              >
-                <span className="hidden md:inline">Stok Opname</span>
-              </Button>
+              {checkPermission("raw_material.create_stock_opname") && (
+                <Button
+                  color="primary"
+                  variant="solid"
+                  icon={<EditOutlined />}
+                  onClick={() => {
+                    setFormTitle("Stok Opname");
+                    setIsOpenFormModal(true);
+                  }}
+                >
+                  <span className="hidden md:inline">Stok Opname</span>
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -258,6 +269,7 @@ const RawMaterial = () => {
           columns={columns}
           loading={isLoading}
           pagination={tableParams.pagination}
+          rowKey={"id"}
           scroll={{ x: "max-content" }}
           onChange={handleTableChange}
         />
