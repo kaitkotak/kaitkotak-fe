@@ -28,6 +28,8 @@ const ProductionPlan = () => {
         title: "Rencana Produksi",
       },
     ]);
+
+    localStorage.setItem("isForm", 'false');
   }, []);
 
   useEffect(() => {

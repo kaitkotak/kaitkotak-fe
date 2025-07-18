@@ -85,6 +85,8 @@ const Production = () => {
         title: "Produksi",
       },
     ]);
+
+    localStorage.setItem("isForm", 'false');
   }, []);
 
   useEffect(() => {

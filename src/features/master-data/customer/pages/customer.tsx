@@ -63,6 +63,8 @@ const Customer = () => {
         title: "Pelanggan",
       },
     ]);
+
+    localStorage.setItem("isForm", 'false');
   }, []);
 
   useEffect(() => {

@@ -63,6 +63,8 @@ const Transportation = () => {
         title: "Transportasi",
       },
     ]);
+
+    localStorage.setItem("isForm", 'false');
   }, []);
 
   useEffect(() => {

@@ -65,6 +65,8 @@ const SalesPeopleForm = () => {
         title: params.id ? "Edit Sales" : "Tambah Sales",
       },
     ]);
+
+    localStorage.setItem("isForm", 'true');
   }, []);
 
   useEffect(() => {

@@ -65,6 +65,8 @@ const PaymentForm = () => {
         title: params.id ? "Edit Pembayaran" : "Tambah Pembayaran",
       },
     ]);
+
+    localStorage.setItem("isForm", 'true');
   }, []);
 
   useEffect(() => {

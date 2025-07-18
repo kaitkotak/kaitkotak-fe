@@ -63,6 +63,8 @@ const SalesPeople = () => {
         title: "Sales",
       },
     ]);
+
+    localStorage.setItem("isForm", 'false');
   }, []);
 
   useEffect(() => {
