@@ -78,6 +78,8 @@ const Sales = () => {
         title: "Penjualan",
       },
     ]);
+
+    localStorage.setItem("isForm", 'false');
   }, []);
 
   useEffect(() => {

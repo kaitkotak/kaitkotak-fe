@@ -79,6 +79,8 @@ const CustomerForm = () => {
         title: params.id ? "Edit Pelanggan" : "Tambah Pelanggan",
       },
     ]);
+
+    localStorage.setItem("isForm", 'true');
   }, []);
 
   useEffect(() => {

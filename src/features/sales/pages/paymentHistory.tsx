@@ -35,6 +35,8 @@ const PaymentHistory = () => {
         title: `Riwayat Pembayaran`,
       },
     ]);
+
+    localStorage.setItem("isForm", 'false');
   }, []);
 
   useEffect(() => {

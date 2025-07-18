@@ -76,6 +76,8 @@ const SalesForm = () => {
         title: params.id ? "Edit Penjualan" : "Tambah Penjualan",
       },
     ]);
+
+    localStorage.setItem("isForm", 'true');
   }, []);
 
   useEffect(() => {

@@ -82,6 +82,8 @@ const ItemForm = () => {
         title: params.id ? "Edit Item" : "Tambah Item",
       },
     ]);
+
+    localStorage.setItem("isForm", 'true');
   }, []);
 
   useEffect(() => {

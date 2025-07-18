@@ -63,6 +63,8 @@ const PurchaseOrder = () => {
         title: "Purchase Order",
       },
     ]);
+
+    localStorage.setItem("isForm", 'false');
   }, []);
 
   useEffect(() => {
