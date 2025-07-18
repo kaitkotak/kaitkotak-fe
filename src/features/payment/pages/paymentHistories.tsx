@@ -61,6 +61,8 @@ const PaymentHistories = () => {
         title: "Pembayaran",
       },
     ]);
+
+    localStorage.setItem("isForm", 'false');
   }, []);
 
   useEffect(() => {

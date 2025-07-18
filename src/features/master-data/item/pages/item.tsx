@@ -67,6 +67,8 @@ const Item = () => {
         title: "Item",
       },
     ]);
+
+    localStorage.setItem("isForm", 'false');
   }, []);
 
   useEffect(() => {

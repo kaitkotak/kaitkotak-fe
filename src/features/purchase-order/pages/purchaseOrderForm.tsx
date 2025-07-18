@@ -55,6 +55,8 @@ const PurchaseOrderForm = () => {
         title: params.id ? "Edit Purchase Order" : "Tambah Purchase Order",
       },
     ]);
+
+    localStorage.setItem("isForm", 'true');
   }, []);
 
   useEffect(() => {

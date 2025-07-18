@@ -35,6 +35,8 @@ const TransportationForm = () => {
         title: params.id ? "Edit Transportasi" : "Tambah Transportasi",
       },
     ]);
+
+    localStorage.setItem("isForm", 'true');
   }, []);
 
   useEffect(() => {

@@ -79,6 +79,8 @@ const RawMaterial = () => {
         title: "Bahan Baku",
       },
     ]);
+
+    localStorage.setItem("isForm", 'false');
   }, []);
 
   useEffect(() => {

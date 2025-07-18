@@ -54,6 +54,8 @@ const ProductionForm = () => {
         title: id ? "Edit Produksi" : "Tambah Produksi",
       },
     ]);
+
+    localStorage.setItem("isForm", 'true');
   }, []);
 
   useEffect(() => {

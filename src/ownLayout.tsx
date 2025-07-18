@@ -1,4 +1,4 @@
-import { Avatar, Breadcrumb, Button, Layout, Menu, Spin, theme } from "antd";
+import {Avatar, Breadcrumb, Button, Layout, Menu, Modal, Spin, theme} from "antd";
 import {
   DatabaseOutlined,
   FileProtectOutlined,
@@ -97,6 +97,8 @@ const OwnLayout = () => {
   const { width } = useWindowDimensions();
   const { mutateAsync: logout } = useLogout();
   const { mutateAsync: getUserInfo } = useGetUserInfo();
+  const [isOpenConfirmationModal, setIsOpenConfirmationModal] = useState(false)
+  const [targetUrl, setTargetUrl] = useState<string>('')
 
   useEffect(() => {
     getUserInfo();
@@ -129,9 +131,26 @@ const OwnLayout = () => {
 
   const clickMenuHandler = (val: any) => {
     if (val.key) {
-      navigate(val.key);
+      const ifForm: boolean = localStorage.getItem("isForm") === "true";
+
+      if (ifForm) {
+        setIsOpenConfirmationModal(true)
+        setTargetUrl(val.key);
+      } else {
+        navigate(val.key);
+      }
     }
   };
+
+  const handleOk = () => {
+    navigate(targetUrl);
+    setIsOpenConfirmationModal(false)
+    localStorage.setItem("isForm", "false");
+  }
+
+  const handleCancel = () => {
+    setIsOpenConfirmationModal(false)
+  }
 
   if (userInfo.loading) {
     return (
@@ -216,6 +235,17 @@ const OwnLayout = () => {
             </p>
           </div>
         </Header>
+
+        <Modal
+            title="Tinggalkan Halaman ini?"
+            open={isOpenConfirmationModal}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            okText="Ya"
+            cancelText="Tidak"
+        >
+          <p>Anda yakin ingin meninggalkan halaman ini?</p>
+        </Modal>
 
         <div
           onClick={() => {

@@ -60,6 +60,8 @@ const User = () => {
         title: "Pengguna",
       },
     ]);
+
+    localStorage.setItem("isForm", 'false');
   }, []);
 
   useEffect(() => {

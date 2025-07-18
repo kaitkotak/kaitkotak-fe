@@ -44,6 +44,8 @@ const UserForm = () => {
         title: params.id ? "Edit Pengguna" : "Tambah Pengguna",
       },
     ]);
+
+    localStorage.setItem("isForm", 'true');
   }, []);
 
   useEffect(() => {
