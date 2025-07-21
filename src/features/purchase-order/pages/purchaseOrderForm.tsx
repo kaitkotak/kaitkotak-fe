@@ -19,7 +19,7 @@ import useCreatePurchaseOrder from "../hooks/useCreatePurchaseOrder";
 import useUpdatePurchaseOrder from "../hooks/useUpdatePurchaseOrder";
 import UseGetPurchaseOrder from "../hooks/useGetPurchaseOrder";
 import { BreadcrumbContext } from "../../../context/breadcrumb";
-import { MinusCircleOutlined } from "@ant-design/icons";
+import {MinusCircleOutlined, ReloadOutlined} from "@ant-design/icons";
 import UseGetCustomerList from "../../master-data/customer/hooks/useGetCustomerList";
 import dayjs from "dayjs";
 import UseGetItemList from "../../master-data/item/hooks/useGetItemList";
@@ -40,9 +40,9 @@ const PurchaseOrderForm = () => {
   });
   const [form] = Form.useForm();
   const { setBreadcrumb } = useContext(BreadcrumbContext);
-  const { data: customerListResponse } = UseGetCustomerList();
+  const { data: customerListResponse, refetch: refetchCustomerList, isRefetching: isCustomerListRefetching } = UseGetCustomerList();
   const [customerList, setCustomerList] = useState<ICustomerList[]>([]);
-  const { data: itemListResponse } = UseGetItemList();
+  const { data: itemListResponse, refetch: refetchItemListm, isRefetching: isItemListRefetching } = UseGetItemList();
   const [itemList, setItemList] = useState<IItemList[]>([]);
   const checkPermission = useCheckPermission();
 
@@ -153,8 +153,13 @@ const PurchaseOrderForm = () => {
     setItemList(newItemList);
   };
 
+  const refreshMasterData = () => {
+    refetchCustomerList();
+    refetchItemListm();
+  }
+
   return (
-    <Spin spinning={isLoading || isPendingCreate || isPendingUpdate}>
+    <Spin spinning={isLoading || isPendingCreate || isPendingUpdate || isItemListRefetching || isCustomerListRefetching}>
       <Content
         style={{
           margin: "24px 16px",
@@ -163,6 +168,13 @@ const PurchaseOrderForm = () => {
           borderRadius: borderRadiusLG,
         }}
       >
+        <div className="flex justify-end mb-5">
+          <Button onClick={refreshMasterData} icon={<ReloadOutlined />} className={'mb-4'} color="primary"
+                  variant="solid">
+            <span className="hidden md:inline">Refresh Data Master</span>
+          </Button>
+        </div>
+
         <Form
           form={form}
           layout="vertical"

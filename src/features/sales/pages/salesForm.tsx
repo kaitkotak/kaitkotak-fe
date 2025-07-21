@@ -14,12 +14,12 @@ import {
 } from "antd";
 import { Content } from "antd/es/layout/layout";
 import { useNavigate, useParams } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import  { useContext, useEffect, useState } from "react";
 import { BreadcrumbContext } from "../../../context/breadcrumb";
 import {
   FileDoneOutlined,
   MinusCircleOutlined,
-  ProfileOutlined,
+  ProfileOutlined, ReloadOutlined,
 } from "@ant-design/icons";
 import UseGetCustomerList from "../../master-data/customer/hooks/useGetCustomerList";
 import UseGetSalesPeopleList from "../../master-data/salesPeople/hooks/useGetSalesPeopleList";
@@ -45,17 +45,17 @@ const SalesForm = () => {
   });
   const [form] = Form.useForm();
   const { setBreadcrumb } = useContext(BreadcrumbContext);
-  const { data: customerListResponse } = UseGetCustomerList();
+  const { data: customerListResponse, refetch: refetchCustomerList, isRefetching: isCustomerListRefetching} = UseGetCustomerList();
   const [customerList, setCustomerList] = useState<ICustomerList[]>([]);
   const [itemList, setItemList] = useState<ISalesItemList[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
-  const { data: salesPeopleListResponse } = UseGetSalesPeopleList();
+  const { data: salesPeopleListResponse, refetch: refetchSalesPeopleList, isRefetching: isSalesPeopleListRefetching } = UseGetSalesPeopleList();
   const [salesPeople, setSalesPeople] = useState<ISalesPeopleList[]>([]);
-  const { data: transportationListResponse } = UseGetTransportatonList();
+  const { data: transportationListResponse, refetch: refetchTransportationList, isRefetching: isTransportationListRefetching } = UseGetTransportatonList();
   const [transportations, setTransportations] = useState<ITransportationList[]>(
     []
   );
-  const { data: purchaseOrderResponse } = UseGetPurchaseOrderList();
+  const { data: purchaseOrderResponse, refetch: refetchPurchaseOrder, isRefetching: isPurchaseOrderRefetching } = UseGetPurchaseOrderList();
   const [purchaseOrders, setPurchaseOrders] = useState<IPurchaseOrderList[]>(
     []
   );
@@ -255,13 +255,20 @@ const SalesForm = () => {
     form.setFieldValue("due_date", date.add(dueDays, "day"));
   };
 
+  const refreshMasterData = () => {
+    refetchCustomerList()
+    refetchSalesPeopleList()
+    refetchTransportationList()
+    refetchPurchaseOrder()
+  }
+
   return (
     <Spin
       spinning={
         isLoading ||
         isPendingCreate ||
         isPendingUpdate ||
-        isGetPurchaseOrderItemsPending
+        isGetPurchaseOrderItemsPending || isCustomerListRefetching || isSalesPeopleListRefetching || isTransportationListRefetching || isPurchaseOrderRefetching
       }
     >
       <Content
@@ -272,45 +279,54 @@ const SalesForm = () => {
           borderRadius: borderRadiusLG,
         }}
       >
-        {params.id && (
+
           <div className="flex justify-end gap-3 mb-5">
-            <Button
-              color="primary"
-              variant="solid"
-              icon={<FileDoneOutlined />}
-              onClick={() => {
-                window.open(
-                  `${import.meta.env.VITE_API_URL}/invoice/download/invoice/${
-                    params.id
-                  }`,
-                  "_blank"
-                );
-              }}
-            >
-              <span className="hidden sm:inline md:inline">
-                Download Invoice
-              </span>
+            <Button onClick={refreshMasterData} icon={<ReloadOutlined />} className={'mb-4'} color="primary"
+                    variant="solid">
+              <span className="hidden md:inline">Refresh Data Master</span>
             </Button>
 
-            <Button
-              color="primary"
-              variant="solid"
-              icon={<ProfileOutlined />}
-              onClick={() => {
-                window.open(
-                  `${
-                    import.meta.env.VITE_API_URL
-                  }/invoice/download/surat-jalan/${params.id}`,
-                  "_blank"
-                );
-              }}
-            >
-              <span className="hidden sm:inline md:inline">
-                Download Surat Jalan
-              </span>
-            </Button>
+            {params.id && (
+                <div className="flex gap-3">
+                  <Button
+                      color="primary"
+                      variant="solid"
+                      icon={<FileDoneOutlined />}
+                      onClick={() => {
+                        window.open(
+                            `${import.meta.env.VITE_API_URL}/invoice/download/invoice/${
+                                params.id
+                            }`,
+                            "_blank"
+                        );
+                      }}
+                  >
+                    <span className="hidden sm:inline md:inline">
+                      Download Invoice
+                    </span>
+                  </Button>
+
+                  <Button
+                      color="primary"
+                      variant="solid"
+                      icon={<ProfileOutlined />}
+                      onClick={() => {
+                        window.open(
+                            `${
+                                import.meta.env.VITE_API_URL
+                            }/invoice/download/surat-jalan/${params.id}`,
+                            "_blank"
+                        );
+                      }}
+                  >
+                    <span className="hidden sm:inline md:inline">
+                      Download Surat Jalan
+                    </span>
+                  </Button>
+                </div>
+            )}
           </div>
-        )}
+
 
         <Form
           form={form}
