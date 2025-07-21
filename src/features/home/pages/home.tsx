@@ -17,6 +17,8 @@ const Home = () => {
         title: "",
       },
     ]);
+
+    localStorage.setItem("isForm", 'false');
   }, []);
 
   return (
