@@ -25,7 +25,7 @@ import { BreadcrumbContext } from "../../../../context/breadcrumb";
 import FormItem from "antd/es/form/FormItem";
 import { getBase64 } from "../../../../libs/getBase64";
 import useUpload from "../../../../hooks/useUpload";
-import { PlusOutlined } from "@ant-design/icons";
+import {PlusOutlined, ReloadOutlined} from "@ant-design/icons";
 import UseGetCustomers from "../../customer/hooks/useGetCustomers";
 import ImgCrop from "antd-img-crop";
 import TextArea from "antd/es/input/TextArea";
@@ -63,7 +63,7 @@ const ItemForm = () => {
     data: uploadResponse,
     isPending: isPendingUpload,
   } = useUpload();
-  const { data: customerResponse } = UseGetCustomers({
+  const { data: customerResponse, refetch: refetchCustomer, isRefetching: isRefetchingCustomer} = UseGetCustomers({
     page: 1,
     limit: 100,
   });
@@ -271,7 +271,7 @@ const ItemForm = () => {
   return (
     <Spin
       spinning={
-        isLoading || isPendingUpload || isPendingCreate || isPendingUpdate
+        isLoading || isPendingUpload || isPendingCreate || isPendingUpdate || isRefetchingCustomer
       }
     >
       <Content
@@ -282,6 +282,13 @@ const ItemForm = () => {
           borderRadius: borderRadiusLG,
         }}
       >
+        <div className="flex justify-end">
+          <Button onClick={() => refetchCustomer()} icon={<ReloadOutlined />} className={'mb-4'} color="primary"
+                  variant="solid">
+            <span className="hidden md:inline">Refresh Data Master</span>
+          </Button>
+        </div>
+
         <Form form={form} layout="vertical" onFinish={submit}>
           <Form.Item<IItemnForm>
             label="Nama"
