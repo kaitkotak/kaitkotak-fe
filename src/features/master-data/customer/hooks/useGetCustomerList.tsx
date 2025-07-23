@@ -7,6 +7,7 @@ const UseGetCustomerList = (props?: ICustomerListParams) => {
   return useQuery({
     queryKey: ["masterCustomersList"],
     queryFn: async () => axiosInstance.get(url),
+    refetchOnMount: false
   });
 };
 

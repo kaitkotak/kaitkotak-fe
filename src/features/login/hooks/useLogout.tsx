@@ -12,7 +12,7 @@ const useLogout = () => {
       return await axiosInstance.get(url);
     },
     onSuccess: () => {
-      localStorage.removeItem("userInfo");
+      localStorage.clear()
       navigate("/");
     },
   });

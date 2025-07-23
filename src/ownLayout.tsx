@@ -1,4 +1,4 @@
-import {Avatar, Breadcrumb, Button, Layout, Menu, Modal, Spin, theme} from "antd";
+import {Avatar, Breadcrumb, Button, Layout, Menu, Modal, Spin, Tabs, theme} from "antd";
 import {
   DatabaseOutlined,
   FileProtectOutlined,
@@ -22,7 +22,7 @@ import useGetUserInfo from "./features/login/hooks/useGetUserInfo";
 
 const OwnLayout = () => {
   const userInfo = useUser();
-  let menus: ItemType<any>[] = [
+  const menus: ItemType<any>[] = [
     {
       key: "/production",
       label: "Produksi",
@@ -99,10 +99,42 @@ const OwnLayout = () => {
   const { mutateAsync: getUserInfo } = useGetUserInfo();
   const [isOpenConfirmationModal, setIsOpenConfirmationModal] = useState(false)
   const [targetUrl, setTargetUrl] = useState<string>('')
+  const TABS_STORAGE_KEY = 'pos_tabs';
+  const ACTIVE_TAB_STORAGE_KEY = 'pos_active_tab';
+  const [tabs, setTabs] = useState(() => {
+    const stored = localStorage.getItem(TABS_STORAGE_KEY);
+    console.log('stored', stored)
+    return stored ? JSON.parse(stored) : [{ key: '/home', label: 'Beranda' }];
+  });
+  const [activeKey, setActiveKey] = useState(() => {
+    return localStorage.getItem(ACTIVE_TAB_STORAGE_KEY) || '/home';
+  });
+
 
   useEffect(() => {
     getUserInfo();
   }, []);
+
+  // 📦 Keep localStorage in sync
+  useEffect(() => {
+    localStorage.setItem(TABS_STORAGE_KEY, JSON.stringify(tabs));
+  }, [tabs]);
+
+  useEffect(() => {
+    localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, activeKey);
+  }, [activeKey]);
+
+  // ➕ Add tab when navigating to a new route
+  useEffect(() => {
+    const exists = tabs.find((tab: any) => tab.key === location.pathname);
+    if (!exists) {
+      const found = menus.find(menu => menu.path === location.pathname);
+      if (found) {
+        setTabs((prev: any) => [...prev, { key: found.path, label: found.label }]);
+      }
+    }
+    setActiveKey(location.pathname);
+  }, [location]);
 
   const filterMenusByPermission = (
     menus: ItemType<any>[],
@@ -137,6 +169,26 @@ const OwnLayout = () => {
         setIsOpenConfirmationModal(true)
         setTargetUrl(val.key);
       } else {
+        // navigate(val.key);
+        console.log('val', val)
+        let selectedMenu = menus.find(menu => menu.key === val.key);
+        const isMaster: boolean = val.key.includes('/master');
+
+        if (isMaster) {
+          console.log('master')
+          selectedMenu = menus.at(-1).children.find((menu: any) => menu.key === val.key);
+        }
+
+        console.log('selectedMenu', selectedMenu)
+
+        if (!(tabs.find((tab: any) => tab.key === val.key))) {
+          setTabs((prev: any) => [
+            ...prev,
+            { key: val.key, label: isMaster ? `Master-${selectedMenu.label}` :  selectedMenu.label },
+          ]);
+        }
+
+        setActiveKey(val.key);
         navigate(val.key);
       }
     }
@@ -151,6 +203,25 @@ const OwnLayout = () => {
   const handleCancel = () => {
     setIsOpenConfirmationModal(false)
   }
+
+  const onTabChange = (key: string) => {
+    navigate(key);
+    setActiveKey(key)
+  };
+
+  const handleTabRemove = (targetKey: string) => {
+    const newTabs = tabs.filter((tab: any) => tab.key !== targetKey);
+    let newActiveKey = activeKey;
+
+    if (targetKey === activeKey) {
+      const lastTab = newTabs[newTabs.length - 1];
+      newActiveKey = lastTab?.key || '/home';
+      navigate(newActiveKey);
+    }
+
+    setTabs(newTabs);
+    setActiveKey(newActiveKey);
+  };
 
   if (userInfo.loading) {
     return (
@@ -208,32 +279,49 @@ const OwnLayout = () => {
       </Sider>
       <Layout className={collapsed ? "sm:ml-[80px]" : "sm:ml-[200px]"}>
         <Header
-          style={{ padding: 0, background: colorBgContainer }}
-          className="flex"
+          style={{ padding: 0, background: colorBgContainer, margin: 0 }}
         >
-          <div className="flex justify-between w-full">
-            <div className="flex">
-              <Button
-                type="text"
-                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                onClick={() => setCollapsed(!collapsed)}
-                style={{
-                  fontSize: "16px",
-                  width: 64,
-                  height: 64,
-                }}
-              />
+          <Tabs
+              hideAdd
+              onChange={onTabChange}
+              activeKey={activeKey}
+              type="editable-card"
+              onEdit={(key, action) => action === 'remove' && handleTabRemove(key as string)}
+              items={tabs.map((tab: any) => ({
+                key: tab.key,
+                label: tab.label,
+                closable: tabs.length > 1,
+                children: (
+                    <div className={'-mt-4'}>
+                      <div className="flex justify-between w-full bg-white">
+                        <div className="flex">
+                          <Button
+                              type="text"
+                              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                              onClick={() => setCollapsed(!collapsed)}
+                              style={{
+                                fontSize: "16px",
+                                width: 64,
+                                height: 64,
+                              }}
+                          />
 
-              <Breadcrumb items={breadcrumb} style={{ margin: "auto 0" }} />
-            </div>
+                          <Breadcrumb items={breadcrumb} style={{ margin: "auto 0" }} />
+                        </div>
 
-            <p
-              className="mr-4 cursor-pointer text-[#570808] font-bold"
-              onClick={() => logout()}
-            >
-              Keluar
-            </p>
-          </div>
+                        <p
+                            className="mr-4 cursor-pointer text-[#570808] font-bold my-auto"
+                            onClick={() => logout()}
+                        >
+                          Keluar
+                        </p>
+                      </div>
+
+                      <Outlet />
+                    </div>
+                ),
+              }))}
+          />
         </Header>
 
         <Modal
@@ -254,7 +342,7 @@ const OwnLayout = () => {
             }
           }}
         >
-          <Outlet />
+
         </div>
       </Layout>
     </Layout>
