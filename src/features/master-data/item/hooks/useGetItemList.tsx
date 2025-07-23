@@ -6,6 +6,7 @@ const UseGetItemList = () => {
   return useQuery({
     queryKey: ["masterItemsList"],
     queryFn: async () => axiosInstance.get(url),
+    refetchOnMount: false
   });
 };
 
