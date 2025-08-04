@@ -1,12 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
-import axiosInstance from "../../../libs/axios";
+import { useQuery } from '@tanstack/react-query'
+import axiosInstance from '../../../libs/axios'
 
 const UseGetPayment = (id: string) => {
-  const url: string = `/payment/${id}`;
-  return useQuery({
-    queryKey: ["payment", id],
-    queryFn: async () => axiosInstance.get(url),
-  });
-};
+    const url: string = `/payment/${id}`
+    return useQuery({
+        queryKey: ['payment', id],
+        queryFn: async () => axiosInstance.get(url),
+        enabled: !!id,
+    })
+}
 
-export default UseGetPayment;
+export default UseGetPayment
