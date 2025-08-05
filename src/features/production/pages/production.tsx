@@ -32,6 +32,7 @@ import { parseDateDDMMYYYY } from "../../../libs/dateParser";
 import useDeleteProduction from "../hooks/useDeleteProduction";
 import { useCheckPermission } from "../../../hooks/useCheckPermission";
 import { Dayjs } from "dayjs";
+import {formatCurrency} from "../../../libs/formatCurrency.ts";
 
 interface IData {
   id: number;
@@ -110,7 +111,7 @@ const Production = () => {
 
   const columns: TableColumnsType<IData> = [
     { title: "Tanggal", dataIndex: "production_date" },
-    { title: "Jumlah", dataIndex: "total_quantity" },
+    { title: "Jumlah", dataIndex: "total_quantity", render: (_, record) => formatCurrency(record.total_quantity, false) },
     {
       dataIndex: "action",
       render: (_, record) => (

@@ -3,12 +3,15 @@ import { Content } from "antd/es/layout/layout";
 import { useContext, useEffect, useState } from "react";
 import { BreadcrumbContext } from "../../../context/breadcrumb";
 import UseGetProductionPlan from "../hooks/useGetProductionPlan";
+import {formatCurrency} from "../../../libs/formatCurrency.ts";
 
 interface IData {
   id: number;
   production_date: string;
   total_quantity: number;
   production_requirements: number;
+  stock: number
+  stock_deficit: number
 }
 
 const ProductionPlan = () => {
@@ -39,9 +42,9 @@ const ProductionPlan = () => {
   const columns: TableColumnsType<IData> = [
     { title: "Nama", dataIndex: "item_name" },
     { title: "Kode", dataIndex: "item_code" },
-    { title: "Stok", dataIndex: "stock" },
-    { title: "Kebutuhan", dataIndex: "production_requirements" },
-    { title: "Rencana Produksi", dataIndex: "stock_deficit" },
+    { title: "Stok", dataIndex: "stock", render: (_, record) => formatCurrency(record.stock, false) },
+    { title: "Kebutuhan", dataIndex: "production_requirements", render: (_, record) => formatCurrency(record.production_requirements, false) },
+    { title: "Rencana Produksi", dataIndex: "stock_deficit", render: (_, record) => formatCurrency(record.stock_deficit, false) },
   ];
 
   return (
