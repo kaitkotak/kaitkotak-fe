@@ -39,6 +39,7 @@ interface IItem {
   price_per_unit: number;
   type: string;
   weight_g: number;
+  stock: number
 }
 
 interface IItemList {

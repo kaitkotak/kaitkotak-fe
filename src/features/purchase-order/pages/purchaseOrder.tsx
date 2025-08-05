@@ -23,6 +23,7 @@ import UseGetPurchaseOrders from "../hooks/useGetPurchaseOrders";
 import useDeletePurchaseOrder from "../hooks/useDeletePurchaseOrder";
 import Search from "antd/es/input/Search";
 import { useCheckPermission } from "../../../hooks/useCheckPermission";
+import {formatCurrency} from "../../../libs/formatCurrency.ts";
 
 interface IData {
   id: number;
@@ -90,7 +91,7 @@ const PurchaseOrder = () => {
     { title: "No Purchase Order", dataIndex: "order_number" },
     { title: "Nama Pelanggan", dataIndex: "customer_name" },
     { title: "Tanggal", dataIndex: "order_date" },
-    { title: "Harga Total", dataIndex: "price_total" },
+    { title: "Harga Total", dataIndex: "price_total", render: (_, record) => formatCurrency(record.price_total, true) },
     {
       dataIndex: "action",
       render: (_, record) => (
