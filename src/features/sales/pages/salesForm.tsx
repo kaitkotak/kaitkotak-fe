@@ -258,7 +258,7 @@ const SalesForm = () => {
   };
 
   const updateDueDate = () => {
-    const date = dayjs(form.getFieldValue("due_date"));
+    const date = dayjs(form.getFieldValue("invoice_date"));
     const dueDays = form.getFieldValue("due_days");
 
     form.setFieldValue("due_date", date.add(dueDays, "day"));
