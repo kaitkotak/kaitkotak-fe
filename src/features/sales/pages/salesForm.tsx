@@ -128,6 +128,8 @@ const SalesForm = () => {
         purchaseOrderItemsResponse.data.data.map(
           (response: ISalesItemList) => ({
             ...response,
+            // id: `${selected.id}-${item.item_id}`,
+            //         po_id: selected.id,
             disabled: true,
           })
         )
@@ -191,8 +193,12 @@ const SalesForm = () => {
   const selectItem = (idx: number, value: string) => {
     const selectedItem: ISalesItemList = itemList.filter(
       (item: ISalesItemList) => item.id === value
-    )[0];
+    )[0]
 
+    form.setFieldValue(
+        [`invoice_items`, idx, "item_id"],
+        Number(selectedItem.item_id)
+    );
     form.setFieldValue(
       [`invoice_items`, idx, "price_per_unit"],
       Number(selectedItem.price_per_unit)
@@ -213,17 +219,20 @@ const SalesForm = () => {
     setSelectedCustomer(val);
 
     form.setFieldsValue({
-      invoice_items: selectedPurchaseOrder.flatMap(
-        (selected: IPurchaseOrderList) =>
-          selected.purchase_order_items.map((item) => ({
-            ...item,
-            id: `${selected.id}-${item.item_id}`,
-            po_id: selected.id,
-          }))
-      ),
-    });
+      invoice_items: []
+    })
+    // form.setFieldsValue({
+    //   invoice_items: selectedPurchaseOrder.flatMap(
+    //     (selected: IPurchaseOrderList) =>
+    //       selected.purchase_order_items.map((item) => ({
+    //         ...item,
+    //         id: `${selected.id}-${item.item_id}`,
+    //         po_id: selected.id,
+    //       }))
+    //   ),
+    // });
 
-    calculateTotalAmount();
+    // calculateTotalAmount();
   };
 
   const handleDueDateChange = (val: any) => {
@@ -249,7 +258,7 @@ const SalesForm = () => {
   };
 
   const updateDueDate = () => {
-    const date = dayjs(form.getFieldValue("due_date"));
+    const date = dayjs(form.getFieldValue("invoice_date"));
     const dueDays = form.getFieldValue("due_days");
 
     form.setFieldValue("due_date", date.add(dueDays, "day"));
@@ -332,11 +341,11 @@ const SalesForm = () => {
           form={form}
           layout="vertical"
           onFinish={submit}
-          initialValues={{
-            invoice_items: [
-              { item_id: "", quantity: 0, price_per_unit: 0, price_total: 0 },
-            ],
-          }}
+          // initialValues={{
+          //   invoice_items: [
+          //     { item_id: "", quantity: 0, price_per_unit: 0, price_total: 0 },
+          //   ],
+          // }}
         >
           {params.id && (
             <Row gutter={16}>
