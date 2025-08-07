@@ -120,7 +120,7 @@ const ProductionForm = () => {
 
   const submit = () => {
     const payload: IProductionPayload = {
-      production_date: dayjs(productionDate).format("YYYY-MM-DD"),
+      production_date: dayjs(id ? productionDate : localStorage.getItem('productionDate')).format("YYYY-MM-DD"),
       production_items: productionItems.map(
         (productionItem: IProductionItem) => ({
           item_id: productionItem.id,
