@@ -56,7 +56,7 @@ const SalesForm = () => {
     []
   );
   const { data: purchaseOrderResponse, refetch: refetchPurchaseOrder, isRefetching: isPurchaseOrderRefetching } = UseGetPurchaseOrderList();
-  const [purchaseOrders, setPurchaseOrders] = useState<IPurchaseOrderList[]>(
+  const [_, setPurchaseOrders] = useState<IPurchaseOrderList[]>(
     []
   );
   const checkPermission = useCheckPermission();
@@ -211,10 +211,10 @@ const SalesForm = () => {
 
   const handleCustomerChange = (val: string) => {
     getPurchaseOrderItems(val);
-    const selectedPurchaseOrder: IPurchaseOrderList[] = purchaseOrders.filter(
-      (purchaseOrder: IPurchaseOrderList) =>
-        purchaseOrder.customer_id === Number(val)
-    );
+    // const selectedPurchaseOrder: IPurchaseOrderList[] = purchaseOrders.filter(
+    //   (purchaseOrder: IPurchaseOrderList) =>
+    //     purchaseOrder.customer_id === Number(val)
+    // );
 
     setSelectedCustomer(val);
 
