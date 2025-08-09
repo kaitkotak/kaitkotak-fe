@@ -28,6 +28,7 @@ import { BreadcrumbContext } from "../../../../context/breadcrumb";
 import { useCheckPermission } from "../../../../hooks/useCheckPermission";
 import UseGetItemList from "../hooks/useGetItemList";
 import useOpnameItem from "../hooks/useOpnameItem";
+import {formatCurrency} from "../../../../libs/formatCurrency.ts";
 
 const Item = () => {
   const {
@@ -96,10 +97,10 @@ const Item = () => {
   const columns: TableColumnsType<IItem> = [
     { title: "Nama", dataIndex: "item_name" },
     { title: "Kode", dataIndex: "item_code" },
-    { title: "Berat (gr)", dataIndex: "weight_g" },
-    { title: "Stok", dataIndex: "stock" },
-    { title: "Harga Jual", dataIndex: "price_per_unit" },
-    { title: "Harga Produksi", dataIndex: "cost_per_unit" },
+    { title: "Berat (gr)", dataIndex: "weight_g", render: (_, record) => formatCurrency(record.weight_g, false) },
+    { title: "Stok", dataIndex: "stock", render: (_, record) => formatCurrency(record.stock, false)},
+    { title: "Harga Jual", dataIndex: "price_per_unit", render: (_, record) => formatCurrency(record.price_per_unit) },
+    { title: "Harga Produksi", dataIndex: "cost_per_unit", render: (_, record) => formatCurrency(record.cost_per_unit) },
     { title: "Tipe", dataIndex: "type" },
     { title: "Kode Pelanggan", dataIndex: "customer_code" },
     {
