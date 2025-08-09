@@ -22,9 +22,10 @@ import UseGetPaymentHistories from "../hooks/useGetPaymentHistories";
 import { BreadcrumbContext } from "../../../context/breadcrumb";
 import { useCheckPermission } from "../../../hooks/useCheckPermission";
 import { format } from "date-fns";
+import {formatCurrency} from "../../../libs/formatCurrency.ts";
 
 interface IData {
-  amount: number;
+  total_amount: number;
   created_at: string;
   created_by_name: string;
   customer_name: string;
@@ -87,7 +88,7 @@ const PaymentHistories = () => {
     { title: "Tanggal", dataIndex: "created_at" },
     { title: "Pelanggan", dataIndex: "customer_name" },
     { title: "No Invoice", dataIndex: "invoice_items" },
-    { title: "Total Pembayaran", dataIndex: "total_amount" },
+    { title: "Total Pembayaran", dataIndex: "total_amount", render: (_, record) => formatCurrency(record.total_amount, true) },
     { title: "PIC", dataIndex: "created_by_name" },
     {
       dataIndex: "action",

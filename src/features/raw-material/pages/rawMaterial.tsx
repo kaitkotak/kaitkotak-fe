@@ -23,6 +23,7 @@ import useCreateRawMaterial from "../hooks/useCreateRawMaterial";
 import id from "antd/es/date-picker/locale/id_ID";
 import { parseDateDDMMYYYY } from "../../../libs/dateParser";
 import { useCheckPermission } from "../../../hooks/useCheckPermission";
+import {formatCurrency} from "../../../libs/formatCurrency.ts";
 
 interface IData {
   id: number;
@@ -117,7 +118,7 @@ const RawMaterial = () => {
   const columns: TableColumnsType<IData> = [
     { title: "Tanggal", dataIndex: "stock_date" },
     { title: "Tipe", dataIndex: "type" },
-    { title: "Jumlah (kg)", dataIndex: "quantity" },
+    { title: "Jumlah (kg)", dataIndex: "quantity", render: (_, record) => formatCurrency(record.quantity, false) },
     { title: "Catatan", dataIndex: "note" },
   ];
 
@@ -231,7 +232,7 @@ const RawMaterial = () => {
 
           <div className="flex justify-between lg:justify-end gap-0 lg:gap-2">
             <div className="px-3 py-1 my-auto border rounded">
-              Stok : {currentStock}kg
+              Stok : {formatCurrency(currentStock, false)}kg
             </div>
 
             <div className="flex gap-2">
