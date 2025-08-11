@@ -149,7 +149,7 @@ const SalesForm = () => {
                         ...response,
                         // id: `${selected.id}-${item.item_id}`,
                         // po_id: selected.id,
-                        disabled: true,
+                        // disabled: true,
                     })
                 )
             )
