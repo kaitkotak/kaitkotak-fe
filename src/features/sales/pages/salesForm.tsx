@@ -148,7 +148,7 @@ const SalesForm = () => {
                     (response: ISalesItemList) => ({
                         ...response,
                         // id: `${selected.id}-${item.item_id}`,
-                        //         po_id: selected.id,
+                        // po_id: selected.id,
                         disabled: true,
                     })
                 )
@@ -214,6 +214,7 @@ const SalesForm = () => {
             (item: ISalesItemList) => item.id === value
         )[0]
 
+        console.log('selectedItem', selectedItem)
         form.setFieldValue(
             [`invoice_items`, idx, 'item_id'],
             Number(selectedItem.item_id)
@@ -223,6 +224,10 @@ const SalesForm = () => {
             Number(selectedItem.price_per_unit)
         )
         form.setFieldValue([`invoice_items`, idx, 'quantity'], 0)
+        form.setFieldValue(
+            [`invoice_items`, idx, 'po_id'],
+            Number(selectedItem.po_id)
+        )
 
         calculateSubstotal(idx)
         renewItemList()
