@@ -254,17 +254,24 @@ const SalesForm = () => {
         // calculateTotalAmount();
     }
 
-    const handleDueDateChange = (val: any) => {
-        form.setFieldValue(
-            'due_days',
-            dayjs(val)
-                .startOf('day')
-                .diff(
-                    dayjs(form.getFieldValue('invoice_date')).startOf('day'),
-                    'day',
-                    true
-                )
-        )
+    const handleDueDateChange = () => {
+        if (
+            form.getFieldValue('due_date') &&
+            form.getFieldValue('invoice_date')
+        ) {
+            form.setFieldValue(
+                'due_days',
+                dayjs(form.getFieldValue('due_date'))
+                    .startOf('day')
+                    .diff(
+                        dayjs(form.getFieldValue('invoice_date')).startOf(
+                            'day'
+                        ),
+                        'day',
+                        true
+                    )
+            )
+        }
     }
 
     const renewItemList = () => {
@@ -414,6 +421,7 @@ const SalesForm = () => {
                                 <DatePicker
                                     style={{ width: '100%' }}
                                     format="DD-MM-YYYY"
+                                    onChange={() => handleDueDateChange()}
                                 />
                             </Form.Item>
                         </Col>
@@ -543,8 +551,8 @@ const SalesForm = () => {
                                                 <DatePicker
                                                     style={{ width: '100%' }}
                                                     format="DD-MM-YYYY"
-                                                    onChange={
-                                                        handleDueDateChange
+                                                    onChange={() =>
+                                                        handleDueDateChange()
                                                     }
                                                 />
                                             </Form.Item>
