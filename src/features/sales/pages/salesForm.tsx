@@ -158,6 +158,8 @@ const SalesForm = () => {
 
     const submit: FormProps<ISalesForm>['onFinish'] = (values) => {
         const payload: ISalesFormPayload = {
+            invoice_number: values.invoice_number,
+            delivery_number: values.delivery_number,
             customer_id: values.customer_id,
             invoice_date: dayjs(values.invoice_date).format('YYYY-MM-DD'),
             due_date: dayjs(values.due_date).format('YYYY-MM-DD'),
@@ -397,18 +399,40 @@ const SalesForm = () => {
                     //   ],
                     // }}
                 >
-                    {params.id && (
-                        <Row gutter={16}>
-                            <Col span={24}>
-                                <Form.Item<ISalesForm>
-                                    label="No Invoice"
-                                    name="invoice_number"
-                                >
-                                    <Input readOnly />
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                    )}
+
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item<ISalesForm>
+                                label="No Invoice"
+                                name="invoice_number"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message:
+                                            'Silahkan masukan nomor invoice!',
+                                    },
+                                ]}
+                            >
+                                <Input  />
+                            </Form.Item>
+                        </Col>
+
+                        <Col span={12}>
+                            <Form.Item<ISalesForm>
+                                label="No Surat Jalan"
+                                name="delivery_number"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message:
+                                            'Silahkan masukan nomor surat jalan!',
+                                    },
+                                ]}
+                            >
+                                <Input  />
+                            </Form.Item>
+                        </Col>
+                    </Row>
 
                     <Row gutter={16}>
                         <Col span={12}>
