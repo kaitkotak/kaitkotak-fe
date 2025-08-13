@@ -43,6 +43,7 @@ interface ISalesForm {
   invoice_items: ISalesItemList[];
   po_id: number;
   invoice_number: string;
+  delivery_number: string
 }
 
 interface ISalesItem {
@@ -81,6 +82,8 @@ interface ISalesPurchaseOrderList {
 }
 
 interface ISalesFormPayload {
+  invoice_number: string;
+  delivery_number: string;
   customer_id: number;
   invoice_date: string;
   due_date: string;
